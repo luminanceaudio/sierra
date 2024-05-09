@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"os"
+	"sierra/services/sierra/commands/index"
 	"sierra/services/sierra/commands/source"
 )
 
 var args struct {
 	Source source.Args `command:"source" description:"Manage sources"`
+	Index  index.Args  `command:"index" description:"Indexes sources"`
 }
 
 func main() {
@@ -23,6 +25,8 @@ func main() {
 	switch p.Active.Name {
 	case "source":
 		err = source.Run(args.Source, p.Active.Active)
+	case "index":
+		err = index.Run(args.Index, p.Active.Active)
 	}
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
