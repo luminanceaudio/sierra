@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"os"
@@ -22,11 +23,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	ctx := context.Background()
+
 	switch p.Active.Name {
 	case "source":
-		err = source.Run(args.Source, p.Active.Active)
+		err = source.Run(ctx, args.Source, p.Active.Active)
 	case "index":
-		err = index.Run(args.Index, p.Active.Active)
+		err = index.Run(ctx, args.Index, p.Active.Active)
 	}
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)

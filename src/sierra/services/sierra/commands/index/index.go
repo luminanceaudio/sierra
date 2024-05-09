@@ -1,6 +1,7 @@
 package index
 
 import (
+	"context"
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"sierra/services/sierra/internal/modules/configfile"
@@ -10,11 +11,13 @@ import (
 type Args struct {
 }
 
-func Run(args Args, subcommand *flags.Command) error {
+func Run(ctx context.Context, args Args, subcommand *flags.Command) error {
 	config, err := configfile.Load()
 	if err != nil {
 		return err
 	}
+
+	idx := indexer.New()
 
 	for _, oneofSource := range config.Sources.List {
 		source, err := oneofSource.Get()
@@ -22,20 +25,9 @@ func Run(args Args, subcommand *flags.Command) error {
 			return fmt.Errorf("failed getting source data: %s", err)
 		}
 
-		idx, err := indexer.New(source)
+		err = idx.Index(ctx, source)
 		if err != nil {
-			return fmt.Errorf("failed creating indexer: %s", err)
-		}
-
-		_ = idx
-
-		entries, err := source.ReadDir("")
-		if err != nil {
-			return fmt.Errorf("failed reading directory: %s", err)
-		}
-
-		for _, entry := range entries {
-			fmt.Println(entry.Name())
+			return fmt.Errorf("failed indexing source: %s", err)
 		}
 	}
 

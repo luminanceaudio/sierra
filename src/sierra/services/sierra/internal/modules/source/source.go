@@ -3,12 +3,14 @@ package source
 import (
 	"encoding/json"
 	"fmt"
-	"io/fs"
+	"os"
+	"path/filepath"
 )
 
 type Source interface {
-	fs.ReadDirFS
-	WriteFile(filename string, data []byte, perm fs.FileMode) error
+	Open(name string) (*os.File, error)
+	Walk(fn filepath.WalkFunc) error
+	WriteFile(filename string, data []byte, perm os.FileMode) error
 }
 
 type OneofSource struct {

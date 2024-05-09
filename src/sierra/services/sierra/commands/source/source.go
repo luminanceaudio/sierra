@@ -1,6 +1,7 @@
 package source
 
 import (
+	"context"
 	"github.com/jessevdk/go-flags"
 	"sierra/services/sierra/commands/source/add"
 	"sierra/services/sierra/commands/source/purge"
@@ -11,7 +12,7 @@ type Args struct {
 	Purge purge.Args `command:"purge" description:"Remove all sources"`
 }
 
-func Run(args Args, subcommand *flags.Command) error {
+func Run(ctx context.Context, args Args, subcommand *flags.Command) error {
 	switch subcommand.Name {
 	case "add":
 		return add.Run(args.Add)

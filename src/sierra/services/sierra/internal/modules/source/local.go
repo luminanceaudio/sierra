@@ -2,24 +2,24 @@ package source
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
+	"path/filepath"
 )
 
 type LocalSource struct {
 	BaseSource
 }
 
-func (s *LocalSource) WriteFile(filename string, data []byte, perm fs.FileMode) error {
+func (s *LocalSource) WriteFile(filename string, data []byte, perm os.FileMode) error {
 	return os.WriteFile(filename, data, perm)
 }
 
-func (s *LocalSource) Open(name string) (fs.File, error) {
+func (s *LocalSource) Open(name string) (*os.File, error) {
 	return os.Open(name)
 }
 
-func (s *LocalSource) ReadDir(name string) ([]fs.DirEntry, error) {
-	return os.ReadDir(s.Path)
+func (s *LocalSource) Walk(fn filepath.WalkFunc) error {
+	return filepath.Walk(s.Path, fn)
 }
 
 func NewLocalSource(path string) (*OneofSource, error) {

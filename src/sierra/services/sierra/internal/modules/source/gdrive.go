@@ -1,7 +1,8 @@
 package source
 
 import (
-	"io/fs"
+	"os"
+	"path/filepath"
 )
 
 // GDriveSource is a Google Drive source
@@ -9,17 +10,17 @@ type GDriveSource struct {
 	BaseSource
 }
 
-func (s *GDriveSource) WriteFile(filename string, data []byte, perm fs.FileMode) error {
+func (s *GDriveSource) WriteFile(filename string, data []byte, perm os.FileMode) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *GDriveSource) Open(name string) (fs.File, error) {
+func (s *GDriveSource) Open(name string) (*os.File, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *GDriveSource) ReadDir(name string) ([]fs.DirEntry, error) {
+func (s *GDriveSource) Walk(fn filepath.WalkFunc) error {
 	//TODO implement me
 	panic("implement me")
 }
