@@ -2,8 +2,8 @@ package add
 
 import (
 	"fmt"
-	"sierra/services/sierra/internal/modules/configfile"
-	"sierra/services/sierra/internal/modules/source"
+	"sierra/services/sierra/internal/configfile"
+	"sierra/services/sierra/internal/source"
 )
 
 type Args struct {

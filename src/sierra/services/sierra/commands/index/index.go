@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/jessevdk/go-flags"
-	"sierra/services/sierra/internal/modules/configfile"
-	"sierra/services/sierra/internal/modules/indexer"
+	"sierra/services/sierra/internal/configfile"
+	"sierra/services/sierra/internal/indexer"
 )
 
 type Args struct {

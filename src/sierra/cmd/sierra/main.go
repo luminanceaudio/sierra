@@ -7,6 +7,7 @@ import (
 	"os"
 	"sierra/services/sierra/commands/index"
 	"sierra/services/sierra/commands/source"
+	"sierra/services/sierra/config"
 )
 
 var args struct {
@@ -25,6 +26,12 @@ func main() {
 
 	ctx := context.Background()
 
+	err = config.CreateAppDataDir()
+	if err != nil {
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	switch p.Active.Name {
 	case "source":
 		err = source.Run(ctx, args.Source, p.Active.Active)
@@ -33,6 +40,6 @@ func main() {
 	}
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		os.Exit(2)
 	}
 }

@@ -2,7 +2,7 @@ package purge
 
 import (
 	"fmt"
-	"sierra/services/sierra/internal/modules/configfile"
+	"sierra/services/sierra/internal/configfile"
 )
 
 type Args struct {
