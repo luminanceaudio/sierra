@@ -1,0 +1,7 @@
+textarea.inputlistitem {
+  color: #6f6f6f !important;
+}
+
+textarea.inputlistitem:first-line {
+  color: initial;
+}

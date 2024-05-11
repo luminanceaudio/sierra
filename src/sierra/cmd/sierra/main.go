@@ -6,6 +6,7 @@ import (
 	"github.com/jessevdk/go-flags"
 	"os"
 	"sierra/services/sierra/commands/index"
+	"sierra/services/sierra/commands/server"
 	"sierra/services/sierra/commands/source"
 	"sierra/services/sierra/config"
 )
@@ -13,6 +14,7 @@ import (
 var args struct {
 	Source source.Args `command:"source" description:"Manage sources"`
 	Index  index.Args  `command:"index" description:"Indexes sources"`
+	Server server.Args `command:"server" description:"Run HTTP server"`
 }
 
 func main() {
@@ -37,6 +39,8 @@ func main() {
 		err = source.Run(ctx, args.Source, p.Active.Active)
 	case "index":
 		err = index.Run(ctx, args.Index, p.Active.Active)
+	case "server":
+		err = server.Run(ctx, args.Server, p.Active.Active)
 	}
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)

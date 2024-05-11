@@ -3,6 +3,7 @@ package format
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	"sierra/services/sierra/internal/format"
@@ -58,12 +59,24 @@ func TryParseWav(reader io.ReadSeeker) (*Format, bool, error) {
 }
 
 func handleChunks(reader io.ReadSeeker) (wavFormat *WavFormat, err error) {
+	var cursor int64
+	var foundChunkId [4]byte
 	for {
-		var foundChunkId [4]byte
 		err := binary.Read(reader, binary.LittleEndian, &foundChunkId)
 		if err != nil {
 			// No more chunks
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
+				return wavFormat, nil
+			}
+
+			if errors.Is(err, io.ErrUnexpectedEOF) {
+				// Check for EOF, if it exists that means it's likely just padding
+				var padding [1]byte
+				_, paddingErr := reader.Read(padding[:])
+				if paddingErr != io.EOF {
+					return nil, fmt.Errorf("expected padding after unexpected EOF reading chunk: %w", paddingErr)
+				}
+
 				return wavFormat, nil
 			}
 
@@ -77,7 +90,7 @@ func handleChunks(reader io.ReadSeeker) (wavFormat *WavFormat, err error) {
 		}
 
 		// Get cursor without actually seeking
-		cursor, err := reader.Seek(0, io.SeekCurrent)
+		cursor, err = reader.Seek(0, io.SeekCurrent)
 		if err != nil {
 			return nil, fmt.Errorf("failed seeking sample file to get cursor: %w", err)
 		}

@@ -32,3 +32,8 @@ Share favorite sounds with each other.
 
 Free plugins repository.
 
+## Server
+
+A server could optionally be implemented. It would receive samples sent in the background from clients, analyze them and store their metadata. Other clients could later query samples metadata to avoid locally analyzing samples.
+
+This could be presented as "Remote Indexing" vs "Local Indexing", the former being faster but requiring internet connectivity.
