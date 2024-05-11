@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sierra/services/sierra/internal/sierradb/sierraent/source"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -13,9 +14,11 @@ import (
 
 // Source is the model entity for the Source schema.
 type Source struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// CreateTime holds the value of the "create_time" field.
+	CreateTime time.Time `json:"create_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SourceQuery when eager-loading is set.
 	Edges        SourceEdges `json:"edges"`
@@ -47,6 +50,8 @@ func (*Source) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case source.FieldID:
 			values[i] = new(sql.NullString)
+		case source.FieldCreateTime:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -67,6 +72,12 @@ func (s *Source) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				s.ID = value.String
+			}
+		case source.FieldCreateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field create_time", values[i])
+			} else if value.Valid {
+				s.CreateTime = value.Time
 			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
@@ -108,7 +119,9 @@ func (s *Source) Unwrap() *Source {
 func (s *Source) String() string {
 	var builder strings.Builder
 	builder.WriteString("Source(")
-	builder.WriteString(fmt.Sprintf("id=%v", s.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", s.ID))
+	builder.WriteString("create_time=")
+	builder.WriteString(s.CreateTime.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

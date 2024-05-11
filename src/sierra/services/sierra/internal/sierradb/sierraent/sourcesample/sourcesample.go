@@ -11,13 +11,11 @@ const (
 	// Label holds the string label denoting the sourcesample type in the database.
 	Label = "source_sample"
 	// FieldID holds the string denoting the id field in the database.
-	FieldID = "relative_path"
+	FieldID = "uri"
 	// EdgeSource holds the string denoting the source edge name in mutations.
 	EdgeSource = "source"
 	// EdgeSample holds the string denoting the sample edge name in mutations.
 	EdgeSample = "sample"
-	// SourceFieldID holds the string denoting the ID field of the Source.
-	SourceFieldID = "uri"
 	// SampleFieldID holds the string denoting the ID field of the Sample.
 	SampleFieldID = "sha256"
 	// Table holds the table name of the sourcesample in the database.
@@ -89,7 +87,7 @@ func BySampleField(field string, opts ...sql.OrderTermOption) OrderOption {
 func newSourceStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SourceInverseTable, SourceFieldID),
+		sqlgraph.To(SourceInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, SourceTable, SourceColumn),
 	)
 }

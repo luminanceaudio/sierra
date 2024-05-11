@@ -2,7 +2,7 @@ function DragHeader() {
   return (
     <div
       style={{
-        '-webkit-app-region': 'drag',
+        WebkitAppRegion: 'drag',
         height: 28,
         position: 'absolute',
         width: '100%',

@@ -6,10 +6,12 @@ export const protobufPackage = "sierra_app";
 export interface Sample {
   sha256: string;
   format: string;
+  sourceUri: string;
+  uri: string;
 }
 
 function createBaseSample(): Sample {
-  return { sha256: "", format: "" };
+  return { sha256: "", format: "", sourceUri: "", uri: "" };
 }
 
 export const Sample = {
@@ -19,6 +21,12 @@ export const Sample = {
     }
     if (message.format !== "") {
       writer.uint32(18).string(message.format);
+    }
+    if (message.sourceUri !== "") {
+      writer.uint32(26).string(message.sourceUri);
+    }
+    if (message.uri !== "") {
+      writer.uint32(34).string(message.uri);
     }
     return writer;
   },
@@ -44,6 +52,20 @@ export const Sample = {
 
           message.format = reader.string();
           continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.sourceUri = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.uri = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -57,6 +79,8 @@ export const Sample = {
     return {
       sha256: isSet(object.sha256) ? String(object.sha256) : "",
       format: isSet(object.format) ? String(object.format) : "",
+      sourceUri: isSet(object.sourceUri) ? String(object.sourceUri) : "",
+      uri: isSet(object.uri) ? String(object.uri) : "",
     };
   },
 
@@ -68,6 +92,12 @@ export const Sample = {
     if (message.format !== "") {
       obj.format = message.format;
     }
+    if (message.sourceUri !== "") {
+      obj.sourceUri = message.sourceUri;
+    }
+    if (message.uri !== "") {
+      obj.uri = message.uri;
+    }
     return obj;
   },
 
@@ -78,6 +108,8 @@ export const Sample = {
     const message = createBaseSample();
     message.sha256 = object.sha256 ?? "";
     message.format = object.format ?? "";
+    message.sourceUri = object.sourceUri ?? "";
+    message.uri = object.uri ?? "";
     return message;
   },
 };

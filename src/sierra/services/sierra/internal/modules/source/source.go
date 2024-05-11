@@ -2,30 +2,30 @@ package source
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
-	"path/filepath"
-	"strings"
+	"sierra/common/uri"
 )
+
+type WalkFunc func(fileUri *uri.URI, info fs.FileInfo, err error) error
 
 type Source interface {
 	Open(name string) (*os.File, error)
-	Walk(fn filepath.WalkFunc) error
+	Walk(fn WalkFunc) error
 	WriteFile(filename string, data []byte, perm os.FileMode) error
-	GetURI() string
+	GetURI() *uri.URI
 }
 
-func New(uri string) (Source, error) {
-	split := strings.SplitN(uri, "://", 2)
-	if len(split) != 2 {
-		return nil, fmt.Errorf("invalid source uri: %s", uri)
+func New(uriStr string) (Source, error) {
+	uri, err := uri.New(uriStr)
+	if err != nil {
+		return nil, err
 	}
 
-	schema, path := split[0], split[1]
-
-	switch schema {
+	switch uri.Scheme() {
 	case File:
-		return NewLocalSource(path)
+		return NewLocalSource(uri)
 	}
 
-	return nil, fmt.Errorf("unsupported source type %s", schema)
+	return nil, fmt.Errorf("unsupported source type %s", uri.Scheme())
 }

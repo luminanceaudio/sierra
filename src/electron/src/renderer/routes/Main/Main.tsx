@@ -1,5 +1,6 @@
 import Layout from '../../components/Layout/Layout';
 import Widget from '../../components/Widget/Widget';
+import Samples from '../../components/Samples/Samples';
 
 function Main() {
   return (
@@ -11,7 +12,7 @@ function Main() {
           flex: 1,
         }}
       >
-        hello
+        <Samples />
       </Widget>
     </Layout>
   );

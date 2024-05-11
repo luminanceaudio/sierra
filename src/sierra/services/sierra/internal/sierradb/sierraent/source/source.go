@@ -3,6 +3,8 @@
 package source
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -12,10 +14,10 @@ const (
 	Label = "source"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "uri"
+	// FieldCreateTime holds the string denoting the create_time field in the database.
+	FieldCreateTime = "create_time"
 	// EdgeSample holds the string denoting the sample edge name in mutations.
 	EdgeSample = "sample"
-	// SourceSampleFieldID holds the string denoting the ID field of the SourceSample.
-	SourceSampleFieldID = "relative_path"
 	// Table holds the table name of the source in the database.
 	Table = "sources"
 	// SampleTable is the table that holds the sample relation/edge.
@@ -30,6 +32,7 @@ const (
 // Columns holds all SQL columns for source fields.
 var Columns = []string{
 	FieldID,
+	FieldCreateTime,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -42,12 +45,22 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+var (
+	// DefaultCreateTime holds the default value on creation for the "create_time" field.
+	DefaultCreateTime func() time.Time
+)
+
 // OrderOption defines the ordering options for the Source queries.
 type OrderOption func(*sql.Selector)
 
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreateTime orders the results by the create_time field.
+func ByCreateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreateTime, opts...).ToFunc()
 }
 
 // BySampleCount orders the results by sample count.
@@ -66,7 +79,7 @@ func BySample(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 func newSampleStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SampleInverseTable, SourceSampleFieldID),
+		sqlgraph.To(SampleInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, true, SampleTable, SampleColumn),
 	)
 }

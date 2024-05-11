@@ -30,16 +30,24 @@ var (
 	// SourcesColumns holds the columns for the "sources" table.
 	SourcesColumns = []*schema.Column{
 		{Name: "uri", Type: field.TypeString, Unique: true},
+		{Name: "create_time", Type: field.TypeTime},
 	}
 	// SourcesTable holds the schema information for the "sources" table.
 	SourcesTable = &schema.Table{
 		Name:       "sources",
 		Columns:    SourcesColumns,
 		PrimaryKey: []*schema.Column{SourcesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "source_uri",
+				Unique:  true,
+				Columns: []*schema.Column{SourcesColumns[0]},
+			},
+		},
 	}
 	// SourceSamplesColumns holds the columns for the "source_samples" table.
 	SourceSamplesColumns = []*schema.Column{
-		{Name: "relative_path", Type: field.TypeString, Unique: true},
+		{Name: "uri", Type: field.TypeString, Unique: true},
 		{Name: "source", Type: field.TypeString, Nullable: true},
 		{Name: "sample", Type: field.TypeString, Nullable: true},
 	}
@@ -60,6 +68,13 @@ var (
 				Columns:    []*schema.Column{SourceSamplesColumns[2]},
 				RefColumns: []*schema.Column{SamplesColumns[0]},
 				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "sourcesample_uri",
+				Unique:  true,
+				Columns: []*schema.Column{SourceSamplesColumns[0]},
 			},
 		},
 	}

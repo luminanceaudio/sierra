@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 type SourceSample struct {
@@ -11,12 +12,14 @@ type SourceSample struct {
 }
 
 func (SourceSample) Indexes() []ent.Index {
-	return []ent.Index{}
+	return []ent.Index{
+		index.Fields("id").Unique(),
+	}
 }
 
 func (SourceSample) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").StorageKey("relative_path").Immutable().Unique(),
+		field.String("id").StorageKey("uri").Immutable().Unique(),
 	}
 }
 

@@ -11,6 +11,10 @@ type Writer struct {
 	writtenHeader bool
 }
 
+func (w *Writer) Write(p []byte) (n int, err error) {
+	return w.writer.Write(p)
+}
+
 func NewWriter(w http.ResponseWriter) *Writer {
 	return &Writer{writer: w, writtenHeader: false}
 }

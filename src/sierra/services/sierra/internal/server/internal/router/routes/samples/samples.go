@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"sierra/common/api"
 	"sierra/services/sierra/client/models"
-	"sierra/services/sierra/internal/modules/sample"
+	"sierra/services/sierra/internal/modules/sourcesample"
 )
 
-func GetSamples(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT, request any) (*models.GetSamplesResponse, *api.Error) {
-	samples, err := sample.GetAll(r.Context())
+func GetSamples(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT) (*models.GetSamplesResponse, *api.Error) {
+	samples, err := sourcesample.GetAll(r.Context())
 	if err != nil {
 		return nil, api.NewInternalError(err, "failed getting samples")
 	}

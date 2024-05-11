@@ -13,6 +13,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type MiddlewareFunc func(w *Writer, r *http.Request, p httprouter.Params) *Error
+
 type Router struct {
 	Router *httprouter.Router
 	Server *http.Server
@@ -68,6 +70,8 @@ func RouteGET[T any](router *Router, authorization Authorization, endpoint strin
 		defer panicHandler(w)
 		logrus.WithField("params", p).Infof("Handling request - GET %s", endpoint)
 
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
 		writer := NewWriter(w)
 
 		jwt, aErr := authorization.Protect(r)
@@ -78,7 +82,7 @@ func RouteGET[T any](router *Router, authorization Authorization, endpoint strin
 
 		var shouldShutdown bool
 		response, aErr := h(writer, r, p, jwt)
-		if errors.Is(aErr.Err, shutdownError) {
+		if aErr != nil && errors.Is(aErr.Err, shutdownError) {
 			aErr = nil
 			shouldShutdown = true
 		}
@@ -108,6 +112,8 @@ func RoutePOST[T any, R any](router *Router, authorization Authorization, endpoi
 	router.Router.POST(endpoint, func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		defer panicHandler(w)
 		logrus.Infof("Handling request - POST %s", endpoint)
+
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 
 		writer := NewWriter(w)
 

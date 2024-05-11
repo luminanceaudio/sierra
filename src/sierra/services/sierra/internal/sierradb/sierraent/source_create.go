@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"sierra/services/sierra/internal/sierradb/sierraent/source"
 	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
+	"time"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -21,6 +22,20 @@ type SourceCreate struct {
 	mutation *SourceMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
+}
+
+// SetCreateTime sets the "create_time" field.
+func (sc *SourceCreate) SetCreateTime(t time.Time) *SourceCreate {
+	sc.mutation.SetCreateTime(t)
+	return sc
+}
+
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (sc *SourceCreate) SetNillableCreateTime(t *time.Time) *SourceCreate {
+	if t != nil {
+		sc.SetCreateTime(*t)
+	}
+	return sc
 }
 
 // SetID sets the "id" field.
@@ -51,6 +66,7 @@ func (sc *SourceCreate) Mutation() *SourceMutation {
 
 // Save creates the Source in the database.
 func (sc *SourceCreate) Save(ctx context.Context) (*Source, error) {
+	sc.defaults()
 	return withHooks(ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
@@ -76,8 +92,19 @@ func (sc *SourceCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (sc *SourceCreate) defaults() {
+	if _, ok := sc.mutation.CreateTime(); !ok {
+		v := source.DefaultCreateTime()
+		sc.mutation.SetCreateTime(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (sc *SourceCreate) check() error {
+	if _, ok := sc.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New(`sierraent: missing required field "Source.create_time"`)}
+	}
 	return nil
 }
 
@@ -114,6 +141,10 @@ func (sc *SourceCreate) createSpec() (*Source, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := sc.mutation.CreateTime(); ok {
+		_spec.SetField(source.FieldCreateTime, field.TypeTime, value)
+		_node.CreateTime = value
+	}
 	if nodes := sc.mutation.SampleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -137,11 +168,17 @@ func (sc *SourceCreate) createSpec() (*Source, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Source.Create().
+//		SetCreateTime(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SourceUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (sc *SourceCreate) OnConflict(opts ...sql.ConflictOption) *SourceUpsertOne {
 	sc.conflict = opts
@@ -192,6 +229,9 @@ func (u *SourceUpsertOne) UpdateNewValues() *SourceUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(source.FieldID)
+		}
+		if _, exists := u.create.mutation.CreateTime(); exists {
+			s.SetIgnore(source.FieldCreateTime)
 		}
 	}))
 	return u
@@ -281,6 +321,7 @@ func (scb *SourceCreateBulk) Save(ctx context.Context) ([]*Source, error) {
 	for i := range scb.builders {
 		func(i int, root context.Context) {
 			builder := scb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*SourceMutation)
 				if !ok {
@@ -356,6 +397,11 @@ func (scb *SourceCreateBulk) ExecX(ctx context.Context) {
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SourceUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (scb *SourceCreateBulk) OnConflict(opts ...sql.ConflictOption) *SourceUpsertBulk {
 	scb.conflict = opts
@@ -400,6 +446,9 @@ func (u *SourceUpsertBulk) UpdateNewValues() *SourceUpsertBulk {
 		for _, b := range u.create.builders {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(source.FieldID)
+			}
+			if _, exists := b.mutation.CreateTime(); exists {
+				s.SetIgnore(source.FieldCreateTime)
 			}
 		}
 	}))

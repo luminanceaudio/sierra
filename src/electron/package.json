@@ -6,13 +6,11 @@
     "build:dll": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
-
     "build:server": "concurrently \"npm run build:server:linuxarm64\" \"npm run build:server:linuxamd64\" \"npm run build:server:darwinarm64\" \"npm run build:server:darwinamd64\"",
     "build:server:linuxarm64": "(cd ../sierra && env GOOS=linux GOARCH=arm64 go build -o ../electron/binaries/linux/arm64/sierraserver ./cmd/sierra)",
     "build:server:linuxamd64": "(cd ../sierra && env GOOS=linux GOARCH=amd64 go build -o ../electron/binaries/linux/x64/sierraserver ./cmd/sierra)",
     "build:server:darwinarm64": "(cd ../sierra && env GOOS=darwin GOARCH=arm64 go build -o ../electron/binaries/mac/arm64/sierraserver ./cmd/sierra)",
     "build:server:darwinamd64": "(cd ../sierra && env GOOS=darwin GOARCH=amd64 go build -o ../electron/binaries/mac/x64/sierraserver ./cmd/sierra)",
-
     "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
     "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll",
@@ -72,9 +70,14 @@
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
+    "@tanstack/query-sync-storage-persister": "^5.35.5",
+    "@tanstack/react-query": "^5.35.5",
+    "@tanstack/react-query-persist-client": "^5.35.5",
+    "axios": "^1.6.8",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-updater": "^6.1.4",
+    "path-browserify": "^1.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.16.0"

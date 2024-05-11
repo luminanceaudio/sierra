@@ -4,8 +4,31 @@ import (
 	"context"
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"sierra/common/uri"
 	"sierra/services/sierra/internal/sierradb"
+	source "sierra/services/sierra/internal/sierradb/sierraent/source"
 )
+
+func Get(ctx context.Context, uri *uri.URI) (Source, error) {
+	sierraDb, err := sierradb.Load(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	src, err := sierraDb.Client.Source.Query().
+		Where(source.ID(uri.String())).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	sourceModel, err := New(src.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return sourceModel, nil
+}
 
 func GetAll(ctx context.Context) ([]Source, error) {
 	sierraDb, err := sierradb.Load(ctx)
@@ -32,13 +55,11 @@ func GetAll(ctx context.Context) ([]Source, error) {
 	return sourceList, nil
 }
 
-func CreateLocal(ctx context.Context, path string) error {
+func Create(ctx context.Context, uri string) error {
 	sierraDb, err := sierradb.Load(ctx)
 	if err != nil {
 		return err
 	}
-
-	uri := fmt.Sprintf("file://%s", path)
 
 	err = sierraDb.Client.Source.Create().
 		SetID(uri).

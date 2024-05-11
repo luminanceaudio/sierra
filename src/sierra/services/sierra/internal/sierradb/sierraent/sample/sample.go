@@ -19,7 +19,7 @@ const (
 	// EdgeSource holds the string denoting the source edge name in mutations.
 	EdgeSource = "source"
 	// SourceSampleFieldID holds the string denoting the ID field of the SourceSample.
-	SourceSampleFieldID = "relative_path"
+	SourceSampleFieldID = "uri"
 	// Table holds the table name of the sample in the database.
 	Table = "samples"
 	// SourceTable is the table that holds the source relation/edge.

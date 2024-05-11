@@ -6,7 +6,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"io/fs"
 	"sierra/common/sha256"
+	"sierra/common/uri"
 	"sierra/services/sierra/internal/analyzers/format"
+	"sierra/services/sierra/internal/modules/sample"
 	"sierra/services/sierra/internal/modules/source"
 	"sierra/services/sierra/internal/modules/sourcesample"
 	"sierra/services/sierra/internal/sierradb"
@@ -20,7 +22,7 @@ func New() *Indexer {
 }
 
 func (indexer *Indexer) Index(ctx context.Context, source source.Source, forceReindex bool) error {
-	err := source.Walk(func(path string, info fs.FileInfo, err error) error {
+	err := source.Walk(func(fileUri *uri.URI, info fs.FileInfo, err error) error {
 		if err != nil {
 			logrus.WithError(err).Error("error walking source")
 			return nil
@@ -30,7 +32,7 @@ func (indexer *Indexer) Index(ctx context.Context, source source.Source, forceRe
 			return nil
 		}
 
-		err = indexFile(ctx, source, path, forceReindex)
+		err = indexFile(ctx, source, fileUri, forceReindex)
 		if err != nil {
 			logrus.WithError(err).Error("error indexing file")
 			return nil
@@ -45,8 +47,8 @@ func (indexer *Indexer) Index(ctx context.Context, source source.Source, forceRe
 	return nil
 }
 
-func indexFile(ctx context.Context, source source.Source, filePath string, forceReindex bool) error {
-	file, err := source.Open(filePath)
+func indexFile(ctx context.Context, src source.Source, fileUri *uri.URI, forceReindex bool) error {
+	file, err := src.Open(fileUri.Path())
 	if err != nil {
 		return fmt.Errorf("failed opening file: %w", err)
 	}
@@ -59,7 +61,7 @@ func indexFile(ctx context.Context, source source.Source, filePath string, force
 
 	if !forceReindex {
 		// TODO: Don't fetch one by one
-		_, err = source.Get(ctx, *sha256Str)
+		_, err = sample.Get(ctx, *sha256Str)
 		if err == nil {
 			// TODO: Make a smarter caching mechanism
 			// Don't reindex file
@@ -81,12 +83,12 @@ func indexFile(ctx context.Context, source source.Source, filePath string, force
 		return nil
 	}
 
-	err = source.Upsert(ctx, *sha256Str, foundFormat.Type)
+	err = sample.Upsert(ctx, *sha256Str, foundFormat.Type)
 	if err != nil {
 		return fmt.Errorf("failed saving sample to db: %w", err)
 	}
 
-	err = sourcesample.Upsert(ctx, *sha256Str, source.GetURI(), filePath)
+	err = sourcesample.Upsert(ctx, *sha256Str, src.GetURI(), fileUri)
 	if err != nil {
 		return fmt.Errorf("failed saving source sample to db: %w", err)
 	}

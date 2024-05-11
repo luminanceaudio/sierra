@@ -294,6 +294,18 @@ func (sq *SourceQuery) WithSample(opts ...func(*SourceSampleQuery)) *SourceQuery
 
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.Source.Query().
+//		GroupBy(source.FieldCreateTime).
+//		Aggregate(sierraent.Count()).
+//		Scan(ctx, &v)
 func (sq *SourceQuery) GroupBy(field string, fields ...string) *SourceGroupBy {
 	sq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &SourceGroupBy{build: sq}
@@ -305,6 +317,16 @@ func (sq *SourceQuery) GroupBy(field string, fields ...string) *SourceGroupBy {
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//	}
+//
+//	client.Source.Query().
+//		Select(source.FieldCreateTime).
+//		Scan(ctx, &v)
 func (sq *SourceQuery) Select(fields ...string) *SourceSelect {
 	sq.ctx.Fields = append(sq.ctx.Fields, fields...)
 	sbuild := &SourceSelect{SourceQuery: sq}

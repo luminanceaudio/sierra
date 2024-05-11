@@ -14,12 +14,12 @@ const (
 type Sha256 = string
 
 // New parses a sha256 string into Sha256 type
-func New(sha256 string) (*Sha256, error) {
+func New(sha256 string) (Sha256, error) {
 	if len(sha256) != sha256Length {
-		return nil, fmt.Errorf("sha256 length must be %d", sha256Length)
+		return "", fmt.Errorf("sha256 length must be %d", sha256Length)
 	}
 
-	return &sha256, nil
+	return sha256, nil
 }
 
 func HashHexEncoded(reader io.Reader) (*Sha256, error) {

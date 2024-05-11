@@ -7,12 +7,12 @@ import (
 
 type Args struct {
 	Positional struct {
-		Path string `positional-arg-name:"<path>" required:"true"`
+		URI string `positional-arg-name:"<uri>" required:"true"`
 	} `positional-args:"yes" required:"yes"`
 }
 
 func Run(ctx context.Context, args Args) error {
-	err := source.CreateLocal(ctx, args.Positional.Path)
+	err := source.Create(ctx, args.Positional.URI)
 	if err != nil {
 		return err
 	}
