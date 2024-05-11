@@ -1,0 +1,13 @@
+syntax = "proto3";
+package sierra_app;
+
+option go_package = "client/models";
+
+import "google/protobuf/timestamp.proto";
+
+message Sample {
+  string sha256 = 1;
+  string format = 2;
+  string source_uri = 3;
+  string uri = 4;
+}

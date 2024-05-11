@@ -2,15 +2,16 @@ package indexer
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"io"
 	"io/fs"
+	"sierra/common/sha256"
+	"sierra/common/uri"
 	"sierra/services/sierra/internal/analyzers/format"
-	"sierra/services/sierra/internal/sierradb/modules/samplefile"
-	"sierra/services/sierra/internal/source"
+	"sierra/services/sierra/internal/modules/sample"
+	"sierra/services/sierra/internal/modules/source"
+	"sierra/services/sierra/internal/modules/sourcesample"
+	"sierra/services/sierra/internal/sierradb"
 )
 
 type Indexer struct {
@@ -20,8 +21,8 @@ func New() *Indexer {
 	return &Indexer{}
 }
 
-func (indexer *Indexer) Index(ctx context.Context, source source.Source) error {
-	err := source.Walk(func(path string, info fs.FileInfo, err error) error {
+func (indexer *Indexer) Index(ctx context.Context, source source.Source, forceReindex bool) error {
+	err := source.Walk(func(fileUri *uri.URI, info fs.FileInfo, err error) error {
 		if err != nil {
 			logrus.WithError(err).Error("error walking source")
 			return nil
@@ -31,7 +32,7 @@ func (indexer *Indexer) Index(ctx context.Context, source source.Source) error {
 			return nil
 		}
 
-		err = indexFile(ctx, source, path)
+		err = indexFile(ctx, source, fileUri, forceReindex)
 		if err != nil {
 			logrus.WithError(err).Error("error indexing file")
 			return nil
@@ -46,19 +47,30 @@ func (indexer *Indexer) Index(ctx context.Context, source source.Source) error {
 	return nil
 }
 
-func indexFile(ctx context.Context, source source.Source, filePath string) error {
-	file, err := source.Open(filePath)
+func indexFile(ctx context.Context, src source.Source, fileUri *uri.URI, forceReindex bool) error {
+	file, err := src.Open(fileUri.Path())
 	if err != nil {
 		return fmt.Errorf("failed opening file: %w", err)
 	}
 	defer file.Close()
 
-	hasher := sha256.New()
-	_, err = io.Copy(hasher, file)
+	sha256Str, err := sha256.HashHexEncoded(file)
 	if err != nil {
 		return fmt.Errorf("failed hashing file: %w", err)
 	}
-	sha256Str := hex.EncodeToString(hasher.Sum(nil))
+
+	if !forceReindex {
+		// TODO: Don't fetch one by one
+		_, err = sample.Get(ctx, *sha256Str)
+		if err == nil {
+			// TODO: Make a smarter caching mechanism
+			// Don't reindex file
+			return nil
+		}
+		if !sierradb.IsNotFound(err) {
+			return fmt.Errorf("failed getting sample: %w", err)
+		}
+	}
 
 	// Format
 	foundFormat, found, err := format.AnalyzeFormat(file)
@@ -71,9 +83,14 @@ func indexFile(ctx context.Context, source source.Source, filePath string) error
 		return nil
 	}
 
-	err = samplefile.Create(ctx, sha256Str, foundFormat.Type)
+	err = sample.Upsert(ctx, *sha256Str, foundFormat.Type)
 	if err != nil {
 		return fmt.Errorf("failed saving sample to db: %w", err)
+	}
+
+	err = sourcesample.Upsert(ctx, *sha256Str, src.GetURI(), fileUri)
+	if err != nil {
+		return fmt.Errorf("failed saving source sample to db: %w", err)
 	}
 
 	return nil

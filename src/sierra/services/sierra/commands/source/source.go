@@ -4,20 +4,16 @@ import (
 	"context"
 	"github.com/jessevdk/go-flags"
 	"sierra/services/sierra/commands/source/add"
-	"sierra/services/sierra/commands/source/purge"
 )
 
 type Args struct {
-	Add   add.Args   `command:"add" description:"Add a new source"`
-	Purge purge.Args `command:"purge" description:"Remove all sources"`
+	Add add.Args `command:"add" description:"Add a new source"`
 }
 
 func Run(ctx context.Context, args Args, subcommand *flags.Command) error {
 	switch subcommand.Name {
 	case "add":
-		return add.Run(args.Add)
-	case "purge":
-		return purge.Run(args.Purge)
+		return add.Run(ctx, args.Add)
 	}
 
 	return nil

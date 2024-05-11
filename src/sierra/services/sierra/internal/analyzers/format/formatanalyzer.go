@@ -22,7 +22,7 @@ func AnalyzeFormat(sampleFile *os.File) (*Format, bool, error) {
 
 	format, valid, err := TryParseWav(sampleFile)
 	if err != nil {
-		logrus.WithError(err).Error("failed to analyze wav format")
+		logrus.WithField("path", sampleFile.Name()).WithError(err).Error("failed to analyze wav format")
 	}
 	if valid {
 		return format, true, nil

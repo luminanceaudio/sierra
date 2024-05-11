@@ -1,0 +1,10 @@
+syntax = "proto3";
+package sierra_app;
+
+import "appbase.proto";
+
+option go_package = "client/models";
+
+message GetSamplesResponse {
+  repeated Sample samples = 1;
+}

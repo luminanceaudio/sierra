@@ -4,28 +4,24 @@ import (
 	"context"
 	"fmt"
 	"github.com/jessevdk/go-flags"
-	"sierra/services/sierra/internal/configfile"
 	"sierra/services/sierra/internal/indexer"
+	"sierra/services/sierra/internal/modules/source"
 )
 
 type Args struct {
+	Force bool `short:"f" long:"force" description:"force reindex"`
 }
 
 func Run(ctx context.Context, args Args, subcommand *flags.Command) error {
-	config, err := configfile.Load()
+	sources, err := source.GetAll(ctx)
 	if err != nil {
 		return err
 	}
 
 	idx := indexer.New()
 
-	for _, oneofSource := range config.Sources.List {
-		source, err := oneofSource.Get()
-		if err != nil {
-			return fmt.Errorf("failed getting source data: %s", err)
-		}
-
-		err = idx.Index(ctx, source)
+	for _, src := range sources {
+		err = idx.Index(ctx, src, args.Force)
 		if err != nil {
 			return fmt.Errorf("failed indexing source: %s", err)
 		}
