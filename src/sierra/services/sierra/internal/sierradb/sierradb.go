@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"sierra/common/database"
 	"sierra/services/sierra/config"
-	"sierra/services/sierra/internal/sierradb/internal/sierraent"
+	"sierra/services/sierra/internal/sierradb/sierraent"
 )
 
 const (
@@ -78,4 +78,8 @@ func createFileIfMissing(dbFilePath string) error {
 	_ = file.Close()
 
 	return nil
+}
+
+func IsNotFound(err error) bool {
+	return sierraent.IsNotFound(err)
 }

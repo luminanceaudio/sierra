@@ -1,7 +1,7 @@
 /* eslint import/prefer-default-export: off */
 import { URL } from 'url';
 import path from 'path';
-import { platform } from 'os';
+import { platform, arch } from 'os';
 import { app } from 'electron';
 
 export function resolveHtmlPath(htmlFileName: string) {
@@ -35,9 +35,10 @@ export function getPlatform(): string {
 }
 
 export function getBinariesPath() {
+  let base = process.resourcesPath;
   if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
-    return path.join(app.getAppPath(), 'binaries', getPlatform()!);
+    base = app.getAppPath();
   }
 
-  return path.join(process.resourcesPath, './binaries');
+  return path.join(base, 'binaries', getPlatform()!, arch());
 }

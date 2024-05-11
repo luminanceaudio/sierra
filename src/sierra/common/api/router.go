@@ -1,6 +1,8 @@
 package api
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,6 +15,7 @@ import (
 
 type Router struct {
 	Router *httprouter.Router
+	Server *http.Server
 }
 
 func NewRouter() *Router {
@@ -22,13 +25,21 @@ func NewRouter() *Router {
 }
 
 func (r *Router) ListenAndServe(addr string) error {
-	s := http.Server{
+	r.Server = &http.Server{
 		Handler:           r.Router,
 		Addr:              addr,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	return s.ListenAndServe()
+	return r.Server.ListenAndServe()
+}
+
+func (r *Router) Shutdown() {
+	logrus.Info("Shutting down HTTP server")
+	err := r.Server.Shutdown(context.Background())
+	if err != nil {
+		logrus.WithError(err).Error("failed to shutdown http server")
+	}
 }
 
 func panicHandler(w http.ResponseWriter) {
@@ -65,7 +76,13 @@ func RouteGET[T any](router *Router, authorization Authorization, endpoint strin
 			return
 		}
 
+		var shouldShutdown bool
 		response, aErr := h(writer, r, p, jwt)
+		if errors.Is(aErr.Err, shutdownError) {
+			aErr = nil
+			shouldShutdown = true
+		}
+
 		if aErr != nil {
 			writer.writeError(aErr)
 			return
@@ -80,6 +97,10 @@ func RouteGET[T any](router *Router, authorization Authorization, endpoint strin
 		}
 
 		logrus.Infof("Handled request - GET %s", endpoint)
+
+		if shouldShutdown {
+			router.Shutdown()
+		}
 	})
 }
 
@@ -103,7 +124,13 @@ func RoutePOST[T any, R any](router *Router, authorization Authorization, endpoi
 			return
 		}
 
+		var shouldShutdown bool
 		response, aErr := h(writer, r, p, jwt, request)
+		if errors.Is(aErr.Err, shutdownError) {
+			aErr = nil
+			shouldShutdown = true
+		}
+
 		if aErr != nil {
 			writer.writeError(aErr)
 			return
@@ -118,6 +145,10 @@ func RoutePOST[T any, R any](router *Router, authorization Authorization, endpoi
 		}
 
 		logrus.Infof("Handled request POST %s", endpoint)
+
+		if shouldShutdown {
+			go router.Shutdown()
+		}
 	})
 }
 

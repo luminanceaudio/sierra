@@ -6,18 +6,14 @@ import { getBinariesPath } from '../util';
 let serverProcess: ChildProcessWithoutNullStreams;
 
 export function startServer() {
-  const sierraBinaryFilePath = path.join(getBinariesPath(), 'sierra');
+  const sierraBinaryFilePath = path.join(getBinariesPath(), 'sierraserver');
 
   console.log('Starting server ', sierraBinaryFilePath);
-  serverProcess = spawn(sierraBinaryFilePath, ['server']);
+  serverProcess = spawn(sierraBinaryFilePath, ['server', 'start']);
 
-  serverProcess.on('exit', (code: number): void => {
+  serverProcess.on('exit', (): void => {
     // Re-run
-    serverProcess = spawn(`${sierraBinaryFilePath} server`);
-  });
-
-  serverProcess.on('spawn', (code: number): void => {
-    console.log(`Spawn: ${code}`);
+    serverProcess = spawn(sierraBinaryFilePath, ['server', 'start']);
   });
 
   serverProcess.on('error', (err: Error): void => {

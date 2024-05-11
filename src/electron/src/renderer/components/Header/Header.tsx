@@ -13,27 +13,31 @@ function Header() {
         alignItems: 'center',
       }}
     >
-      <span style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
-        <Title
-          style={{
-            marginBottom: 0,
-            alignItems: 'center',
-            display: 'inline-block',
-          }}
-        >
-          Samples
-          {/* <TextGradient>{' // '}</TextGradient> */}
-        </Title>
-        {/* <Title */}
-        {/*  style={{ */}
-        {/*    paddingTop: 0, */}
-        {/*    fontWeight: 100, */}
-        {/*    marginLeft: 6, */}
-        {/*  }} */}
-        {/* > */}
-        {/*  Library */}
-        {/* </Title> */}
-      </span>
+      <div>
+        <div style={{ alignItems: 'center' }}>
+          <Title
+            style={{
+              marginBottom: 0,
+              alignItems: 'center',
+              display: 'inline-block',
+              fontSize: 19,
+            }}
+          >
+            Samples
+            {/* <TextGradient>{' // '}</TextGradient> */}
+          </Title>
+          {/* <Title */}
+          {/*  style={{ */}
+          {/*    paddingTop: 0, */}
+          {/*    fontWeight: 100, */}
+          {/*    marginLeft: 6, */}
+          {/*  }} */}
+          {/* > */}
+          {/*  Library */}
+          {/* </Title> */}
+        </div>
+        {/* <div style={{ fontSize: 13, color: '#8f8f8f' }}>All</div> */}
+      </div>
     </div>
   );
 }

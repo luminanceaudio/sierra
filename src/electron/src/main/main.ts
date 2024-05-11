@@ -15,6 +15,7 @@ import fs from 'fs';
 import path from 'path';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { startServer } from './server/server';
 
 class AppUpdater {
   constructor() {
@@ -143,6 +144,8 @@ app
   .whenReady()
   .then(() => {
     createWindow();
+    startServer();
+
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.

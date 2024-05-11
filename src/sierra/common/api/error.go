@@ -93,3 +93,13 @@ func NewNotFoundError(err error, internalMessage string) *Error {
 	}
 	return newError(err, internalMessage, http.StatusNotFound)
 }
+
+var shutdownError = fmt.Errorf("received shutdown")
+
+// NewShutdownError instructs the server to gracefully shutdown
+func NewShutdownError() *Error {
+	return &Error{
+		Err:            shutdownError,
+		httpStatusCode: http.StatusOK,
+	}
+}

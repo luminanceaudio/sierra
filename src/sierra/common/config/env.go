@@ -26,7 +26,7 @@ var (
 
 func init() {
 	InternalIngressPort = GetOptionalEnv("INTERNAL_INGRESS_PORT", "51377")
-	InternalIngressUrl = GetOptionalEnv("INTERNAL_INGRESS_URL", "localhost:51377")
+	InternalIngressUrl = GetOptionalEnv("INTERNAL_INGRESS_URL", "http://localhost:51377")
 }
 
 func GetOptionalEnv(key, defaultValue string) string {
