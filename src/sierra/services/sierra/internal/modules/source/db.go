@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"sierra/common/uri"
+	"sierra/services/sierra/client/models"
 	"sierra/services/sierra/internal/sierradb"
+	"sierra/services/sierra/internal/sierradb/sierraent"
 	source "sierra/services/sierra/internal/sierradb/sierraent/source"
 )
 
@@ -30,13 +32,22 @@ func Get(ctx context.Context, uri *uri.URI) (Source, error) {
 	return sourceModel, nil
 }
 
-func GetAll(ctx context.Context) ([]Source, error) {
+func getAll(ctx context.Context) ([]*sierraent.Source, error) {
 	sierraDb, err := sierradb.Load(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	sources, err := sierraDb.Client.Source.Query().All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return sources, nil
+}
+
+func GetAll(ctx context.Context) ([]Source, error) {
+	sources, err := getAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -55,14 +66,28 @@ func GetAll(ctx context.Context) ([]Source, error) {
 	return sourceList, nil
 }
 
-func Create(ctx context.Context, uri string) error {
+func GetAllAsModel(ctx context.Context) ([]*models.Source, error) {
+	sources, err := getAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var sourceList []*models.Source
+	for _, src := range sources {
+		sourceList = append(sourceList, models.NewSource(src.ID, src.CreateTime))
+	}
+
+	return sourceList, nil
+}
+
+func Create(ctx context.Context, uri *uri.URI) error {
 	sierraDb, err := sierradb.Load(ctx)
 	if err != nil {
 		return err
 	}
 
 	err = sierraDb.Client.Source.Create().
-		SetID(uri).
+		SetID(uri.String()).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("could not create sample file: %w", err)

@@ -9,7 +9,7 @@ import {
   useMutation as rqUseMutation,
   useQuery as rqUseQuery,
   UseQueryOptions as RQUseQueryOptions,
-  UseMutationOptions,
+  UseMutationOptions as RQUseMutationOptions,
   useQueryClient,
 } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
@@ -92,13 +92,15 @@ export function useQuery<TResponse, TQueryKey extends QueryKey = QueryKey>(
   });
 }
 
+export type UseMutationOptions<TRequest, TResponse> = Omit<
+  RQUseMutationOptions<TResponse, unknown, TRequest, unknown>,
+  'mutationFn'
+>;
+
 // useMutation is a thin react-query wrapper function
-export function useMutation<TVariables, TData>(
-  mutationFn: MutationFunction<TData, TVariables>,
-  options?: Omit<
-    UseMutationOptions<TData, unknown, TVariables, unknown>,
-    'mutationFn'
-  >,
+export function useMutation<TRequest, TResponse>(
+  mutationFn: MutationFunction<TResponse, TRequest>,
+  options?: UseMutationOptions<TRequest, TResponse>,
 ) {
   const usedQueryClient = useQueryClient();
 

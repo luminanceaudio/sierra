@@ -3,7 +3,7 @@ import Title from '../Title/Title';
 
 export type WidgetProps = {
   children: React.ReactNode;
-  title: string;
+  title?: string;
   style?: CSSProperties;
 };
 
@@ -13,18 +13,19 @@ function Widget({ children, title, style }: WidgetProps) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'white',
-        borderRadius: 15,
+        margin: '30px 30px',
+        borderRadius: 7,
         ...style,
       }}
     >
-      <Title>{title}</Title>
+      {title && <Title>{title}</Title>}
       {children}
     </div>
   );
 }
 
 Widget.defaultProps = {
+  title: null,
   style: {},
 };
 

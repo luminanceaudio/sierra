@@ -4,10 +4,11 @@ import SideMenu from '../SideMenu/SideMenu';
 import Header from '../Header/Header';
 
 type LayoutProps = {
+  title: string;
   children?: React.ReactNode;
 };
 
-function Layout({ children }: LayoutProps) {
+function Layout({ title, children }: LayoutProps) {
   return (
     <div
       style={{
@@ -26,8 +27,14 @@ function Layout({ children }: LayoutProps) {
             flexDirection: 'column',
           }}
         >
-          <Header />
-          <div style={{ display: 'flex', flex: 1, padding: 20 }}>
+          <Header title={title} />
+          <div
+            style={{
+              display: 'flex',
+              flex: 1,
+              position: 'relative',
+            }}
+          >
             {children}
           </div>
           {/* <div style={{ flex: 1, backgroundColor: '#1f1f1f' }}>Right sidebar</div> */}

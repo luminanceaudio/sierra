@@ -2,6 +2,7 @@ package add
 
 import (
 	"context"
+	"sierra/common/uri"
 	"sierra/services/sierra/internal/modules/source"
 )
 
@@ -12,7 +13,12 @@ type Args struct {
 }
 
 func Run(ctx context.Context, args Args) error {
-	err := source.Create(ctx, args.Positional.URI)
+	uri, err := uri.New(args.Positional.URI)
+	if err != nil {
+		return err
+	}
+
+	err = source.Create(ctx, uri)
 	if err != nil {
 		return err
 	}

@@ -8,3 +8,14 @@ option go_package = "client/models";
 message GetSamplesResponse {
   repeated Sample samples = 1;
 }
+
+message GetSourcesResponse {
+  repeated Source sources = 1;
+}
+
+message CreateSourceRequest {
+  string uri = 1;
+}
+
+message CreateSourceResponse {
+}

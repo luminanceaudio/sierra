@@ -36,14 +36,14 @@ func (w *Writer) writeHeader(status int) {
 }
 
 func (w *Writer) writeError(aErr *Error) {
-	log := logrus.WithError(aErr.Err).WithField("httpStatusCode", aErr.httpStatusCode).WithField("errorCode", aErr.Code)
+	log := logrus.WithError(aErr.Err).WithField("httpStatusCode", aErr.httpStatusCode).WithField("userFacingMessage", aErr.UserFacingMessage)
 	if aErr.httpStatusCode == http.StatusInternalServerError {
 		log.Error("internal api error")
 	} else {
 		log.Info("expected api error")
 	}
 
-	aErr = w.writeJSON(aErr.httpStatusCode, nil)
+	aErr = w.writeJSON(aErr.httpStatusCode, aErr)
 	if aErr != nil {
 		logrus.WithError(aErr.Err).Error("failed writing error JSON")
 	}

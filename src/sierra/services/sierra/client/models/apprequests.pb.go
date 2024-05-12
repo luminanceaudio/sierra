@@ -67,6 +67,138 @@ func (x *GetSamplesResponse) GetSamples() []*Sample {
 	return nil
 }
 
+type GetSourcesResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Sources []*Source `protobuf:"bytes,1,rep,name=sources,proto3" json:"sources,omitempty"`
+}
+
+func (x *GetSourcesResponse) Reset() {
+	*x = GetSourcesResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_apprequests_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetSourcesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSourcesResponse) ProtoMessage() {}
+
+func (x *GetSourcesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_apprequests_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSourcesResponse.ProtoReflect.Descriptor instead.
+func (*GetSourcesResponse) Descriptor() ([]byte, []int) {
+	return file_apprequests_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetSourcesResponse) GetSources() []*Source {
+	if x != nil {
+		return x.Sources
+	}
+	return nil
+}
+
+type CreateSourceRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
+}
+
+func (x *CreateSourceRequest) Reset() {
+	*x = CreateSourceRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_apprequests_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateSourceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSourceRequest) ProtoMessage() {}
+
+func (x *CreateSourceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_apprequests_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSourceRequest.ProtoReflect.Descriptor instead.
+func (*CreateSourceRequest) Descriptor() ([]byte, []int) {
+	return file_apprequests_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *CreateSourceRequest) GetUri() string {
+	if x != nil {
+		return x.Uri
+	}
+	return ""
+}
+
+type CreateSourceResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *CreateSourceResponse) Reset() {
+	*x = CreateSourceResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_apprequests_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateSourceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSourceResponse) ProtoMessage() {}
+
+func (x *CreateSourceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_apprequests_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSourceResponse.ProtoReflect.Descriptor instead.
+func (*CreateSourceResponse) Descriptor() ([]byte, []int) {
+	return file_apprequests_proto_rawDescGZIP(), []int{3}
+}
+
 var File_apprequests_proto protoreflect.FileDescriptor
 
 var file_apprequests_proto_rawDesc = []byte{
@@ -77,8 +209,16 @@ var file_apprequests_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x07, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x18,
 	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x73, 0x69, 0x65, 0x72, 0x72, 0x61, 0x5f, 0x61,
 	0x70, 0x70, 0x2e, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x52, 0x07, 0x73, 0x61, 0x6d, 0x70, 0x6c,
-	0x65, 0x73, 0x42, 0x0f, 0x5a, 0x0d, 0x63, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x2f, 0x6d, 0x6f, 0x64,
-	0x65, 0x6c, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x73, 0x22, 0x42, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x07, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x73, 0x69, 0x65, 0x72,
+	0x72, 0x61, 0x5f, 0x61, 0x70, 0x70, 0x2e, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x07, 0x73,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x22, 0x27, 0x0a, 0x13, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a,
+	0x03, 0x75, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x69, 0x22,
+	0x16, 0x0a, 0x14, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x0f, 0x5a, 0x0d, 0x63, 0x6c, 0x69, 0x65, 0x6e,
+	0x74, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -93,18 +233,23 @@ func file_apprequests_proto_rawDescGZIP() []byte {
 	return file_apprequests_proto_rawDescData
 }
 
-var file_apprequests_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_apprequests_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_apprequests_proto_goTypes = []interface{}{
-	(*GetSamplesResponse)(nil), // 0: sierra_app.GetSamplesResponse
-	(*Sample)(nil),             // 1: sierra_app.Sample
+	(*GetSamplesResponse)(nil),   // 0: sierra_app.GetSamplesResponse
+	(*GetSourcesResponse)(nil),   // 1: sierra_app.GetSourcesResponse
+	(*CreateSourceRequest)(nil),  // 2: sierra_app.CreateSourceRequest
+	(*CreateSourceResponse)(nil), // 3: sierra_app.CreateSourceResponse
+	(*Sample)(nil),               // 4: sierra_app.Sample
+	(*Source)(nil),               // 5: sierra_app.Source
 }
 var file_apprequests_proto_depIdxs = []int32{
-	1, // 0: sierra_app.GetSamplesResponse.samples:type_name -> sierra_app.Sample
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	4, // 0: sierra_app.GetSamplesResponse.samples:type_name -> sierra_app.Sample
+	5, // 1: sierra_app.GetSourcesResponse.sources:type_name -> sierra_app.Source
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_apprequests_proto_init() }
@@ -126,6 +271,42 @@ func file_apprequests_proto_init() {
 				return nil
 			}
 		}
+		file_apprequests_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetSourcesResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_apprequests_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateSourceRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_apprequests_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateSourceResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -133,7 +314,7 @@ func file_apprequests_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_apprequests_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

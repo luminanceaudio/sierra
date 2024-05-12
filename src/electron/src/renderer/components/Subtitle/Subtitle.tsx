@@ -5,24 +5,25 @@ export type TitleProps = {
   style?: CSSProperties;
 };
 
-function Title({ children, style }: TitleProps) {
+function Subtitle({ children, style }: TitleProps) {
   return (
-    <h2
+    <h4
       style={{
         margin: 0,
-        marginBottom: 0,
+        marginBottom: 17,
         padding: 0,
-        fontSize: 23,
+        fontWeight: '400',
+        color: '#787878',
         ...style,
       }}
     >
       {children}
-    </h2>
+    </h4>
   );
 }
 
-Title.defaultProps = {
+Subtitle.defaultProps = {
   style: {},
 };
 
-export default Title;
+export default Subtitle;
