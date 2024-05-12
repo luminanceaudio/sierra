@@ -4,7 +4,7 @@ import Samples from '../../components/Samples/Samples';
 
 function Main() {
   return (
-    <Layout>
+    <Layout title="Samples">
       <Widget
         title="List"
         style={{

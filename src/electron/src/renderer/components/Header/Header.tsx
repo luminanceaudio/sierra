@@ -1,7 +1,11 @@
 import React from 'react';
 import Title from '../Title/Title';
 
-function Header() {
+type HeaderProps = {
+  title: string;
+};
+
+function Header({ title }: HeaderProps) {
   return (
     <div
       style={{
@@ -23,7 +27,7 @@ function Header() {
               fontSize: 19,
             }}
           >
-            Samples
+            {title}
             {/* <TextGradient>{' // '}</TextGradient> */}
           </Title>
           {/* <Title */}

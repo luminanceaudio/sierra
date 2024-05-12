@@ -7,9 +7,9 @@ export function useSamples(
   options?: UseQueryOptions<AxiosResponse<GetSamplesResponse>>,
 ) {
   return useQuery<GetSamplesResponse>(
-    async () => axios.get(`/api/v1/app/samples`),
+    async () => axios.get(`/api/v1/app/sample`),
     {
-      queryKey: ['news'],
+      queryKey: ['samples'],
       ...options,
     },
   );

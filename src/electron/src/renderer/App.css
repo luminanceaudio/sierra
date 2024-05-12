@@ -3,10 +3,8 @@
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
 body {
-  position: relative;
   height: 100vh;
   font-family: sans-serif;
-  overflow-y: hidden;
   display: flex;
   margin: 0;
   overflow: hidden;
@@ -31,14 +29,6 @@ input, textarea {
   font-family: inherit;
 }
 
-:not(input):not(textarea),
-:not(input):not(textarea)::after,
-:not(input):not(textarea)::before {
-    -webkit-user-select: none;
-    user-select: none;
-    cursor: default;
-}
-
 button {
   background-color: transparent;
   color: #111;
@@ -56,10 +46,10 @@ a {
   height: fit-content;
   width: fit-content;
   margin: 10px;
+  color: inherit;
 }
 
 a:hover {
   opacity: 1;
   text-decoration: none;
 }
-

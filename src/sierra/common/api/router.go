@@ -21,8 +21,19 @@ type Router struct {
 }
 
 func NewRouter() *Router {
+	router := httprouter.New()
+
+	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Access-Control-Request-Method") != "" {
+			setCorsHeaders(w)
+		}
+
+		// Adjust status code to 204
+		w.WriteHeader(http.StatusNoContent)
+	})
+
 	return &Router{
-		Router: httprouter.New(),
+		Router: router,
 	}
 }
 
@@ -70,7 +81,7 @@ func RouteGET[T any](router *Router, authorization Authorization, endpoint strin
 		defer panicHandler(w)
 		logrus.WithField("params", p).Infof("Handling request - GET %s", endpoint)
 
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		setCorsHeaders(w)
 
 		writer := NewWriter(w)
 
@@ -113,7 +124,7 @@ func RoutePOST[T any, R any](router *Router, authorization Authorization, endpoi
 		defer panicHandler(w)
 		logrus.Infof("Handling request - POST %s", endpoint)
 
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		setCorsHeaders(w)
 
 		writer := NewWriter(w)
 
@@ -132,7 +143,7 @@ func RoutePOST[T any, R any](router *Router, authorization Authorization, endpoi
 
 		var shouldShutdown bool
 		response, aErr := h(writer, r, p, jwt, request)
-		if errors.Is(aErr.Err, shutdownError) {
+		if aErr != nil && errors.Is(aErr.Err, shutdownError) {
 			aErr = nil
 			shouldShutdown = true
 		}
@@ -173,12 +184,12 @@ func UnmarshalBody(r *http.Request, v any) *Error {
 	}
 
 	if len(b) == 0 {
-		return NewBadRequestError(nil, "missing request body")
+		return NewBadRequestError(nil, "Missing request body")
 	}
 
 	err = Unmarshal(b, v)
 	if err != nil {
-		return NewBadRequestError(err, "failed unmarshalling body")
+		return NewBadRequestError(err, "Bad request body")
 	}
 
 	return nil
@@ -186,4 +197,10 @@ func UnmarshalBody(r *http.Request, v any) *Error {
 
 func SuccessEndpoint(w *Writer, r *http.Request, p httprouter.Params, j *JWT) (*any, *Error) {
 	return nil, nil
+}
+
+func setCorsHeaders(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Accept, Referer, User-Agent, Accept-Language, Content-Type")
 }

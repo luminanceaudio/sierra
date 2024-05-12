@@ -11,3 +11,8 @@ message Sample {
   string source_uri = 3;
   string uri = 4;
 }
+
+message Source {
+  string uri = 1;
+  google.protobuf.Timestamp create_time = 2;
+}

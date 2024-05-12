@@ -13,33 +13,31 @@ type Error struct {
 	Err            error `json:"-"`
 	httpStatusCode int   `json:"-"`
 
-	Code int
+	UserFacingMessage string `json:"message"`
 }
 
 func (e Error) Error() string {
 	return e.Err.Error()
 }
 
-type ErrorCode = int
-
-func (e *Error) WithCode(code ErrorCode) *Error {
-	e.Code = code
+func (e *Error) WithUserFacingMessage(message string) *Error {
+	e.UserFacingMessage = message
 
 	if e.Err == nil {
-		e.Err = fmt.Errorf("code %d", code)
+		e.Err = fmt.Errorf("user facing message '%s'", message)
 	} else {
-		e.Err = errors.Wrapf(e.Err, "code %d", code)
+		e.Err = errors.Wrapf(e.Err, "user facing message '%s'", message)
 	}
 
 	return e
 }
 
-func newError(err error, internalMessage string, httpStatusCode int) *Error {
+func newError(err error, userFacingMessage string, httpStatusCode int) *Error {
 	if aErr, ok := err.(*Error); ok {
 		return aErr
 	}
 
-	err = errors.Wrapf(err, internalMessage)
+	err = errors.Wrapf(err, userFacingMessage)
 
 	message := http.StatusText(httpStatusCode)
 	if err == nil {
@@ -52,46 +50,49 @@ func newError(err error, internalMessage string, httpStatusCode int) *Error {
 	err = errors.WithStack(err)
 
 	return &Error{
-		Err:            err,
-		httpStatusCode: httpStatusCode,
+		Err:               err,
+		httpStatusCode:    httpStatusCode,
+		UserFacingMessage: userFacingMessage,
 	}
 }
 
 func NewInternalError(err error, internalMessage string) *Error {
 	if err == nil {
-		err = fmt.Errorf("api error")
+		err = fmt.Errorf("api error: %s", internalMessage)
+	} else {
+		err = errors.Wrapf(err, "api error: %s", internalMessage)
 	}
 
-	return newError(err, internalMessage, http.StatusInternalServerError)
+	return newError(err, "Internal error", http.StatusInternalServerError)
 }
 
 // NewUnauthorizedError will log the user out upon receiving it
-func NewUnauthorizedError(err error, internalMessage string) *Error {
+func NewUnauthorizedError(err error, userFacingMessage string) *Error {
 	if err == nil {
 		err = fmt.Errorf("api error")
 	}
-	return newError(err, internalMessage, http.StatusUnauthorized)
+	return newError(err, userFacingMessage, http.StatusUnauthorized)
 }
 
-func NewForbiddenError(err error, internalMessage string) *Error {
+func NewForbiddenError(err error, userFacingMessage string) *Error {
 	if err == nil {
 		err = fmt.Errorf("api error")
 	}
-	return newError(err, internalMessage, http.StatusForbidden)
+	return newError(err, userFacingMessage, http.StatusForbidden)
 }
 
-func NewBadRequestError(err error, internalMessage string) *Error {
+func NewBadRequestError(err error, userFacingMessage string) *Error {
 	if err == nil {
 		err = fmt.Errorf("api error")
 	}
-	return newError(err, internalMessage, http.StatusBadRequest)
+	return newError(err, userFacingMessage, http.StatusBadRequest)
 }
 
-func NewNotFoundError(err error, internalMessage string) *Error {
+func NewNotFoundError(err error, userFacingMessage string) *Error {
 	if err == nil {
 		err = fmt.Errorf("api error")
 	}
-	return newError(err, internalMessage, http.StatusNotFound)
+	return newError(err, userFacingMessage, http.StatusNotFound)
 }
 
 var shutdownError = fmt.Errorf("received shutdown")

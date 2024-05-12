@@ -51,7 +51,7 @@ func getJWT(secret string, r *http.Request) (*JWT, *Error) {
 
 	token, err := UnmarshalJWTFromHeader(secret, authHeader)
 	if err != nil {
-		return nil, NewUnauthorizedError(err, "failed unmarshaling jwt from header")
+		return nil, NewUnauthorizedError(err, "Unauthorized")
 	}
 
 	return token, nil

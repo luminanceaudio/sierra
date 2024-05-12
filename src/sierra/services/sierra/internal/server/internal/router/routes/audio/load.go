@@ -18,13 +18,13 @@ func Load(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT) (*any
 
 	fileUri, err := uri.New(uriStr)
 	if err != nil {
-		return nil, api.NewBadRequestError(err, "got bad uri")
+		return nil, api.NewBadRequestError(err, "Invalid sample URI")
 	}
 
 	sample, err := sourcesample.Get(r.Context(), fileUri)
 	if err != nil {
 		if sierradb.IsNotFound(err) {
-			return nil, api.NewNotFoundError(err, "source sample not found")
+			return nil, api.NewNotFoundError(err, "Sample not found")
 		}
 
 		return nil, api.NewInternalError(err, "failed getting source sample from db")
@@ -38,7 +38,7 @@ func Load(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT) (*any
 	src, err := source.Get(r.Context(), sourceUri)
 	if err != nil {
 		if sierradb.IsNotFound(err) {
-			return nil, api.NewNotFoundError(err, "source not found")
+			return nil, api.NewNotFoundError(err, "Source not found")
 		}
 
 		return nil, api.NewInternalError(err, "failed getting source from db")
@@ -46,13 +46,13 @@ func Load(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT) (*any
 
 	audioFile, err := src.Open(fileUri.Path())
 	if err != nil {
-		return nil, api.NewBadRequestError(err, "got bad source")
+		return nil, api.NewBadRequestError(err, "Unable to load sample")
 	}
 	defer audioFile.Close()
 
 	_, err = io.Copy(w, audioFile)
 	if err != nil {
-		return nil, api.NewInternalError(err, "failed to read audio")
+		return nil, api.NewInternalError(err, "Unable to load sample")
 	}
 
 	return nil, nil
