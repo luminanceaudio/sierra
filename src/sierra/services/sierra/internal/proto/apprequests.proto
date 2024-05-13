@@ -19,3 +19,10 @@ message CreateSourceRequest {
 
 message CreateSourceResponse {
 }
+
+message DeleteSourceRequest {
+  string uri = 1;
+}
+
+message DeleteSourceResponse {
+}

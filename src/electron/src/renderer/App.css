@@ -16,6 +16,11 @@ body {
   flex: 1;
 }
 
+* {
+  word-break: break-all;
+}
+
+
 input, textarea {
   border: none;
   overflow: auto;

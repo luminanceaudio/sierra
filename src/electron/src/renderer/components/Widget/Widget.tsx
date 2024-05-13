@@ -12,6 +12,8 @@ function Widget({ children, title, style }: WidgetProps) {
     <div
       style={{
         display: 'flex',
+        flex: 1,
+        maxWidth: 600,
         flexDirection: 'column',
         margin: '30px 30px',
         borderRadius: 7,

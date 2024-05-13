@@ -15,6 +15,11 @@ function Header({ title }: HeaderProps) {
         height: 95,
         borderBottom: '1px solid #f1f1f1',
         alignItems: 'center',
+        position: 'fixed',
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        backdropFilter: 'blur(8px)',
+        zIndex: 1,
+        width: '100%',
       }}
     >
       <div>

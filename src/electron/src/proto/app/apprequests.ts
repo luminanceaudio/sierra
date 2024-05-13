@@ -19,6 +19,13 @@ export interface CreateSourceRequest {
 export interface CreateSourceResponse {
 }
 
+export interface DeleteSourceRequest {
+  uri: string;
+}
+
+export interface DeleteSourceResponse {
+}
+
 function createBaseGetSamplesResponse(): GetSamplesResponse {
   return { samples: [] };
 }
@@ -229,6 +236,106 @@ export const CreateSourceResponse = {
   },
   fromPartial<I extends Exact<DeepPartial<CreateSourceResponse>, I>>(_: I): CreateSourceResponse {
     const message = createBaseCreateSourceResponse();
+    return message;
+  },
+};
+
+function createBaseDeleteSourceRequest(): DeleteSourceRequest {
+  return { uri: "" };
+}
+
+export const DeleteSourceRequest = {
+  encode(message: DeleteSourceRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.uri !== "") {
+      writer.uint32(10).string(message.uri);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DeleteSourceRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteSourceRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.uri = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeleteSourceRequest {
+    return { uri: isSet(object.uri) ? String(object.uri) : "" };
+  },
+
+  toJSON(message: DeleteSourceRequest): unknown {
+    const obj: any = {};
+    if (message.uri !== "") {
+      obj.uri = message.uri;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteSourceRequest>, I>>(base?: I): DeleteSourceRequest {
+    return DeleteSourceRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteSourceRequest>, I>>(object: I): DeleteSourceRequest {
+    const message = createBaseDeleteSourceRequest();
+    message.uri = object.uri ?? "";
+    return message;
+  },
+};
+
+function createBaseDeleteSourceResponse(): DeleteSourceResponse {
+  return {};
+}
+
+export const DeleteSourceResponse = {
+  encode(_: DeleteSourceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DeleteSourceResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteSourceResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): DeleteSourceResponse {
+    return {};
+  },
+
+  toJSON(_: DeleteSourceResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<DeleteSourceResponse>, I>>(base?: I): DeleteSourceResponse {
+    return DeleteSourceResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<DeleteSourceResponse>, I>>(_: I): DeleteSourceResponse {
+    const message = createBaseDeleteSourceResponse();
     return message;
   },
 };

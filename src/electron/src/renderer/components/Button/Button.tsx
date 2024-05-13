@@ -1,17 +1,11 @@
-import React, { CSSProperties } from 'react';
-import config from '../../../config/config';
+import React from 'react';
+import Clickable, { ClickableProps } from '../Clickable/Clickable';
 
-export type ButtonProps = {
-  onClick: () => void;
-  children: React.ReactNode;
-  style?: CSSProperties;
-};
+export type ButtonProps = ClickableProps & {};
 
-function Button({ onClick, children, style }: ButtonProps) {
+function Button({ children, style, onClick, disabled }: ButtonProps) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <Clickable
       style={{
         backgroundColor: '#2e2e2e',
         padding: '7px 18px',
@@ -21,14 +15,18 @@ function Button({ onClick, children, style }: ButtonProps) {
         fontWeight: 500,
         ...style,
       }}
+      disabled={disabled}
+      onClick={onClick}
     >
       {children}
-    </button>
+    </Clickable>
   );
 }
 
 Button.defaultProps = {
   style: {},
+  disabled: false,
+  onClick: null,
 };
 
 export default Button;

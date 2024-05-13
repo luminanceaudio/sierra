@@ -28,6 +28,7 @@ function Modal({ isOpen, onClose, children, style, title }: ModalProps) {
           justifyContent: 'center',
           width: '100vw',
           backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          zIndex: 30,
         }}
       >
         <DialogPanel

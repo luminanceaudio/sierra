@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-export const StyledClickable = styled.button`
+export const StyledClickable = styled.button<{ onClick?: () => void }>`
   &:hover {
-    opacity: 0.68;
-    cursor: pointer;
+    cursor: ${({ onClick }) => (onClick ? 'pointer' : 'inherit')};
+    opacity: ${({ onClick }) => (onClick ? 0.68 : 1)};
     transition: opacity 0.18s;
   }
 
