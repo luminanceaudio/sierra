@@ -3,8 +3,8 @@ package sample
 import (
 	"context"
 	"fmt"
+	"sierra/common/format"
 	"sierra/common/sha256"
-	"sierra/services/sierra/internal/format"
 	"sierra/services/sierra/internal/sierradb"
 	"sierra/services/sierra/internal/sierradb/sierraent"
 	"sierra/services/sierra/internal/sierradb/sierraent/sample"
@@ -24,7 +24,7 @@ func Get(ctx context.Context, sha256Str string) (*sierraent.Sample, error) {
 	return sierraDb.Client.Sample.Query().Where(sample.ID(sha256Str)).Only(ctx)
 }
 
-func Upsert(ctx context.Context, sha256Str string, fileFormat string, waveformSvg []byte) error {
+func Upsert(ctx context.Context, sha256Str string, fileFormat string, waveformStoragePath string) error {
 	if _, err := sha256.New(sha256Str); err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func Upsert(ctx context.Context, sha256Str string, fileFormat string, waveformSv
 	err = sierraDb.Client.Sample.Create().
 		SetID(sha256Str).
 		SetFormat(fileFormat).
-		SetWaveformSvg(waveformSvg).
+		SetWaveformStoragePath(waveformStoragePath).
 		OnConflictColumns(sample.FieldID).
 		UpdateNewValues().
 		Exec(ctx)

@@ -13,7 +13,7 @@ var (
 		{Name: "sha256", Type: field.TypeString, Unique: true},
 		{Name: "format", Type: field.TypeString, Nullable: true},
 		{Name: "length", Type: field.TypeInt64, Nullable: true},
-		{Name: "waveform_svg", Type: field.TypeBytes, Nullable: true},
+		{Name: "waveform_storage_path", Type: field.TypeString, Nullable: true},
 	}
 	// SamplesTable holds the schema information for the "samples" table.
 	SamplesTable = &schema.Table{

@@ -75,15 +75,23 @@ func (su *SampleUpdate) ClearLength() *SampleUpdate {
 	return su
 }
 
-// SetWaveformSvg sets the "waveform_svg" field.
-func (su *SampleUpdate) SetWaveformSvg(b []byte) *SampleUpdate {
-	su.mutation.SetWaveformSvg(b)
+// SetWaveformStoragePath sets the "waveform_storage_path" field.
+func (su *SampleUpdate) SetWaveformStoragePath(s string) *SampleUpdate {
+	su.mutation.SetWaveformStoragePath(s)
 	return su
 }
 
-// ClearWaveformSvg clears the value of the "waveform_svg" field.
-func (su *SampleUpdate) ClearWaveformSvg() *SampleUpdate {
-	su.mutation.ClearWaveformSvg()
+// SetNillableWaveformStoragePath sets the "waveform_storage_path" field if the given value is not nil.
+func (su *SampleUpdate) SetNillableWaveformStoragePath(s *string) *SampleUpdate {
+	if s != nil {
+		su.SetWaveformStoragePath(*s)
+	}
+	return su
+}
+
+// ClearWaveformStoragePath clears the value of the "waveform_storage_path" field.
+func (su *SampleUpdate) ClearWaveformStoragePath() *SampleUpdate {
+	su.mutation.ClearWaveformStoragePath()
 	return su
 }
 
@@ -179,11 +187,11 @@ func (su *SampleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if su.mutation.LengthCleared() {
 		_spec.ClearField(sample.FieldLength, field.TypeInt64)
 	}
-	if value, ok := su.mutation.WaveformSvg(); ok {
-		_spec.SetField(sample.FieldWaveformSvg, field.TypeBytes, value)
+	if value, ok := su.mutation.WaveformStoragePath(); ok {
+		_spec.SetField(sample.FieldWaveformStoragePath, field.TypeString, value)
 	}
-	if su.mutation.WaveformSvgCleared() {
-		_spec.ClearField(sample.FieldWaveformSvg, field.TypeBytes)
+	if su.mutation.WaveformStoragePathCleared() {
+		_spec.ClearField(sample.FieldWaveformStoragePath, field.TypeString)
 	}
 	if su.mutation.SourceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -297,15 +305,23 @@ func (suo *SampleUpdateOne) ClearLength() *SampleUpdateOne {
 	return suo
 }
 
-// SetWaveformSvg sets the "waveform_svg" field.
-func (suo *SampleUpdateOne) SetWaveformSvg(b []byte) *SampleUpdateOne {
-	suo.mutation.SetWaveformSvg(b)
+// SetWaveformStoragePath sets the "waveform_storage_path" field.
+func (suo *SampleUpdateOne) SetWaveformStoragePath(s string) *SampleUpdateOne {
+	suo.mutation.SetWaveformStoragePath(s)
 	return suo
 }
 
-// ClearWaveformSvg clears the value of the "waveform_svg" field.
-func (suo *SampleUpdateOne) ClearWaveformSvg() *SampleUpdateOne {
-	suo.mutation.ClearWaveformSvg()
+// SetNillableWaveformStoragePath sets the "waveform_storage_path" field if the given value is not nil.
+func (suo *SampleUpdateOne) SetNillableWaveformStoragePath(s *string) *SampleUpdateOne {
+	if s != nil {
+		suo.SetWaveformStoragePath(*s)
+	}
+	return suo
+}
+
+// ClearWaveformStoragePath clears the value of the "waveform_storage_path" field.
+func (suo *SampleUpdateOne) ClearWaveformStoragePath() *SampleUpdateOne {
+	suo.mutation.ClearWaveformStoragePath()
 	return suo
 }
 
@@ -431,11 +447,11 @@ func (suo *SampleUpdateOne) sqlSave(ctx context.Context) (_node *Sample, err err
 	if suo.mutation.LengthCleared() {
 		_spec.ClearField(sample.FieldLength, field.TypeInt64)
 	}
-	if value, ok := suo.mutation.WaveformSvg(); ok {
-		_spec.SetField(sample.FieldWaveformSvg, field.TypeBytes, value)
+	if value, ok := suo.mutation.WaveformStoragePath(); ok {
+		_spec.SetField(sample.FieldWaveformStoragePath, field.TypeString, value)
 	}
-	if suo.mutation.WaveformSvgCleared() {
-		_spec.ClearField(sample.FieldWaveformSvg, field.TypeBytes)
+	if suo.mutation.WaveformStoragePathCleared() {
+		_spec.ClearField(sample.FieldWaveformStoragePath, field.TypeString)
 	}
 	if suo.mutation.SourceCleared() {
 		edge := &sqlgraph.EdgeSpec{

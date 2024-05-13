@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sierra/common/appdir"
+	"sierra/common/pathfinder"
 )
 
 func GetAppName() string {
@@ -13,27 +13,31 @@ func GetAppName() string {
 
 // GetAppDataDir gets the application dir for Sierra
 func GetAppDataDir() (string, error) {
-	return appdir.GetApplicationDataDirForApp(GetAppName())
+	return pathfinder.GetApplicationDataDirForApp(GetAppName())
 }
 
-func CreateAppDataDir() error {
-	return CreateAppDataDirEx("")
+func CreateAppDataDir() (string, error) {
+	return createAppDataDirEx("")
 }
 
-func CreateAppDataDirEx(innerDirs string) error {
-	appDataDir, err := GetAppDataDir()
+func CreateAppImageCacheDir() (string, error) {
+	return createAppDataDirEx("cache/images")
+}
+
+func createAppDataDirEx(innerDirs string) (string, error) {
+	dir, err := GetAppDataDir()
 	if err != nil {
-		return fmt.Errorf("could not get appdata dir: %s", err)
+		return "", fmt.Errorf("could not get appdata dir: %s", err)
 	}
 
 	if innerDirs != "" {
-		appDataDir = filepath.Join(appDataDir, innerDirs)
+		dir = filepath.Join(dir, innerDirs)
 	}
 
-	err = os.Mkdir(appDataDir, 0755)
+	err = os.MkdirAll(dir, 0755)
 	if err != nil && !os.IsExist(err) {
-		return fmt.Errorf("failed to create app data directory '%s': %w", appDataDir, err)
+		return "", fmt.Errorf("failed to create directory '%s': %w", dir, err)
 	}
 
-	return nil
+	return dir, nil
 }

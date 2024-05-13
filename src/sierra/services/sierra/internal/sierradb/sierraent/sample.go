@@ -20,8 +20,8 @@ type Sample struct {
 	Format string `json:"format,omitempty"`
 	// Length holds the value of the "length" field.
 	Length int64 `json:"length,omitempty"`
-	// WaveformSvg holds the value of the "waveform_svg" field.
-	WaveformSvg []byte `json:"waveform_svg,omitempty"`
+	// WaveformStoragePath holds the value of the "waveform_storage_path" field.
+	WaveformStoragePath string `json:"waveform_storage_path,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SampleQuery when eager-loading is set.
 	Edges        SampleEdges `json:"edges"`
@@ -51,11 +51,9 @@ func (*Sample) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case sample.FieldWaveformSvg:
-			values[i] = new([]byte)
 		case sample.FieldLength:
 			values[i] = new(sql.NullInt64)
-		case sample.FieldID, sample.FieldFormat:
+		case sample.FieldID, sample.FieldFormat, sample.FieldWaveformStoragePath:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -90,11 +88,11 @@ func (s *Sample) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.Length = value.Int64
 			}
-		case sample.FieldWaveformSvg:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field waveform_svg", values[i])
-			} else if value != nil {
-				s.WaveformSvg = *value
+		case sample.FieldWaveformStoragePath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field waveform_storage_path", values[i])
+			} else if value.Valid {
+				s.WaveformStoragePath = value.String
 			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
@@ -143,8 +141,8 @@ func (s *Sample) String() string {
 	builder.WriteString("length=")
 	builder.WriteString(fmt.Sprintf("%v", s.Length))
 	builder.WriteString(", ")
-	builder.WriteString("waveform_svg=")
-	builder.WriteString(fmt.Sprintf("%v", s.WaveformSvg))
+	builder.WriteString("waveform_storage_path=")
+	builder.WriteString(s.WaveformStoragePath)
 	builder.WriteByte(')')
 	return builder.String()
 }

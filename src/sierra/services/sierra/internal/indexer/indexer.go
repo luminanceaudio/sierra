@@ -6,11 +6,14 @@ import (
 	"github.com/sirupsen/logrus"
 	"io/fs"
 	"os"
+	"path/filepath"
+	"sierra/common/format"
+	"sierra/common/pathfinder"
 	"sierra/common/safemap"
 	"sierra/common/sha256"
 	"sierra/common/uri"
 	"sierra/common/waveform"
-	"sierra/services/sierra/internal/analyzers/format"
+	"sierra/services/sierra/config"
 	"sierra/services/sierra/internal/modules/sample"
 	"sierra/services/sierra/internal/modules/source"
 	"sierra/services/sierra/internal/modules/sourcesample"
@@ -24,10 +27,12 @@ type Indexer struct {
 }
 
 func Singleton() *Indexer {
-	if singleton == nil {
-		singleton = &Indexer{
-			sourceURIToIndexer: safemap.New[string, sourceIndexer](),
-		}
+	if singleton != nil {
+		return singleton
+	}
+
+	singleton = &Indexer{
+		sourceURIToIndexer: safemap.New[string, sourceIndexer](),
 	}
 	return singleton
 }
@@ -137,18 +142,24 @@ func indexFile(ctx context.Context, src source.Source, fileUri *uri.URI, forceRe
 		return nil
 	}
 
-	f, err := os.OpenFile(fileUri.Path()+".svg", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	imageCacheDir, err := config.CreateAppImageCacheDir()
+	if err != nil {
+		return fmt.Errorf("failed creating cache dir: %w", err)
+	}
+
+	waveformFilePath := filepath.Join(imageCacheDir, pathfinder.RandomFilename()) + ".svg"
+	f, err := os.OpenFile(waveformFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		return fmt.Errorf("failed opening file: %w", err)
 	}
+	defer f.Close()
 
-	//waveformSvg := bytes.NewBuffer([]byte{})
 	err = waveform.DrawWaveformSVG(foundFormat.Samples, f)
 	if err != nil {
 		logrus.WithError(err).Error("failed drawing waveform")
 	}
 
-	err = sample.Upsert(ctx, *sha256Str, foundFormat.Type, []byte{})
+	err = sample.Upsert(ctx, *sha256Str, foundFormat.Type, waveformFilePath)
 	if err != nil {
 		return fmt.Errorf("failed saving sample to db: %w", err)
 	}
