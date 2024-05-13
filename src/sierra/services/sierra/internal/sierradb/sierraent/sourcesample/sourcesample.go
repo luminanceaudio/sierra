@@ -12,6 +12,8 @@ const (
 	Label = "source_sample"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "uri"
+	// FieldRelativePath holds the string denoting the relative_path field in the database.
+	FieldRelativePath = "relative_path"
 	// EdgeSource holds the string denoting the source edge name in mutations.
 	EdgeSource = "source"
 	// EdgeSample holds the string denoting the sample edge name in mutations.
@@ -39,6 +41,7 @@ const (
 // Columns holds all SQL columns for sourcesample fields.
 var Columns = []string{
 	FieldID,
+	FieldRelativePath,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "source_samples"
@@ -69,6 +72,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByRelativePath orders the results by the relative_path field.
+func ByRelativePath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelativePath, opts...).ToFunc()
 }
 
 // BySourceField orders the results by source field.

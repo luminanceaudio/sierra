@@ -14,12 +14,14 @@ type SourceSample struct {
 func (SourceSample) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("id").Unique(),
+		index.Fields("relative_path"),
 	}
 }
 
 func (SourceSample) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").StorageKey("uri").Immutable().Unique(),
+		field.String("relative_path").Immutable(),
 	}
 }
 

@@ -64,6 +64,76 @@ func IDContainsFold(id string) predicate.SourceSample {
 	return predicate.SourceSample(sql.FieldContainsFold(FieldID, id))
 }
 
+// RelativePath applies equality check predicate on the "relative_path" field. It's identical to RelativePathEQ.
+func RelativePath(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldEQ(FieldRelativePath, v))
+}
+
+// RelativePathEQ applies the EQ predicate on the "relative_path" field.
+func RelativePathEQ(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldEQ(FieldRelativePath, v))
+}
+
+// RelativePathNEQ applies the NEQ predicate on the "relative_path" field.
+func RelativePathNEQ(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldNEQ(FieldRelativePath, v))
+}
+
+// RelativePathIn applies the In predicate on the "relative_path" field.
+func RelativePathIn(vs ...string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldIn(FieldRelativePath, vs...))
+}
+
+// RelativePathNotIn applies the NotIn predicate on the "relative_path" field.
+func RelativePathNotIn(vs ...string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldNotIn(FieldRelativePath, vs...))
+}
+
+// RelativePathGT applies the GT predicate on the "relative_path" field.
+func RelativePathGT(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldGT(FieldRelativePath, v))
+}
+
+// RelativePathGTE applies the GTE predicate on the "relative_path" field.
+func RelativePathGTE(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldGTE(FieldRelativePath, v))
+}
+
+// RelativePathLT applies the LT predicate on the "relative_path" field.
+func RelativePathLT(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldLT(FieldRelativePath, v))
+}
+
+// RelativePathLTE applies the LTE predicate on the "relative_path" field.
+func RelativePathLTE(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldLTE(FieldRelativePath, v))
+}
+
+// RelativePathContains applies the Contains predicate on the "relative_path" field.
+func RelativePathContains(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldContains(FieldRelativePath, v))
+}
+
+// RelativePathHasPrefix applies the HasPrefix predicate on the "relative_path" field.
+func RelativePathHasPrefix(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldHasPrefix(FieldRelativePath, v))
+}
+
+// RelativePathHasSuffix applies the HasSuffix predicate on the "relative_path" field.
+func RelativePathHasSuffix(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldHasSuffix(FieldRelativePath, v))
+}
+
+// RelativePathEqualFold applies the EqualFold predicate on the "relative_path" field.
+func RelativePathEqualFold(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldEqualFold(FieldRelativePath, v))
+}
+
+// RelativePathContainsFold applies the ContainsFold predicate on the "relative_path" field.
+func RelativePathContainsFold(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldContainsFold(FieldRelativePath, v))
+}
+
 // HasSource applies the HasEdge predicate on the "source" edge.
 func HasSource() predicate.SourceSample {
 	return predicate.SourceSample(func(s *sql.Selector) {

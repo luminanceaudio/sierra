@@ -8,8 +8,9 @@ import (
 	"sierra/services/sierra/internal/modules/sourcesample"
 )
 
-func GetSamples(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT) (*models.GetSamplesResponse, *api.Error) {
-	samples, err := sourcesample.GetAll(r.Context())
+func SearchSamples(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT) (*models.GetSamplesResponse, *api.Error) {
+	query := p.ByName("query")
+	samples, err := sourcesample.GetAll(r.Context(), query)
 	if err != nil {
 		return nil, api.NewInternalError(err, "failed getting samples")
 	}
