@@ -18,10 +18,8 @@ func Run(ctx context.Context, args Args, subcommand *flags.Command) error {
 		return err
 	}
 
-	idx := indexer.New()
-
 	for _, src := range sources {
-		err = idx.Index(ctx, src, args.Force)
+		err = indexer.Singleton().Index(ctx, src, args.Force, false)
 		if err != nil {
 			return fmt.Errorf("failed indexing source: %s", err)
 		}

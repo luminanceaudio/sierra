@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 	"github.com/jessevdk/go-flags"
-	"sierra/services/sierra/commands/server/shutdown"
-	"sierra/services/sierra/commands/server/start"
+	"sierra/services/sierra/cli/server/shutdown"
+	"sierra/services/sierra/cli/server/start"
 )
 
 type Args struct {

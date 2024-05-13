@@ -1,11 +1,13 @@
 package sources
 
 import (
+	"context"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"sierra/common/api"
 	"sierra/common/uri"
 	"sierra/services/sierra/client/models"
+	"sierra/services/sierra/internal/indexer"
 	"sierra/services/sierra/internal/modules/source"
 )
 
@@ -17,7 +19,17 @@ func CreateSource(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JW
 
 	err = source.Create(r.Context(), uri)
 	if err != nil {
-		return nil, api.NewInternalError(err, "failed getting sources")
+		return nil, api.NewInternalError(err, "failed creating source")
+	}
+
+	src, err := source.Get(r.Context(), uri)
+	if err != nil {
+		return nil, api.NewInternalError(err, "failed getting source")
+	}
+
+	err = indexer.Singleton().Index(context.WithoutCancel(r.Context()), src, false, true)
+	if err != nil {
+		return nil, api.NewInternalError(err, "failed indexing sources")
 	}
 
 	return &models.CreateSourceResponse{}, nil

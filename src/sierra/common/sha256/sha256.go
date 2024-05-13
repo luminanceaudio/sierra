@@ -22,9 +22,14 @@ func New(sha256 string) (Sha256, error) {
 	return sha256, nil
 }
 
-func HashHexEncoded(reader io.Reader) (*Sha256, error) {
+func HashHexEncoded(reader io.ReadSeeker) (*Sha256, error) {
+	_, err := reader.Seek(0, io.SeekStart)
+	if err != nil {
+		return nil, fmt.Errorf("failed to seek to start while hashing")
+	}
+
 	hasher := sha256.New()
-	_, err := io.Copy(hasher, reader)
+	_, err = io.Copy(hasher, reader)
 	if err != nil {
 		return nil, fmt.Errorf("failed hashing file: %w", err)
 	}

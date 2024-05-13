@@ -3,7 +3,7 @@ package source
 import (
 	"context"
 	"github.com/jessevdk/go-flags"
-	"sierra/services/sierra/commands/source/add"
+	"sierra/services/sierra/cli/source/add"
 )
 
 type Args struct {
