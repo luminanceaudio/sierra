@@ -8,7 +8,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { app, BrowserWindow, shell, ipcMain, protocol } from 'electron';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import fs from 'fs';
@@ -27,6 +27,8 @@ class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
+const iconName = 'assets/dragDropIcon.png';
+
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
@@ -42,6 +44,14 @@ ipcMain.on('app-provider.load-state', async (event) => {
 ipcMain.on('app-provider.save-state', async (event, data) => {
   const filepath = path.join(app.getPath('userData'), 'data.json');
   fs.writeFileSync(filepath, data);
+});
+
+ipcMain.on('ondragstart', (event, fileUri: string) => {
+  // NOTE: If fileUri is not valid this might crash. Try catching doesn't help here.
+  event.sender.startDrag({
+    file: fileUri.split('://', 2)[1],
+    icon: iconName,
+  });
 });
 
 if (process.env.NODE_ENV === 'production') {
