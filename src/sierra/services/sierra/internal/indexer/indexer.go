@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/fs"
+	"sierra/common/safemap"
 	"sierra/common/sha256"
 	"sierra/common/uri"
 	"sierra/services/sierra/internal/analyzers/format"
@@ -14,14 +15,65 @@ import (
 	"sierra/services/sierra/internal/sierradb"
 )
 
+var singleton *Indexer
+
 type Indexer struct {
+	sourceURIToIndexer *safemap.SafeMap[string, sourceIndexer]
 }
 
-func New() *Indexer {
-	return &Indexer{}
+func Singleton() *Indexer {
+	if singleton == nil {
+		singleton = &Indexer{
+			sourceURIToIndexer: safemap.New[string, sourceIndexer](),
+		}
+	}
+	return singleton
 }
 
-func (indexer *Indexer) Index(ctx context.Context, source source.Source, forceReindex bool) error {
+func (i *Indexer) Index(ctx context.Context, source source.Source, forceReindex, inBackground bool) error {
+	sourceUri := source.GetURI().String()
+
+	tempSourceIdx, ok := i.sourceURIToIndexer.Get(sourceUri)
+	if !ok {
+		tempSourceIdx = newSourceIndexer()
+		i.sourceURIToIndexer.Put(sourceUri, tempSourceIdx)
+	}
+
+	// Don't index if in progress
+	if tempSourceIdx.IsIndexing {
+		logrus.WithField("sourceUri", sourceUri).Info("not indexing source as it is already being indexed")
+		return nil
+	}
+
+	tempSourceIdx.IsIndexing = true
+
+	// Save IsIndexing state
+	i.sourceURIToIndexer.Put(sourceUri, tempSourceIdx)
+
+	// Run index
+	if inBackground {
+		go func() {
+			err := i.index(ctx, source, forceReindex)
+			if err != nil {
+				logrus.WithError(err).WithField("sourceUri", sourceUri).Info("failed to index source")
+				return
+			}
+
+			logrus.WithField("sourceUri", sourceUri).Info("indexed source in background successfully")
+		}()
+	} else {
+		err := i.index(ctx, source, forceReindex)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (i *Indexer) index(ctx context.Context, source source.Source, forceReindex bool) error {
+	defer i.sourceURIToIndexer.Delete(source.GetURI().String())
+
 	err := source.Walk(func(fileUri *uri.URI, info fs.FileInfo, err error) error {
 		if err != nil {
 			logrus.WithError(err).Error("error walking source")
@@ -61,7 +113,7 @@ func indexFile(ctx context.Context, src source.Source, fileUri *uri.URI, forceRe
 
 	if !forceReindex {
 		// TODO: Don't fetch one by one
-		_, err = sample.Get(ctx, *sha256Str)
+		_, err = sourcesample.GetBySampleSha256(ctx, *sha256Str)
 		if err == nil {
 			// TODO: Make a smarter caching mechanism
 			// Don't reindex file

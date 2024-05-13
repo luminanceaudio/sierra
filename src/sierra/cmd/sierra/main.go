@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
 	"os"
-	"sierra/services/sierra/commands/index"
-	"sierra/services/sierra/commands/server"
-	"sierra/services/sierra/commands/source"
+	"sierra/services/sierra/cli/index"
+	"sierra/services/sierra/cli/server"
+	"sierra/services/sierra/cli/source"
 	"sierra/services/sierra/config"
 )
 
