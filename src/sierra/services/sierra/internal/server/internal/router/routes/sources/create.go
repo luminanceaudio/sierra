@@ -9,6 +9,7 @@ import (
 	"sierra/services/sierra/client/models"
 	"sierra/services/sierra/internal/indexer"
 	"sierra/services/sierra/internal/modules/source"
+	"sierra/services/sierra/internal/sierradb/sierraent"
 )
 
 func CreateSource(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT, request *models.CreateSourceRequest) (*models.CreateSourceResponse, *api.Error) {
@@ -19,6 +20,9 @@ func CreateSource(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JW
 
 	err = source.Create(r.Context(), uri)
 	if err != nil {
+		if sierraent.IsConstraintError(err) {
+			return nil, api.NewBadRequestError(err, "Source already exists")
+		}
 		return nil, api.NewInternalError(err, "failed creating source")
 	}
 

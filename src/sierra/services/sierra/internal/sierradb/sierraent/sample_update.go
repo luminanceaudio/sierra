@@ -75,6 +75,18 @@ func (su *SampleUpdate) ClearLength() *SampleUpdate {
 	return su
 }
 
+// SetWaveformSvg sets the "waveform_svg" field.
+func (su *SampleUpdate) SetWaveformSvg(b []byte) *SampleUpdate {
+	su.mutation.SetWaveformSvg(b)
+	return su
+}
+
+// ClearWaveformSvg clears the value of the "waveform_svg" field.
+func (su *SampleUpdate) ClearWaveformSvg() *SampleUpdate {
+	su.mutation.ClearWaveformSvg()
+	return su
+}
+
 // AddSourceIDs adds the "source" edge to the SourceSample entity by IDs.
 func (su *SampleUpdate) AddSourceIDs(ids ...string) *SampleUpdate {
 	su.mutation.AddSourceIDs(ids...)
@@ -166,6 +178,12 @@ func (su *SampleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if su.mutation.LengthCleared() {
 		_spec.ClearField(sample.FieldLength, field.TypeInt64)
+	}
+	if value, ok := su.mutation.WaveformSvg(); ok {
+		_spec.SetField(sample.FieldWaveformSvg, field.TypeBytes, value)
+	}
+	if su.mutation.WaveformSvgCleared() {
+		_spec.ClearField(sample.FieldWaveformSvg, field.TypeBytes)
 	}
 	if su.mutation.SourceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -276,6 +294,18 @@ func (suo *SampleUpdateOne) AddLength(i int64) *SampleUpdateOne {
 // ClearLength clears the value of the "length" field.
 func (suo *SampleUpdateOne) ClearLength() *SampleUpdateOne {
 	suo.mutation.ClearLength()
+	return suo
+}
+
+// SetWaveformSvg sets the "waveform_svg" field.
+func (suo *SampleUpdateOne) SetWaveformSvg(b []byte) *SampleUpdateOne {
+	suo.mutation.SetWaveformSvg(b)
+	return suo
+}
+
+// ClearWaveformSvg clears the value of the "waveform_svg" field.
+func (suo *SampleUpdateOne) ClearWaveformSvg() *SampleUpdateOne {
+	suo.mutation.ClearWaveformSvg()
 	return suo
 }
 
@@ -400,6 +430,12 @@ func (suo *SampleUpdateOne) sqlSave(ctx context.Context) (_node *Sample, err err
 	}
 	if suo.mutation.LengthCleared() {
 		_spec.ClearField(sample.FieldLength, field.TypeInt64)
+	}
+	if value, ok := suo.mutation.WaveformSvg(); ok {
+		_spec.SetField(sample.FieldWaveformSvg, field.TypeBytes, value)
+	}
+	if suo.mutation.WaveformSvgCleared() {
+		_spec.ClearField(sample.FieldWaveformSvg, field.TypeBytes)
 	}
 	if suo.mutation.SourceCleared() {
 		edge := &sqlgraph.EdgeSpec{

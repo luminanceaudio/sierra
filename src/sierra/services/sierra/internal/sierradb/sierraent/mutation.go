@@ -40,6 +40,7 @@ type SampleMutation struct {
 	format        *string
 	length        *int64
 	addlength     *int64
+	waveform_svg  *[]byte
 	clearedFields map[string]struct{}
 	source        map[string]struct{}
 	removedsource map[string]struct{}
@@ -272,6 +273,55 @@ func (m *SampleMutation) ResetLength() {
 	delete(m.clearedFields, sample.FieldLength)
 }
 
+// SetWaveformSvg sets the "waveform_svg" field.
+func (m *SampleMutation) SetWaveformSvg(b []byte) {
+	m.waveform_svg = &b
+}
+
+// WaveformSvg returns the value of the "waveform_svg" field in the mutation.
+func (m *SampleMutation) WaveformSvg() (r []byte, exists bool) {
+	v := m.waveform_svg
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWaveformSvg returns the old "waveform_svg" field's value of the Sample entity.
+// If the Sample object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SampleMutation) OldWaveformSvg(ctx context.Context) (v []byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWaveformSvg is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWaveformSvg requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWaveformSvg: %w", err)
+	}
+	return oldValue.WaveformSvg, nil
+}
+
+// ClearWaveformSvg clears the value of the "waveform_svg" field.
+func (m *SampleMutation) ClearWaveformSvg() {
+	m.waveform_svg = nil
+	m.clearedFields[sample.FieldWaveformSvg] = struct{}{}
+}
+
+// WaveformSvgCleared returns if the "waveform_svg" field was cleared in this mutation.
+func (m *SampleMutation) WaveformSvgCleared() bool {
+	_, ok := m.clearedFields[sample.FieldWaveformSvg]
+	return ok
+}
+
+// ResetWaveformSvg resets all changes to the "waveform_svg" field.
+func (m *SampleMutation) ResetWaveformSvg() {
+	m.waveform_svg = nil
+	delete(m.clearedFields, sample.FieldWaveformSvg)
+}
+
 // AddSourceIDs adds the "source" edge to the SourceSample entity by ids.
 func (m *SampleMutation) AddSourceIDs(ids ...string) {
 	if m.source == nil {
@@ -360,12 +410,15 @@ func (m *SampleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SampleMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 3)
 	if m.format != nil {
 		fields = append(fields, sample.FieldFormat)
 	}
 	if m.length != nil {
 		fields = append(fields, sample.FieldLength)
+	}
+	if m.waveform_svg != nil {
+		fields = append(fields, sample.FieldWaveformSvg)
 	}
 	return fields
 }
@@ -379,6 +432,8 @@ func (m *SampleMutation) Field(name string) (ent.Value, bool) {
 		return m.Format()
 	case sample.FieldLength:
 		return m.Length()
+	case sample.FieldWaveformSvg:
+		return m.WaveformSvg()
 	}
 	return nil, false
 }
@@ -392,6 +447,8 @@ func (m *SampleMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldFormat(ctx)
 	case sample.FieldLength:
 		return m.OldLength(ctx)
+	case sample.FieldWaveformSvg:
+		return m.OldWaveformSvg(ctx)
 	}
 	return nil, fmt.Errorf("unknown Sample field %s", name)
 }
@@ -414,6 +471,13 @@ func (m *SampleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLength(v)
+		return nil
+	case sample.FieldWaveformSvg:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWaveformSvg(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Sample field %s", name)
@@ -466,6 +530,9 @@ func (m *SampleMutation) ClearedFields() []string {
 	if m.FieldCleared(sample.FieldLength) {
 		fields = append(fields, sample.FieldLength)
 	}
+	if m.FieldCleared(sample.FieldWaveformSvg) {
+		fields = append(fields, sample.FieldWaveformSvg)
+	}
 	return fields
 }
 
@@ -486,6 +553,9 @@ func (m *SampleMutation) ClearField(name string) error {
 	case sample.FieldLength:
 		m.ClearLength()
 		return nil
+	case sample.FieldWaveformSvg:
+		m.ClearWaveformSvg()
+		return nil
 	}
 	return fmt.Errorf("unknown Sample nullable field %s", name)
 }
@@ -499,6 +569,9 @@ func (m *SampleMutation) ResetField(name string) error {
 		return nil
 	case sample.FieldLength:
 		m.ResetLength()
+		return nil
+	case sample.FieldWaveformSvg:
+		m.ResetWaveformSvg()
 		return nil
 	}
 	return fmt.Errorf("unknown Sample field %s", name)

@@ -74,6 +74,11 @@ func Length(v int64) predicate.Sample {
 	return predicate.Sample(sql.FieldEQ(FieldLength, v))
 }
 
+// WaveformSvg applies equality check predicate on the "waveform_svg" field. It's identical to WaveformSvgEQ.
+func WaveformSvg(v []byte) predicate.Sample {
+	return predicate.Sample(sql.FieldEQ(FieldWaveformSvg, v))
+}
+
 // FormatEQ applies the EQ predicate on the "format" field.
 func FormatEQ(v string) predicate.Sample {
 	return predicate.Sample(sql.FieldEQ(FieldFormat, v))
@@ -197,6 +202,56 @@ func LengthIsNil() predicate.Sample {
 // LengthNotNil applies the NotNil predicate on the "length" field.
 func LengthNotNil() predicate.Sample {
 	return predicate.Sample(sql.FieldNotNull(FieldLength))
+}
+
+// WaveformSvgEQ applies the EQ predicate on the "waveform_svg" field.
+func WaveformSvgEQ(v []byte) predicate.Sample {
+	return predicate.Sample(sql.FieldEQ(FieldWaveformSvg, v))
+}
+
+// WaveformSvgNEQ applies the NEQ predicate on the "waveform_svg" field.
+func WaveformSvgNEQ(v []byte) predicate.Sample {
+	return predicate.Sample(sql.FieldNEQ(FieldWaveformSvg, v))
+}
+
+// WaveformSvgIn applies the In predicate on the "waveform_svg" field.
+func WaveformSvgIn(vs ...[]byte) predicate.Sample {
+	return predicate.Sample(sql.FieldIn(FieldWaveformSvg, vs...))
+}
+
+// WaveformSvgNotIn applies the NotIn predicate on the "waveform_svg" field.
+func WaveformSvgNotIn(vs ...[]byte) predicate.Sample {
+	return predicate.Sample(sql.FieldNotIn(FieldWaveformSvg, vs...))
+}
+
+// WaveformSvgGT applies the GT predicate on the "waveform_svg" field.
+func WaveformSvgGT(v []byte) predicate.Sample {
+	return predicate.Sample(sql.FieldGT(FieldWaveformSvg, v))
+}
+
+// WaveformSvgGTE applies the GTE predicate on the "waveform_svg" field.
+func WaveformSvgGTE(v []byte) predicate.Sample {
+	return predicate.Sample(sql.FieldGTE(FieldWaveformSvg, v))
+}
+
+// WaveformSvgLT applies the LT predicate on the "waveform_svg" field.
+func WaveformSvgLT(v []byte) predicate.Sample {
+	return predicate.Sample(sql.FieldLT(FieldWaveformSvg, v))
+}
+
+// WaveformSvgLTE applies the LTE predicate on the "waveform_svg" field.
+func WaveformSvgLTE(v []byte) predicate.Sample {
+	return predicate.Sample(sql.FieldLTE(FieldWaveformSvg, v))
+}
+
+// WaveformSvgIsNil applies the IsNil predicate on the "waveform_svg" field.
+func WaveformSvgIsNil() predicate.Sample {
+	return predicate.Sample(sql.FieldIsNull(FieldWaveformSvg))
+}
+
+// WaveformSvgNotNil applies the NotNil predicate on the "waveform_svg" field.
+func WaveformSvgNotNil() predicate.Sample {
+	return predicate.Sample(sql.FieldNotNull(FieldWaveformSvg))
 }
 
 // HasSource applies the HasEdge predicate on the "source" edge.

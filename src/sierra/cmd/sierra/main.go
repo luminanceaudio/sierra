@@ -8,7 +8,6 @@ import (
 	"sierra/services/sierra/cli/index"
 	"sierra/services/sierra/cli/server"
 	"sierra/services/sierra/cli/source"
-	"sierra/services/sierra/config"
 )
 
 var args struct {
@@ -27,12 +26,6 @@ func main() {
 	}
 
 	ctx := context.Background()
-
-	err = config.CreateAppDataDir()
-	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
 
 	switch p.Active.Name {
 	case "source":

@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"sierra/common/appdir"
 )
 
@@ -16,9 +17,17 @@ func GetAppDataDir() (string, error) {
 }
 
 func CreateAppDataDir() error {
+	return CreateAppDataDirEx("")
+}
+
+func CreateAppDataDirEx(innerDirs string) error {
 	appDataDir, err := GetAppDataDir()
 	if err != nil {
 		return fmt.Errorf("could not get appdata dir: %s", err)
+	}
+
+	if innerDirs != "" {
+		appDataDir = filepath.Join(appDataDir, innerDirs)
 	}
 
 	err = os.Mkdir(appDataDir, 0755)

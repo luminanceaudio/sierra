@@ -22,6 +22,7 @@ func (Sample) Fields() []ent.Field {
 		field.String("id").StorageKey("sha256").Immutable().Unique(),
 		field.String("format").Optional(),
 		field.Int64("length").Optional(),
+		field.Bytes("waveform_svg").Optional(),
 	}
 }
 

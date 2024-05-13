@@ -1,3 +1,5 @@
-h1:9aVC9+KM2H7UQ+PocSUDk/hyhwYJ1cSzeD6MHe5Ks0U=
+h1:A5fPmkS5v50PPFpvLsXSxtS0MRN1uektCPEjkLYz3IU=
 20240511164937_add_other_index.down.sql h1:Cu+pluEmls8MADKRX5AM/tw2AYoN/VT7c/qK/iJDA8k=
 20240511164937_add_other_index.up.sql h1:QliSmWVNKyiPb2r3hDjgaGiBpRA2159XsQmChK+mIdI=
+20240513141223_add_waveform_svg.down.sql h1:NpxmXXUHIqaQTUwRdlbJ/StZukPO9Q5yizp1G+JoEsk=
+20240513141223_add_waveform_svg.up.sql h1:HPUYb7MeED1aAkHNZlMhQuhaSa6kKfgKFOcdEFRpabs=

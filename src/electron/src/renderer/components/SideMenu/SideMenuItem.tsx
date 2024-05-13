@@ -13,8 +13,8 @@ function SideMenuItem({ name, route }: SideMenuItemProps) {
     <Link
       to={route}
       style={{
-        display: 'block',
         margin: 0,
+        width: '100%',
       }}
     >
       <Title

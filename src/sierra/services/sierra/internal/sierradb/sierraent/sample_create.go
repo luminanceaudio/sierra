@@ -51,6 +51,12 @@ func (sc *SampleCreate) SetNillableLength(i *int64) *SampleCreate {
 	return sc
 }
 
+// SetWaveformSvg sets the "waveform_svg" field.
+func (sc *SampleCreate) SetWaveformSvg(b []byte) *SampleCreate {
+	sc.mutation.SetWaveformSvg(b)
+	return sc
+}
+
 // SetID sets the "id" field.
 func (sc *SampleCreate) SetID(s string) *SampleCreate {
 	sc.mutation.SetID(s)
@@ -149,6 +155,10 @@ func (sc *SampleCreate) createSpec() (*Sample, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Length(); ok {
 		_spec.SetField(sample.FieldLength, field.TypeInt64, value)
 		_node.Length = value
+	}
+	if value, ok := sc.mutation.WaveformSvg(); ok {
+		_spec.SetField(sample.FieldWaveformSvg, field.TypeBytes, value)
+		_node.WaveformSvg = value
 	}
 	if nodes := sc.mutation.SourceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -260,6 +270,24 @@ func (u *SampleUpsert) ClearLength() *SampleUpsert {
 	return u
 }
 
+// SetWaveformSvg sets the "waveform_svg" field.
+func (u *SampleUpsert) SetWaveformSvg(v []byte) *SampleUpsert {
+	u.Set(sample.FieldWaveformSvg, v)
+	return u
+}
+
+// UpdateWaveformSvg sets the "waveform_svg" field to the value that was provided on create.
+func (u *SampleUpsert) UpdateWaveformSvg() *SampleUpsert {
+	u.SetExcluded(sample.FieldWaveformSvg)
+	return u
+}
+
+// ClearWaveformSvg clears the value of the "waveform_svg" field.
+func (u *SampleUpsert) ClearWaveformSvg() *SampleUpsert {
+	u.SetNull(sample.FieldWaveformSvg)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -354,6 +382,27 @@ func (u *SampleUpsertOne) UpdateLength() *SampleUpsertOne {
 func (u *SampleUpsertOne) ClearLength() *SampleUpsertOne {
 	return u.Update(func(s *SampleUpsert) {
 		s.ClearLength()
+	})
+}
+
+// SetWaveformSvg sets the "waveform_svg" field.
+func (u *SampleUpsertOne) SetWaveformSvg(v []byte) *SampleUpsertOne {
+	return u.Update(func(s *SampleUpsert) {
+		s.SetWaveformSvg(v)
+	})
+}
+
+// UpdateWaveformSvg sets the "waveform_svg" field to the value that was provided on create.
+func (u *SampleUpsertOne) UpdateWaveformSvg() *SampleUpsertOne {
+	return u.Update(func(s *SampleUpsert) {
+		s.UpdateWaveformSvg()
+	})
+}
+
+// ClearWaveformSvg clears the value of the "waveform_svg" field.
+func (u *SampleUpsertOne) ClearWaveformSvg() *SampleUpsertOne {
+	return u.Update(func(s *SampleUpsert) {
+		s.ClearWaveformSvg()
 	})
 }
 
@@ -617,6 +666,27 @@ func (u *SampleUpsertBulk) UpdateLength() *SampleUpsertBulk {
 func (u *SampleUpsertBulk) ClearLength() *SampleUpsertBulk {
 	return u.Update(func(s *SampleUpsert) {
 		s.ClearLength()
+	})
+}
+
+// SetWaveformSvg sets the "waveform_svg" field.
+func (u *SampleUpsertBulk) SetWaveformSvg(v []byte) *SampleUpsertBulk {
+	return u.Update(func(s *SampleUpsert) {
+		s.SetWaveformSvg(v)
+	})
+}
+
+// UpdateWaveformSvg sets the "waveform_svg" field to the value that was provided on create.
+func (u *SampleUpsertBulk) UpdateWaveformSvg() *SampleUpsertBulk {
+	return u.Update(func(s *SampleUpsert) {
+		s.UpdateWaveformSvg()
+	})
+}
+
+// ClearWaveformSvg clears the value of the "waveform_svg" field.
+func (u *SampleUpsertBulk) ClearWaveformSvg() *SampleUpsertBulk {
+	return u.Update(func(s *SampleUpsert) {
+		s.ClearWaveformSvg()
 	})
 }
 

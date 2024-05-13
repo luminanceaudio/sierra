@@ -71,6 +71,11 @@ func getSierraDbFilePath() (string, error) {
 }
 
 func createFileIfMissing(dbFilePath string) error {
+	err := config.CreateAppDataDir()
+	if err != nil {
+		return fmt.Errorf("failed creating sierra db dir: %w", err)
+	}
+
 	file, err := os.OpenFile(dbFilePath, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return fmt.Errorf("failed opening sierra db file: %w", err)
