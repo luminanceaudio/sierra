@@ -6,7 +6,6 @@ function Main() {
   return (
     <Layout title="Samples">
       <Widget
-        title="List"
         style={{
           display: 'flex',
           flex: 1,

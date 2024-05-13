@@ -11,6 +11,7 @@ import (
 	sample2 "sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"sierra/services/sierra/internal/sierradb/sierraent/source"
 	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
+	"strings"
 )
 
 func Get(ctx context.Context, uri *uri.URI) (*models.Sample, error) {
@@ -63,13 +64,21 @@ func GetBySampleSha256(ctx context.Context, sha256 sha256.Sha256) (*models.Sampl
 	return sample, nil
 }
 
-func GetAll(ctx context.Context) ([]*models.Sample, error) {
+func GetAll(ctx context.Context, query string) ([]*models.Sample, error) {
 	sierraDb, err := sierradb.Load(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	sourceSamples, err := sierraDb.Client.SourceSample.Query().WithSource().WithSample().All(ctx)
+	q := sierraDb.Client.SourceSample.Query().
+		WithSource().
+		WithSample()
+
+	if query != "" {
+		q = q.Where(sourcesample.RelativePathContains(query))
+	}
+
+	sourceSamples, err := q.All(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -102,10 +111,19 @@ func Upsert(ctx context.Context, sha256Str string, sourceUri, fileUri *uri.URI) 
 		return err
 	}
 
+	splitPath := strings.SplitN(fileUri.String(), sourceUri.String(), 2)
+	if len(splitPath) != 2 {
+		return fmt.Errorf("invalid file uri, can't calculate relative path")
+	}
+	relativePath := strings.TrimPrefix(splitPath[1], "/")
+
 	err = sierraDb.Client.SourceSample.Create().
 		SetID(fileUri.String()).
 		SetSampleID(sha256Str).
 		SetSourceID(sourceUri.String()).
+		SetRelativePath(relativePath).
+		OnConflictColumns(sourcesample.FieldID).
+		UpdateNewValues().
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("could not create source sample: %w", err)

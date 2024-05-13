@@ -1019,6 +1019,7 @@ type SourceSampleMutation struct {
 	op            Op
 	typ           string
 	id            *string
+	relative_path *string
 	clearedFields map[string]struct{}
 	source        *string
 	clearedsource bool
@@ -1133,6 +1134,42 @@ func (m *SourceSampleMutation) IDs(ctx context.Context) ([]string, error) {
 	}
 }
 
+// SetRelativePath sets the "relative_path" field.
+func (m *SourceSampleMutation) SetRelativePath(s string) {
+	m.relative_path = &s
+}
+
+// RelativePath returns the value of the "relative_path" field in the mutation.
+func (m *SourceSampleMutation) RelativePath() (r string, exists bool) {
+	v := m.relative_path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRelativePath returns the old "relative_path" field's value of the SourceSample entity.
+// If the SourceSample object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SourceSampleMutation) OldRelativePath(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRelativePath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRelativePath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRelativePath: %w", err)
+	}
+	return oldValue.RelativePath, nil
+}
+
+// ResetRelativePath resets all changes to the "relative_path" field.
+func (m *SourceSampleMutation) ResetRelativePath() {
+	m.relative_path = nil
+}
+
 // SetSourceID sets the "source" edge to the Source entity by id.
 func (m *SourceSampleMutation) SetSourceID(id string) {
 	m.source = &id
@@ -1245,7 +1282,10 @@ func (m *SourceSampleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SourceSampleMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 1)
+	if m.relative_path != nil {
+		fields = append(fields, sourcesample.FieldRelativePath)
+	}
 	return fields
 }
 
@@ -1253,6 +1293,10 @@ func (m *SourceSampleMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *SourceSampleMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case sourcesample.FieldRelativePath:
+		return m.RelativePath()
+	}
 	return nil, false
 }
 
@@ -1260,6 +1304,10 @@ func (m *SourceSampleMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *SourceSampleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case sourcesample.FieldRelativePath:
+		return m.OldRelativePath(ctx)
+	}
 	return nil, fmt.Errorf("unknown SourceSample field %s", name)
 }
 
@@ -1268,6 +1316,13 @@ func (m *SourceSampleMutation) OldField(ctx context.Context, name string) (ent.V
 // type.
 func (m *SourceSampleMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case sourcesample.FieldRelativePath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRelativePath(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SourceSample field %s", name)
 }
@@ -1289,6 +1344,8 @@ func (m *SourceSampleMutation) AddedField(name string) (ent.Value, bool) {
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *SourceSampleMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown SourceSample numeric field %s", name)
 }
 
@@ -1314,6 +1371,11 @@ func (m *SourceSampleMutation) ClearField(name string) error {
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *SourceSampleMutation) ResetField(name string) error {
+	switch name {
+	case sourcesample.FieldRelativePath:
+		m.ResetRelativePath()
+		return nil
+	}
 	return fmt.Errorf("unknown SourceSample field %s", name)
 }
 

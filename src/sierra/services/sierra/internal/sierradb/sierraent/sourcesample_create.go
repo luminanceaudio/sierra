@@ -24,6 +24,12 @@ type SourceSampleCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetRelativePath sets the "relative_path" field.
+func (ssc *SourceSampleCreate) SetRelativePath(s string) *SourceSampleCreate {
+	ssc.mutation.SetRelativePath(s)
+	return ssc
+}
+
 // SetID sets the "id" field.
 func (ssc *SourceSampleCreate) SetID(s string) *SourceSampleCreate {
 	ssc.mutation.SetID(s)
@@ -102,6 +108,9 @@ func (ssc *SourceSampleCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ssc *SourceSampleCreate) check() error {
+	if _, ok := ssc.mutation.RelativePath(); !ok {
+		return &ValidationError{Name: "relative_path", err: errors.New(`sierraent: missing required field "SourceSample.relative_path"`)}
+	}
 	return nil
 }
 
@@ -137,6 +146,10 @@ func (ssc *SourceSampleCreate) createSpec() (*SourceSample, *sqlgraph.CreateSpec
 	if id, ok := ssc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := ssc.mutation.RelativePath(); ok {
+		_spec.SetField(sourcesample.FieldRelativePath, field.TypeString, value)
+		_node.RelativePath = value
 	}
 	if nodes := ssc.mutation.SourceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -179,11 +192,17 @@ func (ssc *SourceSampleCreate) createSpec() (*SourceSample, *sqlgraph.CreateSpec
 // of the `INSERT` statement. For example:
 //
 //	client.SourceSample.Create().
+//		SetRelativePath(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SourceSampleUpsert) {
+//			SetRelativePath(v+v).
+//		}).
 //		Exec(ctx)
 func (ssc *SourceSampleCreate) OnConflict(opts ...sql.ConflictOption) *SourceSampleUpsertOne {
 	ssc.conflict = opts
@@ -234,6 +253,9 @@ func (u *SourceSampleUpsertOne) UpdateNewValues() *SourceSampleUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(sourcesample.FieldID)
+		}
+		if _, exists := u.create.mutation.RelativePath(); exists {
+			s.SetIgnore(sourcesample.FieldRelativePath)
 		}
 	}))
 	return u
@@ -398,6 +420,11 @@ func (sscb *SourceSampleCreateBulk) ExecX(ctx context.Context) {
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.SourceSampleUpsert) {
+//			SetRelativePath(v+v).
+//		}).
 //		Exec(ctx)
 func (sscb *SourceSampleCreateBulk) OnConflict(opts ...sql.ConflictOption) *SourceSampleUpsertBulk {
 	sscb.conflict = opts
@@ -442,6 +469,9 @@ func (u *SourceSampleUpsertBulk) UpdateNewValues() *SourceSampleUpsertBulk {
 		for _, b := range u.create.builders {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(sourcesample.FieldID)
+			}
+			if _, exists := b.mutation.RelativePath(); exists {
+				s.SetIgnore(sourcesample.FieldRelativePath)
 			}
 		}
 	}))

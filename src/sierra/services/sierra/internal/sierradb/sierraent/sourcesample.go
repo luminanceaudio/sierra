@@ -15,9 +15,11 @@ import (
 
 // SourceSample is the model entity for the SourceSample schema.
 type SourceSample struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// RelativePath holds the value of the "relative_path" field.
+	RelativePath string `json:"relative_path,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SourceSampleQuery when eager-loading is set.
 	Edges        SourceSampleEdges `json:"edges"`
@@ -64,7 +66,7 @@ func (*SourceSample) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case sourcesample.FieldID:
+		case sourcesample.FieldID, sourcesample.FieldRelativePath:
 			values[i] = new(sql.NullString)
 		case sourcesample.ForeignKeys[0]: // source
 			values[i] = new(sql.NullString)
@@ -90,6 +92,12 @@ func (ss *SourceSample) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				ss.ID = value.String
+			}
+		case sourcesample.FieldRelativePath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field relative_path", values[i])
+			} else if value.Valid {
+				ss.RelativePath = value.String
 			}
 		case sourcesample.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -150,7 +158,9 @@ func (ss *SourceSample) Unwrap() *SourceSample {
 func (ss *SourceSample) String() string {
 	var builder strings.Builder
 	builder.WriteString("SourceSample(")
-	builder.WriteString(fmt.Sprintf("id=%v", ss.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", ss.ID))
+	builder.WriteString("relative_path=")
+	builder.WriteString(ss.RelativePath)
 	builder.WriteByte(')')
 	return builder.String()
 }
