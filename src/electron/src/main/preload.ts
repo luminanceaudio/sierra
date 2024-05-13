@@ -25,6 +25,9 @@ const electronHandler = {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
   },
+  startDrag: (fileUri: string) => {
+    ipcRenderer.send('ondragstart', fileUri);
+  },
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
