@@ -51,6 +51,20 @@ func (sc *SampleCreate) SetNillableLength(i *int64) *SampleCreate {
 	return sc
 }
 
+// SetWaveformStoragePath sets the "waveform_storage_path" field.
+func (sc *SampleCreate) SetWaveformStoragePath(s string) *SampleCreate {
+	sc.mutation.SetWaveformStoragePath(s)
+	return sc
+}
+
+// SetNillableWaveformStoragePath sets the "waveform_storage_path" field if the given value is not nil.
+func (sc *SampleCreate) SetNillableWaveformStoragePath(s *string) *SampleCreate {
+	if s != nil {
+		sc.SetWaveformStoragePath(*s)
+	}
+	return sc
+}
+
 // SetID sets the "id" field.
 func (sc *SampleCreate) SetID(s string) *SampleCreate {
 	sc.mutation.SetID(s)
@@ -149,6 +163,10 @@ func (sc *SampleCreate) createSpec() (*Sample, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Length(); ok {
 		_spec.SetField(sample.FieldLength, field.TypeInt64, value)
 		_node.Length = value
+	}
+	if value, ok := sc.mutation.WaveformStoragePath(); ok {
+		_spec.SetField(sample.FieldWaveformStoragePath, field.TypeString, value)
+		_node.WaveformStoragePath = value
 	}
 	if nodes := sc.mutation.SourceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -260,6 +278,24 @@ func (u *SampleUpsert) ClearLength() *SampleUpsert {
 	return u
 }
 
+// SetWaveformStoragePath sets the "waveform_storage_path" field.
+func (u *SampleUpsert) SetWaveformStoragePath(v string) *SampleUpsert {
+	u.Set(sample.FieldWaveformStoragePath, v)
+	return u
+}
+
+// UpdateWaveformStoragePath sets the "waveform_storage_path" field to the value that was provided on create.
+func (u *SampleUpsert) UpdateWaveformStoragePath() *SampleUpsert {
+	u.SetExcluded(sample.FieldWaveformStoragePath)
+	return u
+}
+
+// ClearWaveformStoragePath clears the value of the "waveform_storage_path" field.
+func (u *SampleUpsert) ClearWaveformStoragePath() *SampleUpsert {
+	u.SetNull(sample.FieldWaveformStoragePath)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -354,6 +390,27 @@ func (u *SampleUpsertOne) UpdateLength() *SampleUpsertOne {
 func (u *SampleUpsertOne) ClearLength() *SampleUpsertOne {
 	return u.Update(func(s *SampleUpsert) {
 		s.ClearLength()
+	})
+}
+
+// SetWaveformStoragePath sets the "waveform_storage_path" field.
+func (u *SampleUpsertOne) SetWaveformStoragePath(v string) *SampleUpsertOne {
+	return u.Update(func(s *SampleUpsert) {
+		s.SetWaveformStoragePath(v)
+	})
+}
+
+// UpdateWaveformStoragePath sets the "waveform_storage_path" field to the value that was provided on create.
+func (u *SampleUpsertOne) UpdateWaveformStoragePath() *SampleUpsertOne {
+	return u.Update(func(s *SampleUpsert) {
+		s.UpdateWaveformStoragePath()
+	})
+}
+
+// ClearWaveformStoragePath clears the value of the "waveform_storage_path" field.
+func (u *SampleUpsertOne) ClearWaveformStoragePath() *SampleUpsertOne {
+	return u.Update(func(s *SampleUpsert) {
+		s.ClearWaveformStoragePath()
 	})
 }
 
@@ -617,6 +674,27 @@ func (u *SampleUpsertBulk) UpdateLength() *SampleUpsertBulk {
 func (u *SampleUpsertBulk) ClearLength() *SampleUpsertBulk {
 	return u.Update(func(s *SampleUpsert) {
 		s.ClearLength()
+	})
+}
+
+// SetWaveformStoragePath sets the "waveform_storage_path" field.
+func (u *SampleUpsertBulk) SetWaveformStoragePath(v string) *SampleUpsertBulk {
+	return u.Update(func(s *SampleUpsert) {
+		s.SetWaveformStoragePath(v)
+	})
+}
+
+// UpdateWaveformStoragePath sets the "waveform_storage_path" field to the value that was provided on create.
+func (u *SampleUpsertBulk) UpdateWaveformStoragePath() *SampleUpsertBulk {
+	return u.Update(func(s *SampleUpsert) {
+		s.UpdateWaveformStoragePath()
+	})
+}
+
+// ClearWaveformStoragePath clears the value of the "waveform_storage_path" field.
+func (u *SampleUpsertBulk) ClearWaveformStoragePath() *SampleUpsertBulk {
+	return u.Update(func(s *SampleUpsert) {
+		s.ClearWaveformStoragePath()
 	})
 }
 

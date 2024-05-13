@@ -106,6 +106,8 @@ func Upsert(ctx context.Context, sha256Str string, sourceUri, fileUri *uri.URI) 
 		SetID(fileUri.String()).
 		SetSampleID(sha256Str).
 		SetSourceID(sourceUri.String()).
+		OnConflictColumns(sourcesample.FieldID).
+		UpdateNewValues().
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("could not create source sample: %w", err)

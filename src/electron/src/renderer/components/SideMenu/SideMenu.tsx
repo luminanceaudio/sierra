@@ -13,7 +13,15 @@ function SideMenu() {
         borderRight: '1px solid #f1f1f1',
       }}
     >
-      <div style={{ padding: 20, paddingTop: 35, flex: 1 }}>
+      <div
+        style={{
+          padding: 20,
+          paddingTop: 35,
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Title style={{ marginBottom: 50 }}>
           <TextGradient>Sierra</TextGradient>
         </Title>

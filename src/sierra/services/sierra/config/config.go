@@ -3,7 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
-	"sierra/common/appdir"
+	"path/filepath"
+	"sierra/common/pathfinder"
 )
 
 func GetAppName() string {
@@ -12,19 +13,31 @@ func GetAppName() string {
 
 // GetAppDataDir gets the application dir for Sierra
 func GetAppDataDir() (string, error) {
-	return appdir.GetApplicationDataDirForApp(GetAppName())
+	return pathfinder.GetApplicationDataDirForApp(GetAppName())
 }
 
-func CreateAppDataDir() error {
-	appDataDir, err := GetAppDataDir()
+func CreateAppDataDir() (string, error) {
+	return createAppDataDirEx("")
+}
+
+func CreateAppImageCacheDir() (string, error) {
+	return createAppDataDirEx("cache/images")
+}
+
+func createAppDataDirEx(innerDirs string) (string, error) {
+	dir, err := GetAppDataDir()
 	if err != nil {
-		return fmt.Errorf("could not get appdata dir: %s", err)
+		return "", fmt.Errorf("could not get appdata dir: %s", err)
 	}
 
-	err = os.Mkdir(appDataDir, 0755)
+	if innerDirs != "" {
+		dir = filepath.Join(dir, innerDirs)
+	}
+
+	err = os.MkdirAll(dir, 0755)
 	if err != nil && !os.IsExist(err) {
-		return fmt.Errorf("failed to create app data directory '%s': %w", appDataDir, err)
+		return "", fmt.Errorf("failed to create directory '%s': %w", dir, err)
 	}
 
-	return nil
+	return dir, nil
 }

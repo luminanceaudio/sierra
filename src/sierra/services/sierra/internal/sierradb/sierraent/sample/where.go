@@ -74,6 +74,11 @@ func Length(v int64) predicate.Sample {
 	return predicate.Sample(sql.FieldEQ(FieldLength, v))
 }
 
+// WaveformStoragePath applies equality check predicate on the "waveform_storage_path" field. It's identical to WaveformStoragePathEQ.
+func WaveformStoragePath(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldEQ(FieldWaveformStoragePath, v))
+}
+
 // FormatEQ applies the EQ predicate on the "format" field.
 func FormatEQ(v string) predicate.Sample {
 	return predicate.Sample(sql.FieldEQ(FieldFormat, v))
@@ -197,6 +202,81 @@ func LengthIsNil() predicate.Sample {
 // LengthNotNil applies the NotNil predicate on the "length" field.
 func LengthNotNil() predicate.Sample {
 	return predicate.Sample(sql.FieldNotNull(FieldLength))
+}
+
+// WaveformStoragePathEQ applies the EQ predicate on the "waveform_storage_path" field.
+func WaveformStoragePathEQ(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldEQ(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathNEQ applies the NEQ predicate on the "waveform_storage_path" field.
+func WaveformStoragePathNEQ(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldNEQ(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathIn applies the In predicate on the "waveform_storage_path" field.
+func WaveformStoragePathIn(vs ...string) predicate.Sample {
+	return predicate.Sample(sql.FieldIn(FieldWaveformStoragePath, vs...))
+}
+
+// WaveformStoragePathNotIn applies the NotIn predicate on the "waveform_storage_path" field.
+func WaveformStoragePathNotIn(vs ...string) predicate.Sample {
+	return predicate.Sample(sql.FieldNotIn(FieldWaveformStoragePath, vs...))
+}
+
+// WaveformStoragePathGT applies the GT predicate on the "waveform_storage_path" field.
+func WaveformStoragePathGT(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldGT(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathGTE applies the GTE predicate on the "waveform_storage_path" field.
+func WaveformStoragePathGTE(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldGTE(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathLT applies the LT predicate on the "waveform_storage_path" field.
+func WaveformStoragePathLT(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldLT(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathLTE applies the LTE predicate on the "waveform_storage_path" field.
+func WaveformStoragePathLTE(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldLTE(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathContains applies the Contains predicate on the "waveform_storage_path" field.
+func WaveformStoragePathContains(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldContains(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathHasPrefix applies the HasPrefix predicate on the "waveform_storage_path" field.
+func WaveformStoragePathHasPrefix(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldHasPrefix(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathHasSuffix applies the HasSuffix predicate on the "waveform_storage_path" field.
+func WaveformStoragePathHasSuffix(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldHasSuffix(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathIsNil applies the IsNil predicate on the "waveform_storage_path" field.
+func WaveformStoragePathIsNil() predicate.Sample {
+	return predicate.Sample(sql.FieldIsNull(FieldWaveformStoragePath))
+}
+
+// WaveformStoragePathNotNil applies the NotNil predicate on the "waveform_storage_path" field.
+func WaveformStoragePathNotNil() predicate.Sample {
+	return predicate.Sample(sql.FieldNotNull(FieldWaveformStoragePath))
+}
+
+// WaveformStoragePathEqualFold applies the EqualFold predicate on the "waveform_storage_path" field.
+func WaveformStoragePathEqualFold(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldEqualFold(FieldWaveformStoragePath, v))
+}
+
+// WaveformStoragePathContainsFold applies the ContainsFold predicate on the "waveform_storage_path" field.
+func WaveformStoragePathContainsFold(v string) predicate.Sample {
+	return predicate.Sample(sql.FieldContainsFold(FieldWaveformStoragePath, v))
 }
 
 // HasSource applies the HasEdge predicate on the "source" edge.

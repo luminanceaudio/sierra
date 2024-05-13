@@ -16,6 +16,8 @@ const (
 	FieldFormat = "format"
 	// FieldLength holds the string denoting the length field in the database.
 	FieldLength = "length"
+	// FieldWaveformStoragePath holds the string denoting the waveform_storage_path field in the database.
+	FieldWaveformStoragePath = "waveform_storage_path"
 	// EdgeSource holds the string denoting the source edge name in mutations.
 	EdgeSource = "source"
 	// SourceSampleFieldID holds the string denoting the ID field of the SourceSample.
@@ -36,6 +38,7 @@ var Columns = []string{
 	FieldID,
 	FieldFormat,
 	FieldLength,
+	FieldWaveformStoragePath,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -64,6 +67,11 @@ func ByFormat(opts ...sql.OrderTermOption) OrderOption {
 // ByLength orders the results by the length field.
 func ByLength(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLength, opts...).ToFunc()
+}
+
+// ByWaveformStoragePath orders the results by the waveform_storage_path field.
+func ByWaveformStoragePath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWaveformStoragePath, opts...).ToFunc()
 }
 
 // BySourceCount orders the results by source count.

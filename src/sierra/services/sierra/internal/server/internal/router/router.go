@@ -24,6 +24,7 @@ func ListenAndServe(ctx context.Context) error {
 
 	api.RouteGET(router, api.Public, "/api/v1/app/sample", samples.GetSamples)
 	api.RouteGET(router, api.Public, "/api/v1/app/sample/load/*uri", audio.Load)
+	api.RouteGET(router, api.Public, "/api/v1/app/sample/waveform/*uri", audio.GetWaveform)
 
 	logrus.WithField("port", config.InternalIngressPort).Info("Starting HTTP server")
 	return router.ListenAndServe(":" + config.InternalIngressPort)

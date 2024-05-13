@@ -34,19 +34,20 @@ const (
 // SampleMutation represents an operation that mutates the Sample nodes in the graph.
 type SampleMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	format        *string
-	length        *int64
-	addlength     *int64
-	clearedFields map[string]struct{}
-	source        map[string]struct{}
-	removedsource map[string]struct{}
-	clearedsource bool
-	done          bool
-	oldValue      func(context.Context) (*Sample, error)
-	predicates    []predicate.Sample
+	op                    Op
+	typ                   string
+	id                    *string
+	format                *string
+	length                *int64
+	addlength             *int64
+	waveform_storage_path *string
+	clearedFields         map[string]struct{}
+	source                map[string]struct{}
+	removedsource         map[string]struct{}
+	clearedsource         bool
+	done                  bool
+	oldValue              func(context.Context) (*Sample, error)
+	predicates            []predicate.Sample
 }
 
 var _ ent.Mutation = (*SampleMutation)(nil)
@@ -272,6 +273,55 @@ func (m *SampleMutation) ResetLength() {
 	delete(m.clearedFields, sample.FieldLength)
 }
 
+// SetWaveformStoragePath sets the "waveform_storage_path" field.
+func (m *SampleMutation) SetWaveformStoragePath(s string) {
+	m.waveform_storage_path = &s
+}
+
+// WaveformStoragePath returns the value of the "waveform_storage_path" field in the mutation.
+func (m *SampleMutation) WaveformStoragePath() (r string, exists bool) {
+	v := m.waveform_storage_path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWaveformStoragePath returns the old "waveform_storage_path" field's value of the Sample entity.
+// If the Sample object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SampleMutation) OldWaveformStoragePath(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWaveformStoragePath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWaveformStoragePath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWaveformStoragePath: %w", err)
+	}
+	return oldValue.WaveformStoragePath, nil
+}
+
+// ClearWaveformStoragePath clears the value of the "waveform_storage_path" field.
+func (m *SampleMutation) ClearWaveformStoragePath() {
+	m.waveform_storage_path = nil
+	m.clearedFields[sample.FieldWaveformStoragePath] = struct{}{}
+}
+
+// WaveformStoragePathCleared returns if the "waveform_storage_path" field was cleared in this mutation.
+func (m *SampleMutation) WaveformStoragePathCleared() bool {
+	_, ok := m.clearedFields[sample.FieldWaveformStoragePath]
+	return ok
+}
+
+// ResetWaveformStoragePath resets all changes to the "waveform_storage_path" field.
+func (m *SampleMutation) ResetWaveformStoragePath() {
+	m.waveform_storage_path = nil
+	delete(m.clearedFields, sample.FieldWaveformStoragePath)
+}
+
 // AddSourceIDs adds the "source" edge to the SourceSample entity by ids.
 func (m *SampleMutation) AddSourceIDs(ids ...string) {
 	if m.source == nil {
@@ -360,12 +410,15 @@ func (m *SampleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SampleMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 3)
 	if m.format != nil {
 		fields = append(fields, sample.FieldFormat)
 	}
 	if m.length != nil {
 		fields = append(fields, sample.FieldLength)
+	}
+	if m.waveform_storage_path != nil {
+		fields = append(fields, sample.FieldWaveformStoragePath)
 	}
 	return fields
 }
@@ -379,6 +432,8 @@ func (m *SampleMutation) Field(name string) (ent.Value, bool) {
 		return m.Format()
 	case sample.FieldLength:
 		return m.Length()
+	case sample.FieldWaveformStoragePath:
+		return m.WaveformStoragePath()
 	}
 	return nil, false
 }
@@ -392,6 +447,8 @@ func (m *SampleMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldFormat(ctx)
 	case sample.FieldLength:
 		return m.OldLength(ctx)
+	case sample.FieldWaveformStoragePath:
+		return m.OldWaveformStoragePath(ctx)
 	}
 	return nil, fmt.Errorf("unknown Sample field %s", name)
 }
@@ -414,6 +471,13 @@ func (m *SampleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLength(v)
+		return nil
+	case sample.FieldWaveformStoragePath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWaveformStoragePath(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Sample field %s", name)
@@ -466,6 +530,9 @@ func (m *SampleMutation) ClearedFields() []string {
 	if m.FieldCleared(sample.FieldLength) {
 		fields = append(fields, sample.FieldLength)
 	}
+	if m.FieldCleared(sample.FieldWaveformStoragePath) {
+		fields = append(fields, sample.FieldWaveformStoragePath)
+	}
 	return fields
 }
 
@@ -486,6 +553,9 @@ func (m *SampleMutation) ClearField(name string) error {
 	case sample.FieldLength:
 		m.ClearLength()
 		return nil
+	case sample.FieldWaveformStoragePath:
+		m.ClearWaveformStoragePath()
+		return nil
 	}
 	return fmt.Errorf("unknown Sample nullable field %s", name)
 }
@@ -499,6 +569,9 @@ func (m *SampleMutation) ResetField(name string) error {
 		return nil
 	case sample.FieldLength:
 		m.ResetLength()
+		return nil
+	case sample.FieldWaveformStoragePath:
+		m.ResetWaveformStoragePath()
 		return nil
 	}
 	return fmt.Errorf("unknown Sample field %s", name)
