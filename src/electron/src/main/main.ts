@@ -47,12 +47,11 @@ ipcMain.on('app-provider.save-state', async (event, data) => {
 });
 
 ipcMain.on('ondragstart', (event, fileUri: string) => {
-  console.log('ondragstart', fileUri);
+  // NOTE: If fileUri is not valid this might crash. Try catching doesn't help here.
   event.sender.startDrag({
     file: fileUri.split('://', 2)[1],
     icon: iconName,
   });
-  console.log('ondragstart end', fileUri);
 });
 
 if (process.env.NODE_ENV === 'production') {
