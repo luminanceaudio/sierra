@@ -12,7 +12,7 @@ import {
   UseMutationOptions as RQUseMutationOptions,
   useQueryClient,
 } from '@tanstack/react-query';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -115,4 +115,9 @@ export function useMutation<TRequest, TResponse>(
         await options?.onSettled(data, error, variables, context);
     },
   });
+}
+
+export function getErrorMessage(error: any): string {
+  const err = error as AxiosError<{ message: string }, any>;
+  return err.response?.data.message || err.message;
 }

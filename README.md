@@ -18,7 +18,7 @@ go generate ./...
 
 ```
 cd src/electron
-npm start
+npm run build:server && npm start
 ```
 
 ## Useful commands

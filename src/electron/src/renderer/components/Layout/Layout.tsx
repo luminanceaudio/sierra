@@ -25,6 +25,8 @@ function Layout({ title, children }: LayoutProps) {
             display: 'flex',
             flex: 1,
             flexDirection: 'column',
+            maxHeight: '100vh',
+            overflow: 'auto',
           }}
         >
           <Header title={title} />
@@ -32,7 +34,8 @@ function Layout({ title, children }: LayoutProps) {
             style={{
               display: 'flex',
               flex: 1,
-              position: 'relative',
+              paddingTop: 95,
+              justifyContent: 'center',
             }}
           >
             {children}

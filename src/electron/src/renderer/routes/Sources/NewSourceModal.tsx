@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import path from 'path';
-import { AxiosError } from 'axios';
 import Modal from '../../components/Modal/Modal';
 import RadioGroup from '../../components/RadioGroup/RadioGroup';
 import RadioItem from '../../components/RadioGroup/RadioItem';
 import Button from '../../components/Button/Button';
 import { useCreateSource } from '../../../api/sources';
 import { CreateSourceRequest } from '../../../proto/app/apprequests';
+import { getErrorMessage } from '../../../api/reactquery';
 
 type NewSourceModalProps = {
   isOpen: boolean;
@@ -21,8 +21,7 @@ function NewSourceModal({ isOpen, onClose }: NewSourceModalProps) {
 
   useEffect(() => {
     if (error) {
-      const err = error as AxiosError<{ message: string }, any>;
-      setErrorMessage(err.response?.data.message || err.message);
+      setErrorMessage(getErrorMessage(error));
       return;
     }
 
@@ -64,7 +63,7 @@ function NewSourceModal({ isOpen, onClose }: NewSourceModalProps) {
         >
           <span
             style={{
-              color: '#eb4034',
+              color: '#cf1212',
               fontSize: 13,
               height: 15,
             }}

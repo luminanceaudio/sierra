@@ -1,9 +1,13 @@
 import path from 'path';
-import { FolderIcon } from '@heroicons/react/24/outline';
+import { FolderIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { FolderPlusIcon } from '@heroicons/react/24/solid';
 import React, { useState } from 'react';
 import Clickable from '../../components/Clickable/Clickable';
 import NewSourceModal from './NewSourceModal';
+import IconButton from '../../components/IconButton/IconButton';
+import { useDeleteSource } from '../../../api/sources';
+import { DeleteSourceRequest } from '../../../proto/app/apprequests';
+import Toast from '../../components/Toast/Toast';
 
 type SourceBaseProps = {
   render: React.ReactNode;
@@ -11,8 +15,7 @@ type SourceBaseProps = {
 
 function SourceBase({ render }: SourceBaseProps) {
   return (
-    <Clickable
-      onClick={() => {}}
+    <div
       style={{
         display: 'flex',
         gap: 10,
@@ -20,11 +23,11 @@ function SourceBase({ render }: SourceBaseProps) {
         padding: 15,
         border: '1px solid #e6e6e6',
         borderRadius: 10,
-        width: '100%',
+        cursor: 'default',
       }}
     >
       {render}
-    </Clickable>
+    </div>
   );
 }
 
@@ -33,34 +36,53 @@ export type SourceProps = {
 };
 
 export function Source({ uri }: SourceProps) {
+  const { mutate: deleteSource, error, isPending } = useDeleteSource();
+
   return (
     <SourceBase
       render={
-        <>
-          <div
-            style={{
-              width: 20,
-              padding: '10px 10px',
-              backgroundColor: '#f1f1f1',
-              borderRadius: 7,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <FolderIcon width="100%" />
-          </div>
+        <div
+          style={{ display: 'flex', flex: 1, gap: 10, alignItems: 'center' }}
+        >
+          <Toast error={error} />
+          <IconButton>
+            <FolderIcon width={20} />
+          </IconButton>
           <div
             style={{
               display: 'flex',
+              flex: 1,
               flexDirection: 'column',
               gap: 4,
             }}
           >
             <div style={{ fontSize: 17 }}>{path.basename(uri)}</div>
-            <span style={{ color: '#a1a1a1', fontSize: 12 }}>{uri}</span>
+            <span
+              style={{
+                color: '#a1a1a1',
+                fontSize: 12,
+                width: '100%',
+                textOverflow: 'clip',
+              }}
+            >
+              {uri}
+            </span>
           </div>
-        </>
+          <IconButton
+            type="secondary"
+            style={{ border: 'none' }}
+            onClick={() =>
+              deleteSource(
+                DeleteSourceRequest.create({
+                  uri,
+                }),
+              )
+            }
+            disabled={isPending}
+          >
+            <TrashIcon width={20} style={{ color: '#cf1212' }} />
+          </IconButton>
+        </div>
       }
     />
   );
@@ -84,9 +106,11 @@ export function SourceNew() {
         onClick={() => setOpen(true)}
       >
         <FolderPlusIcon width="20" />
-        <div style={{ fontSize: 16 }}>Add source</div>
+        <div style={{ fontSize: 15 }}>Add source</div>
       </Clickable>
-      <NewSourceModal isOpen={isOpen} onClose={() => setOpen(false)} />
+      {isOpen && (
+        <NewSourceModal isOpen={isOpen} onClose={() => setOpen(false)} />
+      )}
     </div>
   );
 }

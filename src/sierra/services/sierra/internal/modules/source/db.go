@@ -95,3 +95,17 @@ func Create(ctx context.Context, uri *uri.URI) error {
 
 	return nil
 }
+
+func Delete(ctx context.Context, uri *uri.URI) error {
+	sierraDb, err := sierradb.Load(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = sierraDb.Client.Source.DeleteOneID(uri.String()).Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("could not create sample file: %w", err)
+	}
+
+	return nil
+}
