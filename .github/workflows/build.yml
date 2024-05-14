@@ -3,7 +3,7 @@ name: Build/release
 on: push
 
 jobs:
-  nogogenerate:
+  gogenerate:
     name: "Go generate check"
     runs-on: ubuntu-latest
     env:
@@ -14,7 +14,6 @@ jobs:
 
       - name: Run go generate
         run: |
-          sudo apt install protobuf-compiler
           go generate ./...
 
       - name: Check for uncommitted changes and untracked files
@@ -40,7 +39,7 @@ jobs:
           args: ./...
 
   release:
-    needs: [nogogenerate, gosec]
+    needs: [gogenerate, gosec]
     runs-on: ${{ matrix.os }}
 
     strategy:
