@@ -60,9 +60,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          
+      
       - name: Determine version for package.json
-        run: 'echo "SIERRA_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV'
+        run: echo "SIERRA_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
 
       - name: Package Electron app
         run: |
@@ -87,7 +87,7 @@ jobs:
         
     steps:
       - name: "Determine tag"
-        run: 'echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV'
+        run: echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Download build artifacts
         uses: actions/download-artifact@v2
