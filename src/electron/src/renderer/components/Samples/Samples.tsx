@@ -1,21 +1,30 @@
 import React, { useEffect } from 'react';
-import { useSamples } from '../../../api/samples';
+import { useSamples, useSamplesCount } from '../../../api/samples';
 import Search from '../Search/Search';
 import Sample from './Sample';
+import Paginate from '../Paginate/Paginate';
+
+const pageSize = 8;
 
 function Samples(): React.ReactElement {
   const [search, setSearch] = React.useState('');
-  const { data: samples, isLoading, refetch } = useSamples(search);
+  const [page, setPage] = React.useState(1);
+  const {
+    data: samples,
+    isLoading,
+    refetch,
+  } = useSamples(search, page, pageSize);
+  const { data: totalCount } = useSamplesCount(search);
 
   useEffect(() => {
     (async () => {
       await refetch();
     })();
-  }, [refetch, search]);
+  }, [refetch, search, page]);
 
-  if (isLoading) {
-    return <div />;
-  }
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
 
   return (
     <div
@@ -45,9 +54,18 @@ function Samples(): React.ReactElement {
             gap: 15,
           }}
         >
-          {samples?.data?.samples?.map((sample) => {
-            return <Sample key={sample.uri} sample={sample} />;
-          })}
+          {isLoading
+            ? ''
+            : samples?.data?.samples?.map((sample) => {
+                return <Sample key={sample.uri} sample={sample} />;
+              })}
+
+          <Paginate
+            page={page}
+            onChangePage={setPage}
+            totalItems={totalCount?.data?.count}
+            pageSize={pageSize}
+          />
         </div>
       </div>
     </div>

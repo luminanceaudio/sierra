@@ -23,8 +23,12 @@ func ListenAndServe(ctx context.Context) error {
 	api.RoutePOST(router, api.Public, "/api/v1/app/source/delete", sources.DeleteSource)
 
 	// Samples
-	api.RouteGET(router, api.Public, "/api/v1/app/sample/search", samples.SearchSamples)
-	api.RouteGET(router, api.Public, "/api/v1/app/sample/search/:query", samples.SearchSamples)
+	api.RouteGET(router, api.Public, "/api/v1/app/sample/search/paginated/:page", samples.SearchSamples)
+	api.RouteGET(router, api.Public, "/api/v1/app/sample/search/paginated/:page/:query", samples.SearchSamples)
+
+	api.RouteGET(router, api.Public, "/api/v1/app/sample/search/count", samples.GetSamplesCount)
+	api.RouteGET(router, api.Public, "/api/v1/app/sample/search/count/:query", samples.GetSamplesCount)
+
 	api.RouteGET(router, api.Public, "/api/v1/app/sample/load/*uri", audio.Load)
 
 	logrus.WithField("port", config.InternalIngressPort).Info("Starting HTTP server")
