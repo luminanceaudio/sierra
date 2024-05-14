@@ -9,6 +9,10 @@ message GetSamplesResponse {
   repeated Sample samples = 1;
 }
 
+message GetSamplesCountResponse {
+  int64 count = 1;
+}
+
 message GetSourcesResponse {
   repeated Source sources = 1;
 }

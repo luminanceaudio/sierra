@@ -8,6 +8,7 @@ import (
 	"sierra/common/uri"
 	"sierra/services/sierra/client/models"
 	"sierra/services/sierra/internal/sierradb"
+	"sierra/services/sierra/internal/sierradb/sierraent"
 	sample2 "sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"sierra/services/sierra/internal/sierradb/sierraent/source"
 	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
@@ -29,14 +30,7 @@ func Get(ctx context.Context, uri *uri.URI) (*models.Sample, error) {
 		return nil, err
 	}
 
-	sample := models.NewSample(
-		sourceSample.ID,
-		sourceSample.Edges.Sample.ID,
-		sourceSample.Edges.Sample.Format,
-		sourceSample.Edges.Source.ID,
-	)
-
-	return sample, nil
+	return translateSample(sourceSample), nil
 }
 
 func GetBySampleSha256(ctx context.Context, sha256 sha256.Sha256) (*models.Sample, error) {
@@ -54,17 +48,10 @@ func GetBySampleSha256(ctx context.Context, sha256 sha256.Sha256) (*models.Sampl
 		return nil, err
 	}
 
-	sample := models.NewSample(
-		sourceSample.ID,
-		sourceSample.Edges.Sample.ID,
-		sourceSample.Edges.Sample.Format,
-		sourceSample.Edges.Source.ID,
-	)
-
-	return sample, nil
+	return translateSample(sourceSample), nil
 }
 
-func GetAll(ctx context.Context, query string) ([]*models.Sample, error) {
+func getAll(ctx context.Context, query string, page, size *int) (*sierraent.SourceSampleQuery, error) {
 	sierraDb, err := sierradb.Load(ctx)
 	if err != nil {
 		return nil, err
@@ -74,8 +61,29 @@ func GetAll(ctx context.Context, query string) ([]*models.Sample, error) {
 		WithSource().
 		WithSample()
 
+	if page != nil && size != nil {
+		if *page <= 0 {
+			return nil, fmt.Errorf("page must be a positive integer")
+		}
+
+		if *size <= 0 {
+			return nil, fmt.Errorf("size must be a positive integer")
+		}
+
+		q = q.Offset((*page - 1) * *size).Limit(*size)
+	}
+
 	if query != "" {
 		q = q.Where(sourcesample.RelativePathContains(query))
+	}
+
+	return q, nil
+}
+
+func Query(ctx context.Context, query string, page, size int) ([]*models.Sample, error) {
+	q, err := getAll(ctx, query, &page, &size)
+	if err != nil {
+		return nil, err
 	}
 
 	sourceSamples, err := q.All(ctx)
@@ -83,26 +91,21 @@ func GetAll(ctx context.Context, query string) ([]*models.Sample, error) {
 		return nil, err
 	}
 
-	var results []*models.Sample
-	for _, sample := range sourceSamples {
-		if sample.Edges.Source == nil {
-			logrus.Error("source is nil")
-			continue
-		}
+	return translateSamples(sourceSamples), nil
+}
 
-		if sample.Edges.Sample == nil {
-			logrus.Error("sample is nil")
-			continue
-		}
-
-		results = append(results, models.NewSample(
-			sample.ID,
-			sample.Edges.Sample.ID,
-			sample.Edges.Sample.Format,
-			sample.Edges.Source.ID,
-		))
+func QueryCount(ctx context.Context, query string) (int, error) {
+	q, err := getAll(ctx, query, nil, nil)
+	if err != nil {
+		return 0, err
 	}
-	return results, nil
+
+	count, err := q.Count(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 func Upsert(ctx context.Context, sha256Str string, sourceUri, fileUri *uri.URI) error {
