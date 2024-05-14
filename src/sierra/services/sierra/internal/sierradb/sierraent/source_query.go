@@ -7,13 +7,13 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"sierra/services/sierra/internal/sierradb/sierraent/predicate"
-	"sierra/services/sierra/internal/sierradb/sierraent/source"
-	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/predicate"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 )
 
 // SourceQuery is the builder for querying Source entities.

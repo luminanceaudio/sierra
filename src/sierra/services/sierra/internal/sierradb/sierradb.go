@@ -6,12 +6,12 @@ import (
 	"entgo.io/ent/dialect"
 	"fmt"
 	_ "github.com/golang-migrate/migrate/v4/database/sqlite3"
+	"github.com/luminanceaudio/sierra/src/sierra/common/database"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/config"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent"
 	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
-	"sierra/common/database"
-	"sierra/services/sierra/config"
-	"sierra/services/sierra/internal/sierradb/sierraent"
 )
 
 const (

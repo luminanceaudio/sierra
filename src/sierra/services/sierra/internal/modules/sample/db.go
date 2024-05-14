@@ -3,11 +3,11 @@ package sample
 import (
 	"context"
 	"fmt"
-	"sierra/common/sha256"
-	"sierra/services/sierra/internal/format"
-	"sierra/services/sierra/internal/sierradb"
-	"sierra/services/sierra/internal/sierradb/sierraent"
-	"sierra/services/sierra/internal/sierradb/sierraent/sample"
+	"github.com/luminanceaudio/sierra/src/sierra/common/sha256"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/format"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"strings"
 )
 

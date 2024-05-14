@@ -1,9 +1,9 @@
 package sourcesample
 
 import (
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/client/models"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent"
 	"github.com/sirupsen/logrus"
-	"sierra/services/sierra/client/models"
-	"sierra/services/sierra/internal/sierradb/sierraent"
 )
 
 func translateSample(sample *sierraent.SourceSample) *models.Sample {

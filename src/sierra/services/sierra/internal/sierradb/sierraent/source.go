@@ -4,12 +4,12 @@ package sierraent
 
 import (
 	"fmt"
-	"sierra/services/sierra/internal/sierradb/sierraent/source"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
 )
 
 // Source is the model entity for the Source schema.

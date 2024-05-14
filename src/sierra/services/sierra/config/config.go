@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
+	"github.com/luminanceaudio/sierra/src/sierra/common/appdir"
 	"os"
-	"sierra/common/appdir"
 )
 
 func GetAppName() string {

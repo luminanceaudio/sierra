@@ -2,8 +2,8 @@ package indexer
 
 import (
 	"context"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/source"
 	"github.com/sirupsen/logrus"
-	"sierra/services/sierra/internal/modules/source"
 	"time"
 )
 

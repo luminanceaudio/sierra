@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/jessevdk/go-flags"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/cli/index"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/cli/server"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/cli/source"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/config"
 	"os"
-	"sierra/services/sierra/cli/index"
-	"sierra/services/sierra/cli/server"
-	"sierra/services/sierra/cli/source"
-	"sierra/services/sierra/config"
 )
 
 var args struct {

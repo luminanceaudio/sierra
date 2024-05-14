@@ -1,4 +1,4 @@
-module sierra
+module github.com/luminanceaudio/sierra
 
 go 1.22.3
 

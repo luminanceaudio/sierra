@@ -3,9 +3,10 @@
 package sierraent
 
 import (
-	"sierra/services/sierra/internal/sierradb/schema"
-	"sierra/services/sierra/internal/sierradb/sierraent/source"
 	"time"
+
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/schema"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
 )
 
 // The init function reads all schema descriptors with runtime code

@@ -4,12 +4,12 @@ package sierraent
 
 import (
 	"context"
-	"sierra/services/sierra/internal/sierradb/sierraent/predicate"
-	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/predicate"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 )
 
 // SourceSampleDelete is the builder for deleting a SourceSample entity.

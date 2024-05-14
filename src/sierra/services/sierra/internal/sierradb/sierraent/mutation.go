@@ -6,15 +6,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sierra/services/sierra/internal/sierradb/sierraent/predicate"
-	"sierra/services/sierra/internal/sierradb/sierraent/sample"
-	"sierra/services/sierra/internal/sierradb/sierraent/source"
-	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 	"sync"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/predicate"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 )
 
 const (

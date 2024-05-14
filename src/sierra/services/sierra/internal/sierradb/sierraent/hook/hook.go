@@ -5,7 +5,8 @@ package hook
 import (
 	"context"
 	"fmt"
-	"sierra/services/sierra/internal/sierradb/sierraent"
+
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent"
 )
 
 // The SampleFunc type is an adapter to allow the use of ordinary

@@ -4,11 +4,11 @@ package sierraent
 
 import (
 	"fmt"
-	"sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
 )
 
 // Sample is the model entity for the Sample schema.

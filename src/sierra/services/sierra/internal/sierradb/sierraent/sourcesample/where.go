@@ -3,10 +3,9 @@
 package sourcesample
 
 import (
-	"sierra/services/sierra/internal/sierradb/sierraent/predicate"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/predicate"
 )
 
 // ID filters vertices based on their ID field.

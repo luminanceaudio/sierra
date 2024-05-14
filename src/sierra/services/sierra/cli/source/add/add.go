@@ -2,8 +2,8 @@ package add
 
 import (
 	"context"
-	"sierra/common/uri"
-	"sierra/services/sierra/internal/modules/source"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/source"
 )
 
 type Args struct {

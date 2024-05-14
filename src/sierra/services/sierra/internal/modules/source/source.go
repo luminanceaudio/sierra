@@ -2,9 +2,9 @@ package source
 
 import (
 	"fmt"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
 	"io/fs"
 	"os"
-	"sierra/common/uri"
 )
 
 type WalkFunc func(fileUri *uri.URI, info fs.FileInfo, err error) error

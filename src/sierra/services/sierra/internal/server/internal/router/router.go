@@ -2,13 +2,13 @@ package router
 
 import (
 	"context"
+	"github.com/luminanceaudio/sierra/src/sierra/common/api"
+	"github.com/luminanceaudio/sierra/src/sierra/common/config"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/server/internal/router/routes/audio"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/server/internal/router/routes/samples"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/server/internal/router/routes/shutdown"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/server/internal/router/routes/sources"
 	"github.com/sirupsen/logrus"
-	"sierra/common/api"
-	"sierra/common/config"
-	"sierra/services/sierra/internal/server/internal/router/routes/audio"
-	"sierra/services/sierra/internal/server/internal/router/routes/samples"
-	"sierra/services/sierra/internal/server/internal/router/routes/shutdown"
-	"sierra/services/sierra/internal/server/internal/router/routes/sources"
 )
 
 func ListenAndServe(ctx context.Context) error {

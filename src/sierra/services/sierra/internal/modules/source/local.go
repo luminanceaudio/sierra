@@ -2,10 +2,10 @@ package source
 
 import (
 	"fmt"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
 	"io/fs"
 	"os"
 	"path/filepath"
-	"sierra/common/uri"
 )
 
 type LocalSource struct {

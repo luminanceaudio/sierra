@@ -1,6 +1,6 @@
 package client
 
-import "sierra/common/api"
+import "github.com/luminanceaudio/sierra/src/sierra/common/api"
 
 func (c *Client) Shutdown() *api.Error {
 	_, err := api.SendRequest[any, any](c.c, "", "POST", "app/shutdown", nil)

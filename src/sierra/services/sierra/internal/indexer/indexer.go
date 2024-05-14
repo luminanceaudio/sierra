@@ -3,16 +3,16 @@ package indexer
 import (
 	"context"
 	"fmt"
+	"github.com/luminanceaudio/sierra/src/sierra/common/safemap"
+	"github.com/luminanceaudio/sierra/src/sierra/common/sha256"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/analyzers/format"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/sample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/source"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/sourcesample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb"
 	"github.com/sirupsen/logrus"
 	"io/fs"
-	"sierra/common/safemap"
-	"sierra/common/sha256"
-	"sierra/common/uri"
-	"sierra/services/sierra/internal/analyzers/format"
-	"sierra/services/sierra/internal/modules/sample"
-	"sierra/services/sierra/internal/modules/source"
-	"sierra/services/sierra/internal/modules/sourcesample"
-	"sierra/services/sierra/internal/sierradb"
 )
 
 var singleton *Indexer

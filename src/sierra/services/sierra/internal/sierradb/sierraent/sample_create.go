@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sierra/services/sierra/internal/sierradb/sierraent/sample"
-	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 )
 
 // SampleCreate is the builder for creating a Sample entity.

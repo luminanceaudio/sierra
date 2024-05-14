@@ -2,12 +2,12 @@ package sources
 
 import (
 	"github.com/julienschmidt/httprouter"
+	"github.com/luminanceaudio/sierra/src/sierra/common/api"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/client/models"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/source"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/sourcesample"
 	"net/http"
-	"sierra/common/api"
-	"sierra/common/uri"
-	"sierra/services/sierra/client/models"
-	"sierra/services/sierra/internal/modules/source"
-	"sierra/services/sierra/internal/modules/sourcesample"
 )
 
 func DeleteSource(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT, request *models.DeleteSourceRequest) (*models.DeleteSourceResponse, *api.Error) {

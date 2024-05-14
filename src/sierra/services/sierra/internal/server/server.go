@@ -2,9 +2,9 @@ package server
 
 import (
 	"context"
-	"sierra/common/maingroup"
-	"sierra/services/sierra/internal/indexer"
-	"sierra/services/sierra/internal/server/internal/router"
+	"github.com/luminanceaudio/sierra/src/sierra/common/maingroup"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/indexer"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/server/internal/router"
 )
 
 func StartBlocking() error {
