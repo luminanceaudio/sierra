@@ -7,7 +7,6 @@ import (
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/cli/index"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/cli/server"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/cli/source"
-	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/config"
 	"os"
 )
 
@@ -27,12 +26,6 @@ func main() {
 	}
 
 	ctx := context.Background()
-
-	err = config.CreateAppDataDir()
-	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
 
 	switch p.Active.Name {
 	case "source":

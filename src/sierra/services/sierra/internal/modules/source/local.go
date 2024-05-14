@@ -32,7 +32,7 @@ func (s *LocalSource) WriteFile(filename string, data []byte, perm os.FileMode) 
 }
 
 func (s *LocalSource) Open(name string) (*os.File, error) {
-	return os.OpenFile(name, os.O_RDONLY, 0600)
+	return os.OpenFile(filepath.Clean(name), os.O_RDONLY, 0600)
 }
 
 func (s *LocalSource) Walk(fn WalkFunc) error {

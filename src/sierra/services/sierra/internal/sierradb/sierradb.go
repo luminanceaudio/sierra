@@ -32,15 +32,16 @@ func Load(ctx context.Context) (*SierraDb, error) {
 		return sierraDb, nil
 	}
 
-	dbFilePath, err := getSierraDbFilePath()
+	dbFilePath, err := config.CreateAppDataDir(sierraDbFileName)
 	if err != nil {
-		return nil, fmt.Errorf("failed loading sierra db: %w", err)
+		return nil, fmt.Errorf("failed getting user config dir: %w", err)
 	}
 
-	err = createFileIfMissing(dbFilePath)
+	file, err := os.OpenFile(filepath.Clean(dbFilePath), os.O_RDWR|os.O_CREATE, 0600)
 	if err != nil {
 		return nil, fmt.Errorf("failed creating sierra db file: %w", err)
 	}
+	_ = file.Close()
 
 	connectionString := fmt.Sprintf("sqlite3://%s", dbFilePath)
 
@@ -59,25 +60,6 @@ func Load(ctx context.Context) (*SierraDb, error) {
 		Client: client,
 	}
 	return sierraDb, nil
-}
-
-func getSierraDbFilePath() (string, error) {
-	userCacheDir, err := config.GetAppDataDir()
-	if err != nil {
-		return "", fmt.Errorf("failed getting user config dir: %w", err)
-	}
-
-	return filepath.Join(userCacheDir, sierraDbFileName), nil
-}
-
-func createFileIfMissing(dbFilePath string) error {
-	file, err := os.OpenFile(dbFilePath, os.O_RDWR|os.O_CREATE, 0755)
-	if err != nil {
-		return fmt.Errorf("failed opening sierra db file: %w", err)
-	}
-	_ = file.Close()
-
-	return nil
 }
 
 func IsNotFound(err error) bool {
