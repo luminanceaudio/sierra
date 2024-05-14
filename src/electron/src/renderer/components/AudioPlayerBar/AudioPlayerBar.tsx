@@ -4,11 +4,8 @@ import path from 'path';
 import { StyledAudioPlayerBar } from './AudioPlayerBar.style';
 import Button from '../Button/Button';
 import { useAudioPlayer } from '../AudioPlayerProvider/AudioPlayerProvider';
-import config from '../../../config/config';
 
-export type AudioPlayerBarProps = {};
-
-function AudioPlayerBar({}: AudioPlayerBarProps) {
+function AudioPlayerBar() {
   const { audioUri, isPlaying, setIsPlaying } = useAudioPlayer();
 
   // useEffect(() => {

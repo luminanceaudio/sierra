@@ -4,13 +4,15 @@ import { PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
 import { Sample as SampleModel } from '../../../proto/app/appbase';
 import Button from '../Button/Button';
 import { useAudioPlayer } from '../AudioPlayerProvider/AudioPlayerProvider';
+import { StyledProgress } from './Sample.style';
 
 export type SampleProps = {
   sample: SampleModel;
 };
 
 function Sample({ sample }: SampleProps): React.ReactNode {
-  const { audioUri, setAudioUri, isPlaying, setIsPlaying } = useAudioPlayer();
+  const { audioUri, setAudioUri, isPlaying, setIsPlaying, duration } =
+    useAudioPlayer();
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, uri: string) => {
     e.preventDefault();
@@ -29,10 +31,22 @@ function Sample({ sample }: SampleProps): React.ReactNode {
         alignItems: 'center',
         border: '3px solid #f1f1f1',
         borderRadius: 50,
+        position: 'relative',
+        overflow: 'hidden',
       }}
       draggable
       onDragStart={(e) => handleDragStart(e, sample.uri)}
     >
+      {isCurrentAudio && isPlaying ? (
+        <StyledProgress
+          style={{
+            animationPlayState: 'running',
+            animationDuration: `${duration}s`,
+          }}
+        />
+      ) : (
+        ''
+      )}
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <Button
         onClick={() => {
