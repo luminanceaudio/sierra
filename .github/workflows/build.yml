@@ -21,7 +21,7 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             echo "Go generate changed or created files that are not commited"
-            git status --short
+            git diff
             exit 1
           fi
 
