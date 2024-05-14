@@ -38,14 +38,16 @@ jobs:
         with:
           args: ./...
 
-  release:
+  package:
     needs: [gogenerate, gosec]
-    runs-on: ${{ matrix.os }}
-
+    
+    if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref, 'alpha') && github.event_name == 'push'
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
+    runs-on: ${{ matrix.os }}
+    
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
@@ -58,11 +60,61 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          
+      - name: Determine version for package.json
+        run: 'echo "SIERRA_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV'
 
-      - name: Build/release Electron app
-        uses: samuelmeuli/action-electron-builder@v1
+      - name: Package Electron app
+        run: |
+          cd src/electron
+          npm run package
+          
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v2
         with:
-          github_token: ${{ secrets.github_token }}
-          package_root: src/electron
-          # If the commit is tagged with a version (e.g. "v1.0.0"), release the app
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          name: release_binaries
+          path: src/electron/release/build/Sierra-*
+  
+  release:
+    needs: [package]
+      
+    if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+    strategy:
+      matrix:
+        tag: [ true ]
+
+    runs-on: "ubuntu-latest"
+        
+    steps:
+      - name: "Determine tag"
+        run: 'echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: release_binaries
+          path: src/electron/release/build/
+        
+      - name: "Create release"
+        uses: "actions/github-script@v6"
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            try {
+              const response = await github.rest.repos.createRelease({
+                draft: false,
+                generate_release_notes: true,
+                name: process.env.RELEASE_TAG,
+                owner: context.repo.owner,
+                prerelease: false,
+                repo: context.repo.repo,
+                tag_name: process.env.RELEASE_TAG,
+              });
+            
+              core.exportVariable('RELEASE_ID', response.data.id);
+              core.exportVariable('RELEASE_UPLOAD_URL', response.data.upload_url);
+            } catch (error) {
+              core.setFailed(error.message);
+            }
+
+      

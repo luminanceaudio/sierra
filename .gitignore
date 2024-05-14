@@ -2,3 +2,5 @@
 .idea
 src/sierra/common/proto/bin/
 src/sierra/common/proto/node_modules
+src/electron/release/app/package.json
+src/electron/release/app/package-lock.json
