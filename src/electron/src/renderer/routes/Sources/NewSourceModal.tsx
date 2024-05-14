@@ -3,10 +3,10 @@ import path from 'path';
 import Modal from '../../components/Modal/Modal';
 import RadioGroup from '../../components/RadioGroup/RadioGroup';
 import RadioItem from '../../components/RadioGroup/RadioItem';
-import Button from '../../components/Button/Button';
 import { useCreateSource } from '../../../api/sources';
 import { CreateSourceRequest } from '../../../proto/app/apprequests';
 import { getErrorMessage } from '../../../api/reactquery';
+import Button from '../../components/Button/Button';
 
 type NewSourceModalProps = {
   isOpen: boolean;
@@ -34,6 +34,7 @@ function NewSourceModal({ isOpen, onClose }: NewSourceModalProps) {
     setErrorMessage(data?.statusText || '');
   }, [data, onClose, setErrorMessage, error]);
 
+  // @ts-ignore
   return (
     <Modal
       isOpen={isOpen}

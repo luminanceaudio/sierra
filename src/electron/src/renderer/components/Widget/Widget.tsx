@@ -14,9 +14,7 @@ function Widget({ children, title, style }: WidgetProps) {
         display: 'flex',
         flex: 1,
         maxWidth: 600,
-        flexDirection: 'column',
         margin: '30px 30px',
-        borderRadius: 7,
         ...style,
       }}
     >

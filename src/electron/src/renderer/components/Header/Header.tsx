@@ -13,7 +13,7 @@ function Header({ title }: HeaderProps) {
         padding: 20,
         boxSizing: 'border-box',
         height: 95,
-        borderBottom: '1px solid #f1f1f1',
+        borderBottom: '1px solid #e1e1e1',
         alignItems: 'center',
         position: 'fixed',
         backgroundColor: 'rgba(255, 255, 255, 0.7)',

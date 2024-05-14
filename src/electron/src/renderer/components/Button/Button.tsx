@@ -1,22 +1,29 @@
 import React from 'react';
-import Clickable, { ClickableProps } from '../Clickable/Clickable';
+import Clickable from '../Clickable/Clickable';
 
-export type ButtonProps = ClickableProps & {};
+type IconButtonProps = {
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  style?: React.CSSProperties;
+  children: React.ReactNode;
+  type?: 'primary' | 'secondary';
+  disabled?: boolean;
+};
 
-function Button({ children, style, onClick, disabled }: ButtonProps) {
+function Button({ onClick, style, children, type, disabled }: IconButtonProps) {
   return (
     <Clickable
+      onClick={onClick}
       style={{
-        backgroundColor: '#2e2e2e',
-        padding: '7px 18px',
-        borderRadius: 30,
-        cursor: 'pointer',
-        color: 'white',
-        fontWeight: 500,
+        padding: '10px 10px',
+        borderRadius: 100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 7,
+        backgroundColor: type === 'primary' ? '#f1f1f1' : 'transparent',
         ...style,
       }}
       disabled={disabled}
-      onClick={onClick}
     >
       {children}
     </Clickable>
@@ -24,9 +31,10 @@ function Button({ children, style, onClick, disabled }: ButtonProps) {
 }
 
 Button.defaultProps = {
-  style: {},
-  disabled: false,
   onClick: null,
+  style: {},
+  type: 'primary',
+  disabled: false,
 };
 
 export default Button;

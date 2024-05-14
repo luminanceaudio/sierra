@@ -14,7 +14,7 @@ function Input({ value, onChange, placeholder, style }: InputProps) {
       style={{
         background: 'none',
         fontSize: 14,
-        border: '1px solid #f1f1f1',
+        border: '1px solid #e1e1e1',
         borderRadius: 7,
         padding: '10px 15px',
         ...style,

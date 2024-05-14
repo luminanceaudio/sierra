@@ -2,13 +2,15 @@ import React from 'react';
 import DragHeader from '../DragHeader/DragHeader';
 import SideMenu from '../SideMenu/SideMenu';
 import Header from '../Header/Header';
+import AudioPlayerBar from '../AudioPlayerBar/AudioPlayerBar';
 
 type LayoutProps = {
   title: string;
   children?: React.ReactNode;
+  style?: React.CSSProperties;
 };
 
-function Layout({ title, children }: LayoutProps) {
+function Layout({ title, children, style }: LayoutProps) {
   return (
     <div
       style={{
@@ -35,12 +37,14 @@ function Layout({ title, children }: LayoutProps) {
               display: 'flex',
               flex: 1,
               paddingTop: 95,
+              paddingBottom: 95,
               justifyContent: 'center',
+              ...style,
             }}
           >
             {children}
           </div>
-          {/* <div style={{ flex: 1, backgroundColor: '#1f1f1f' }}>Right sidebar</div> */}
+          <AudioPlayerBar />
         </div>
       </div>
     </div>
@@ -49,6 +53,7 @@ function Layout({ title, children }: LayoutProps) {
 
 Layout.defaultProps = {
   children: null,
+  style: {},
 };
 
 export default Layout;
