@@ -1,9 +1,9 @@
 package format
 
 import (
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/format"
 	"github.com/stretchr/testify/require"
 	"io"
-	"sierra/services/sierra/internal/format"
 	"sierra/tests/resources/samplessanity"
 	"testing"
 )

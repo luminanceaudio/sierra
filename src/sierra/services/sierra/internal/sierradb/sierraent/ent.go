@@ -7,14 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"sierra/services/sierra/internal/sierradb/sierraent/sample"
-	"sierra/services/sierra/internal/sierradb/sierraent/source"
-	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 	"sync"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 )
 
 // ent aliases to avoid import conflicts in user's code.

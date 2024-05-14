@@ -2,13 +2,13 @@ package audio
 
 import (
 	"github.com/julienschmidt/httprouter"
+	"github.com/luminanceaudio/sierra/src/sierra/common/api"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/source"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/sourcesample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb"
 	"io"
 	"net/http"
-	"sierra/common/api"
-	"sierra/common/uri"
-	"sierra/services/sierra/internal/modules/source"
-	"sierra/services/sierra/internal/modules/sourcesample"
-	"sierra/services/sierra/internal/sierradb"
 	"strings"
 )
 

@@ -1,8 +1,8 @@
 package start
 
 import (
-	"sierra/services/sierra/client"
-	"sierra/services/sierra/internal/server"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/client"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/server"
 )
 
 type Args struct {

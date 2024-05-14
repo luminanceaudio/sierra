@@ -5,8 +5,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/format"
 	"io"
-	"sierra/services/sierra/internal/format"
 )
 
 var (

@@ -1,6 +1,6 @@
 package shutdown
 
-import "sierra/services/sierra/client"
+import "github.com/luminanceaudio/sierra/src/sierra/services/sierra/client"
 
 type Args struct {
 }
@@ -11,6 +11,6 @@ func Run(args Args) error {
 	if aErr != nil {
 		return aErr
 	}
-	
+
 	return nil
 }

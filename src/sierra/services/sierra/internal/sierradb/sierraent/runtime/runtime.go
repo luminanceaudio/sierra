@@ -2,7 +2,7 @@
 
 package runtime
 
-// The schema-stitching logic is generated in sierra/services/sierra/internal/sierradb/sierraent/runtime.go
+// The schema-stitching logic is generated in github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/runtime.go
 
 const (
 	Version = "v0.13.1"                                         // Version of ent codegen.

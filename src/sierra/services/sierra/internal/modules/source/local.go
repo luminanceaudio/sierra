@@ -2,10 +2,10 @@ package source
 
 import (
 	"fmt"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
 	"io/fs"
 	"os"
 	"path/filepath"
-	"sierra/common/uri"
 )
 
 type LocalSource struct {
@@ -32,7 +32,7 @@ func (s *LocalSource) WriteFile(filename string, data []byte, perm os.FileMode) 
 }
 
 func (s *LocalSource) Open(name string) (*os.File, error) {
-	return os.OpenFile(name, os.O_RDONLY, 0600)
+	return os.OpenFile(filepath.Clean(name), os.O_RDONLY, 0600)
 }
 
 func (s *LocalSource) Walk(fn WalkFunc) error {

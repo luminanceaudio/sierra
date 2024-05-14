@@ -9,16 +9,15 @@ import (
 	"log"
 	"reflect"
 
-	"sierra/services/sierra/internal/sierradb/sierraent/migrate"
-
-	"sierra/services/sierra/internal/sierradb/sierraent/sample"
-	"sierra/services/sierra/internal/sierradb/sierraent/source"
-	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 )
 
 // Client is the client that holds all ent builders.

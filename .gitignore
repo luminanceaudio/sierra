@@ -1,2 +1,4 @@
 .DS_Store
 .idea
+src/sierra/common/proto/bin/
+src/sierra/common/proto/node_modules

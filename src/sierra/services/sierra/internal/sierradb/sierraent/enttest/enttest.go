@@ -4,13 +4,13 @@ package enttest
 
 import (
 	"context"
-	"sierra/services/sierra/internal/sierradb/sierraent"
-	// required by schema hooks.
-	_ "sierra/services/sierra/internal/sierradb/sierraent/runtime"
 
-	"sierra/services/sierra/internal/sierradb/sierraent/migrate"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent"
+	// required by schema hooks.
+	_ "github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/migrate"
 )
 
 type (

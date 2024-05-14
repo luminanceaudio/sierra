@@ -1,7 +1,7 @@
 package format
 
 import (
-	"sierra/services/sierra/internal/format"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/format"
 )
 
 type Format struct {

@@ -1,8 +1,8 @@
 package client
 
 import (
+	"github.com/luminanceaudio/sierra/src/sierra/common/api"
 	"net/http"
-	"sierra/common/api"
 )
 
 type Client struct {

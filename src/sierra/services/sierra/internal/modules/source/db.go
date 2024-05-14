@@ -3,12 +3,12 @@ package source
 import (
 	"context"
 	"fmt"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/client/models"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent"
+	source "github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
 	"github.com/sirupsen/logrus"
-	"sierra/common/uri"
-	"sierra/services/sierra/client/models"
-	"sierra/services/sierra/internal/sierradb"
-	"sierra/services/sierra/internal/sierradb/sierraent"
-	source "sierra/services/sierra/internal/sierradb/sierraent/source"
 )
 
 func Get(ctx context.Context, uri *uri.URI) (Source, error) {

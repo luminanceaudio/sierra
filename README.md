@@ -5,7 +5,9 @@
 1. Install `protoc`:
 
 ```
-brew install protobuf
+brew install protobuf@21
+echo 'export PATH="/opt/homebrew/opt/protobuf@21/bin:$PATH"' >> ~/.zshrc
+# Restart your shell
 ```
 
 2. Run go generate to generate the DB schema and compile the protobuf files:

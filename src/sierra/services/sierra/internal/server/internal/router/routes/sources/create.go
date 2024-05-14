@@ -3,12 +3,12 @@ package sources
 import (
 	"context"
 	"github.com/julienschmidt/httprouter"
+	"github.com/luminanceaudio/sierra/src/sierra/common/api"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/client/models"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/indexer"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/modules/source"
 	"net/http"
-	"sierra/common/api"
-	"sierra/common/uri"
-	"sierra/services/sierra/client/models"
-	"sierra/services/sierra/internal/indexer"
-	"sierra/services/sierra/internal/modules/source"
 )
 
 func CreateSource(w *api.Writer, r *http.Request, p httprouter.Params, j *api.JWT, request *models.CreateSourceRequest) (*models.CreateSourceResponse, *api.Error) {

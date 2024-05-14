@@ -3,10 +3,10 @@ package api
 import (
 	"bytes"
 	"fmt"
+	"github.com/luminanceaudio/sierra/src/sierra/common/config"
 	"io"
 	"mime/multipart"
 	"net/http"
-	"sierra/common/config"
 
 	"github.com/sirupsen/logrus"
 )

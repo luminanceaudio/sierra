@@ -3,15 +3,15 @@ package sourcesample
 import (
 	"context"
 	"fmt"
+	"github.com/luminanceaudio/sierra/src/sierra/common/sha256"
+	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/client/models"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent"
+	sample2 "github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 	"github.com/sirupsen/logrus"
-	"sierra/common/sha256"
-	"sierra/common/uri"
-	"sierra/services/sierra/client/models"
-	"sierra/services/sierra/internal/sierradb"
-	"sierra/services/sierra/internal/sierradb/sierraent"
-	sample2 "sierra/services/sierra/internal/sierradb/sierraent/sample"
-	"sierra/services/sierra/internal/sierradb/sierraent/source"
-	"sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 	"strings"
 )
 
