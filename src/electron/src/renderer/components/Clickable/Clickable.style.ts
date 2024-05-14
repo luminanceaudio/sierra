@@ -1,6 +1,9 @@
 import styled from 'styled-components';
+import React from 'react';
 
-export const StyledClickable = styled.button<{ onClick?: () => void }>`
+export const StyledClickable = styled.button<{
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}>`
   &:hover {
     cursor: ${({ onClick }) => (onClick ? 'pointer' : 'inherit')};
     opacity: ${({ onClick }) => (onClick ? 0.68 : 1)};

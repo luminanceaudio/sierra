@@ -5,12 +5,7 @@ import Samples from '../../components/Samples/Samples';
 function Main() {
   return (
     <Layout title="Samples">
-      <Widget
-        style={{
-          display: 'flex',
-          flex: 1,
-        }}
-      >
+      <Widget>
         <Samples />
       </Widget>
     </Layout>

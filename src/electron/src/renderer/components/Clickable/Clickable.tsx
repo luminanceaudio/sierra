@@ -4,7 +4,7 @@ import { StyledClickable } from './Clickable.style';
 export type ClickableProps = {
   children: React.ReactNode;
   style?: CSSProperties;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
 };
 

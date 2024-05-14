@@ -83,6 +83,7 @@
     "protobufjs": "^7.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-h5-audio-player": "^3.9.1",
     "react-router-dom": "^6.16.0",
     "styled-components": "^6.1.11"
   },

@@ -2,9 +2,8 @@ import path from 'path';
 import { FolderIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { FolderPlusIcon } from '@heroicons/react/24/solid';
 import React, { useState } from 'react';
-import Clickable from '../../components/Clickable/Clickable';
 import NewSourceModal from './NewSourceModal';
-import IconButton from '../../components/IconButton/IconButton';
+import Button from '../../components/Button/Button';
 import { useDeleteSource } from '../../../api/sources';
 import { DeleteSourceRequest } from '../../../proto/app/apprequests';
 import Toast from '../../components/Toast/Toast';
@@ -45,9 +44,9 @@ export function Source({ uri }: SourceProps) {
           style={{ display: 'flex', flex: 1, gap: 10, alignItems: 'center' }}
         >
           <Toast error={error} />
-          <IconButton>
+          <Button>
             <FolderIcon width={20} />
-          </IconButton>
+          </Button>
           <div
             style={{
               display: 'flex',
@@ -68,9 +67,8 @@ export function Source({ uri }: SourceProps) {
               {uri}
             </span>
           </div>
-          <IconButton
+          <Button
             type="secondary"
-            style={{ border: 'none' }}
             onClick={() =>
               deleteSource(
                 DeleteSourceRequest.create({
@@ -81,7 +79,7 @@ export function Source({ uri }: SourceProps) {
             disabled={isPending}
           >
             <TrashIcon width={20} style={{ color: '#cf1212' }} />
-          </IconButton>
+          </Button>
         </div>
       }
     />
@@ -92,22 +90,10 @@ export function SourceNew() {
   const [isOpen, setOpen] = useState(false);
   return (
     <div>
-      <Clickable
-        style={{
-          height: 40,
-          padding: '10px 10px',
-          backgroundColor: '#f1f1f1',
-          borderRadius: 7,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 10,
-        }}
-        onClick={() => setOpen(true)}
-      >
+      <Button onClick={() => setOpen(true)}>
         <FolderPlusIcon width="20" />
         <div style={{ fontSize: 15 }}>Add source</div>
-      </Clickable>
+      </Button>
       {isOpen && (
         <NewSourceModal isOpen={isOpen} onClose={() => setOpen(false)} />
       )}

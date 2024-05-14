@@ -13,7 +13,7 @@ export const StyledToast = styled(TransitionOnLoad)`
   width: 300px;
   margin: 30px;
   border-radius: 7px;
-  border: 1px solid #f1f1f1;
+  border: 1px solid #e1e1e1;
   padding: 15px 20px;
   font-size: 14px;
   background-color: #f1f1f1;

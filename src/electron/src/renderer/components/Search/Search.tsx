@@ -33,10 +33,13 @@ function Search({
       onChange={setValue}
       placeholder="Search samples"
       style={{
+        display: 'flex',
+        flex: 1,
         paddingTop: 15,
         paddingBottom: 15,
         paddingLeft: 20,
         borderRadius: 50,
+        flexShrink: 0,
       }}
     />
   );
