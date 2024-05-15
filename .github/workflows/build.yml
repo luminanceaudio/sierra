@@ -66,7 +66,7 @@ jobs:
       - name: Package Electron app
         run: |
           cd src/electron
-          NODE_OPTIONS=--max_old_space_size=1536 npm ci --include=dev
+          NODE_OPTIONS=--max_old_space_size=836 npm ci --include=dev
           npm run package
           
       - name: Archive build artifacts
