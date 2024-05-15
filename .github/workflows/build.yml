@@ -41,7 +41,6 @@ jobs:
   package:
     needs: [gogenerate, gosec]
     
-    if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
