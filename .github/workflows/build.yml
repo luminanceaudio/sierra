@@ -67,7 +67,7 @@ jobs:
         run: |
           cd src/electron
           NODE_OPTIONS=--max_old_space_size=836 npm ci --include=dev
-          npm run package
+          NODE_OPTIONS=--max_old_space_size=836 npm run package
           
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
