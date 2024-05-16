@@ -66,11 +66,7 @@ jobs:
       - name: Package Electron app
         run: |
           cd src/electron
-          echo npm ci --include=prod 
-          npm ci --include=prod
-          echo npm ci --include=dev 
-          npm ci --include=dev
-          echo npm run package
+          npm ci --include=dev --include=prod
           npm run package
           
       - name: Archive build artifacts
