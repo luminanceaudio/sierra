@@ -66,8 +66,9 @@ jobs:
       - name: Package Electron app
         run: |
           cd src/electron
-          cpulimit -l 50 NODE_OPTIONS=--max_old_space_size=200 npm ci --include=dev
-          cpulimit -l 50 NODE_OPTIONS=--max_old_space_size=200 npm run package
+          npm ci
+          npm ci --include-dev
+          npm run package
           
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
