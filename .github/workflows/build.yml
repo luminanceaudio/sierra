@@ -5,7 +5,7 @@ on: push
 jobs:
   gogenerate:
     name: "Go generate check"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       GO111MODULE: on
     steps:
@@ -26,7 +26,7 @@ jobs:
 
   gosec:
     name: "Gosec Check"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       GO111MODULE: on
     steps:
@@ -43,7 +43,7 @@ jobs:
     
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-20.04]
 
     runs-on: ${{ matrix.os }}
     
@@ -83,7 +83,7 @@ jobs:
       matrix:
         tag: [ true ]
 
-    runs-on: "ubuntu-latest"
+    runs-on: "ubuntu-20.04"
         
     steps:
       - name: "Determine tag"
