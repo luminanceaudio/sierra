@@ -67,7 +67,7 @@ jobs:
         run: (cd src/electron && npm ci)
           
       - name: Package
-        run: (cd src/electron && npm package)
+        run: (cd src/electron && npm run package)
           
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
