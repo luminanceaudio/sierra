@@ -146,4 +146,26 @@ jobs:
               core.setFailed(error.message);
             }
 
-      
+
+      - name: "Upload release assets"
+        uses: "actions/github-script@v6"
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const artifacts = fs.readdirSync('src/electron/release/build').map(file => path.join('src/electron/release/build', file));
+            const releaseId = process.env.RELEASE_ID;
+
+            for (const file of artifacts) {
+              const name = path.basename(file);
+              const fileData = fs.readFileSync(file);
+
+              github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: releaseId,
+                name: name,
+                data: fileData,
+              });
+            }
