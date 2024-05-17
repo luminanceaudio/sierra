@@ -56,7 +56,7 @@ jobs:
           node-version: 22.1
 
       - name: Install node dependencies
-        run: (cd src/electron && npm ci)
+        run: (cd src/electron && npm ci --include=dev)
         
       - name: Post install
         run: (cd src/electron && npm run post_install)
