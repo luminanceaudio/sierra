@@ -100,7 +100,7 @@ jobs:
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: release_binaries
+          name: release_binaries_${{ matrix.os }}
           path: src/electron/release/build/Sierra-*
   
   release:
@@ -121,7 +121,13 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v2
         with:
-          name: release_binaries
+          name: release_binaries_ubuntu-latest
+          path: src/electron/release/build/
+          
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: release_binaries_macos-latest
           path: src/electron/release/build/
         
       - name: "Create release"
