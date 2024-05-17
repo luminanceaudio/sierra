@@ -55,14 +55,21 @@ jobs:
         with:
           node-version: 22.1
 
+      - name: Change dir
+        run: |
+          cd src/electron
+          env
+          ls -a ~/
+          cat ~/.npmrc || echo npmcrc not found
+
       - name: Install node dependencies
-        run: (cd src/electron && npm ci --include=dev)
-        
+        run: npm ci
+
       - name: Post install
-        run: (cd src/electron && npm run post_install)
+        run: npm run post_install
 
       - name: Build
-        run: (cd src/electron && npm run build)
+        run: npm run build
 
   package:
     if: startsWith(github.ref, 'refs/tags/')
