@@ -122,13 +122,13 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: release_binaries_ubuntu-latest
-          path: src/electron/release/build/
+          path: src/electron/release/build/ubuntu
           
       - name: Download build artifacts
         uses: actions/download-artifact@v2
         with:
           name: release_binaries_macos-latest
-          path: src/electron/release/build/
+          path: src/electron/release/build/macos
         
       - name: "Create release"
         uses: "actions/github-script@v6"
@@ -160,9 +160,23 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            const artifacts = fs.readdirSync('src/electron/release/build').map(file => path.join('src/electron/release/build', file));
             const releaseId = process.env.RELEASE_ID;
 
+            const artifacts = fs.readdirSync('src/electron/release/build').map(file => path.join('src/electron/release/build/ubuntu', file));
+            for (const file of artifacts) {
+              const name = path.basename(file);
+              const fileData = fs.readFileSync(file);
+
+              github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: releaseId,
+                name: name,
+                data: fileData,
+              });
+            }
+            
+            const artifacts = fs.readdirSync('src/electron/release/build').map(file => path.join('src/electron/release/build/macos', file));
             for (const file of artifacts) {
               const name = path.basename(file);
               const fileData = fs.readFileSync(file);
