@@ -62,6 +62,8 @@ jobs:
           export NODE_ENV=development
           echo $NODE_ENV
           CI=false NODE_ENV=development npm install
+          echo npm list
+          npm list
           npm run build
 
   package:
