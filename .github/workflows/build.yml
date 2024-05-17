@@ -66,7 +66,8 @@ jobs:
       - name: Package Electron app
         run: |
           cd src/electron
-          npm run package
+          NPM_CONFIG_PRODUCTION=false npm install
+          NPM_CONFIG_PRODUCTION=false npm run package
           
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
