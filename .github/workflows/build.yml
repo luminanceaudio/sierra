@@ -84,7 +84,7 @@ jobs:
           node-version: 22.1
       
       - name: Determine version name
-        run: echo "SIERRA_VERSION=$(echo ${GITHUB_REF##*/} | sed 's/^v//')" &gt;&gt; $GITHUB_ENV
+        run: echo "SIERRA_VERSION=$(echo ${GITHUB_REF##*/} | sed 's/^v//')" >> $GITHUB_ENV
 
       - name: Install node dependencies
         run: (cd src/electron && npm ci)
