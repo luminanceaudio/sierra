@@ -32,10 +32,12 @@ func Load(ctx context.Context) (*SierraDb, error) {
 		return sierraDb, nil
 	}
 
-	dbFilePath, err := config.CreateAppDataDir(sierraDbFileName)
+	dbDirPath, err := config.CreateAppDataDir("")
 	if err != nil {
 		return nil, fmt.Errorf("failed getting user config dir: %w", err)
 	}
+
+	dbFilePath := filepath.Join(dbDirPath, sierraDbFileName)
 
 	file, err := os.OpenFile(filepath.Clean(dbFilePath), os.O_RDWR|os.O_CREATE, 0600)
 	if err != nil {

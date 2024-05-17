@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "version": "4.6.0",
+  "name": "sierra",
+  "version": "@{{SIERRA_VERSION}}",
   "description": "A foundation for scalable desktop apps",
   "license": "MIT",
   "author": {
@@ -14,5 +14,7 @@
     "postinstall": "npm run rebuild && npm run link-modules",
     "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "ts-node": "^10.9.2"
+  }
 }
