@@ -60,7 +60,8 @@ jobs:
           cd src/electron
           env
           export NODE_ENV=development
-          CI=false NODE_ENV=development npm ci
+          echo $NODE_ENV
+          CI=false NODE_ENV=development npm install
           npm run build
 
   package:
