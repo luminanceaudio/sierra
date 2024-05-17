@@ -57,6 +57,9 @@ jobs:
 
       - name: Install node dependencies
         run: (cd src/electron && npm ci)
+        
+      - name: Post install
+        run: (cd src/electron && npm run post_install)
 
       - name: Build
         run: (cd src/electron && npm run build)

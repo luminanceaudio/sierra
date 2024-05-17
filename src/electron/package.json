@@ -11,7 +11,7 @@
     "build:server:linuxamd64": "(cd ../sierra && env GOOS=linux GOARCH=amd64 go build -o ../electron/binaries/linux/x64/sierraserver ./cmd/sierra)",
     "build:server:darwinarm64": "(cd ../sierra && env GOOS=darwin GOARCH=arm64 go build -o ../electron/binaries/mac/arm64/sierraserver ./cmd/sierra)",
     "build:server:darwinamd64": "(cd ../sierra && env GOOS=darwin GOARCH=amd64 go build -o ../electron/binaries/mac/x64/sierraserver ./cmd/sierra)",
-    "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
+    "post_install": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
     "package": "../scripts/apply_env.sh ./release/app/package.json && ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
