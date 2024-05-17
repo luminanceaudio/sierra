@@ -57,9 +57,10 @@ jobs:
 
       - name: Install and build
         run: |
-          cd src/electron && npm ci
-          cd src/electron && npm run post_install
-          cd src/electron && npm run build
+          cd src/electron
+          npm ci
+          npm run post_install
+          npm run build
 
   package:
     if: startsWith(github.ref, 'refs/tags/')
