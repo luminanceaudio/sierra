@@ -58,6 +58,7 @@ jobs:
       - name: Install and build
         run: |
           cd src/electron
+          export NODE_ENV=development
           npm ci
           npm run build
 
