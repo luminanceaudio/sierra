@@ -176,7 +176,7 @@ jobs:
               });
             }
             
-            const artifacts = fs.readdirSync('src/electron/release/build').map(file => path.join('src/electron/release/build/macos', file));
+            artifacts = fs.readdirSync('src/electron/release/build').map(file => path.join('src/electron/release/build/macos', file));
             for (const file of artifacts) {
               const name = path.basename(file);
               const fileData = fs.readFileSync(file);
