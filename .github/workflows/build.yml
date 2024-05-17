@@ -162,7 +162,7 @@ jobs:
             const path = require('path');
             const releaseId = process.env.RELEASE_ID;
 
-            const artifacts = fs.readdirSync('src/electron/release/build').map(file => path.join('src/electron/release/build/ubuntu', file));
+            const artifacts = fs.readdirSync('src/electron/release/build/ubuntu').map(file => path.join('src/electron/release/build/ubuntu', file));
             for (const file of artifacts) {
               const name = path.basename(file);
               const fileData = fs.readFileSync(file);
@@ -176,7 +176,7 @@ jobs:
               });
             }
             
-            artifacts = fs.readdirSync('src/electron/release/build').map(file => path.join('src/electron/release/build/macos', file));
+            artifacts = fs.readdirSync('src/electron/release/build/macos').map(file => path.join('src/electron/release/build/macos', file));
             for (const file of artifacts) {
               const name = path.basename(file);
               const fileData = fs.readFileSync(file);
