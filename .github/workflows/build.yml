@@ -10,7 +10,7 @@ jobs:
       GO111MODULE: on
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run go generate
         run: |
@@ -31,7 +31,7 @@ jobs:
       GO111MODULE: on
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
@@ -58,16 +58,17 @@ jobs:
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22.1
+          cache: 'npm'
       
       - name: Determine version for package.json
         run: echo "SIERRA_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\///')" >> $GITHUB_ENV
 
-      - name: Package Electron app
-        run: |
-          cd src/electron
-          NPM_CONFIG_PRODUCTION=false npm install
-          NPM_CONFIG_PRODUCTION=false npm run package
+      - name: Install node dependencies
+        run: (cd src/electron && npm ci)
+          
+      - name: Package
+        run: (cd src/electron && npm package)
           
       - name: Archive build artifacts
         uses: actions/upload-artifact@v2
