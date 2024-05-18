@@ -6,7 +6,7 @@ export const StyledProgress = styled.div`
   background-color: #f1f1f1;
   z-index: -1;
 
-  animation: my-animation 6s infinite;
+  animation: my-animation 6s;
   animation-timing-function: linear;
 
   @keyframes my-animation {

@@ -18,8 +18,8 @@ type Sample struct {
 	ID string `json:"id,omitempty"`
 	// Format holds the value of the "format" field.
 	Format string `json:"format,omitempty"`
-	// Length holds the value of the "length" field.
-	Length int64 `json:"length,omitempty"`
+	// Duration holds the value of the "duration" field.
+	Duration int64 `json:"duration,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SampleQuery when eager-loading is set.
 	Edges        SampleEdges `json:"edges"`
@@ -49,7 +49,7 @@ func (*Sample) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case sample.FieldLength:
+		case sample.FieldDuration:
 			values[i] = new(sql.NullInt64)
 		case sample.FieldID, sample.FieldFormat:
 			values[i] = new(sql.NullString)
@@ -80,11 +80,11 @@ func (s *Sample) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.Format = value.String
 			}
-		case sample.FieldLength:
+		case sample.FieldDuration:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field length", values[i])
+				return fmt.Errorf("unexpected type %T for field duration", values[i])
 			} else if value.Valid {
-				s.Length = value.Int64
+				s.Duration = value.Int64
 			}
 		default:
 			s.selectValues.Set(columns[i], values[i])
@@ -130,8 +130,8 @@ func (s *Sample) String() string {
 	builder.WriteString("format=")
 	builder.WriteString(s.Format)
 	builder.WriteString(", ")
-	builder.WriteString("length=")
-	builder.WriteString(fmt.Sprintf("%v", s.Length))
+	builder.WriteString("duration=")
+	builder.WriteString(fmt.Sprintf("%v", s.Duration))
 	builder.WriteByte(')')
 	return builder.String()
 }

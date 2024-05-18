@@ -20,14 +20,12 @@ type AppState = {
 
   audioUri: string;
   isPlaying: boolean;
-  duration: number;
 };
 
 const initialState: AppState = {
   ref: null,
   audioUri: '',
   isPlaying: false,
-  duration: 0,
 };
 
 type Action =
@@ -42,10 +40,6 @@ type Action =
   | {
       type: 'setRef';
       ref: RefObject<H5AudioPlayer>;
-    }
-  | {
-      type: 'setDuration';
-      duration: number;
     };
 
 type Dispatch = (action: Action) => void;
@@ -67,10 +61,6 @@ function appReducer(state: AppState, action: Action): AppState {
 
     case 'setIsPlaying': {
       return { ...state, isPlaying: action.isPlaying };
-    }
-
-    case 'setDuration': {
-      return { ...state, duration: action.duration };
     }
 
     default: {
@@ -99,7 +89,9 @@ export function AudioPlayerProvider({ children }: AudioProviderProps) {
   // Always jump to start on play
   useEffect(() => {
     if (state.isPlaying) {
-      state.ref?.current?.setJumpTime(0);
+      if (state.ref?.current?.audio?.current) {
+        state.ref.current.audio.current.currentTime = 0;
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isPlaying]);
@@ -118,12 +110,6 @@ export function AudioPlayerProvider({ children }: AudioProviderProps) {
         style={{ display: 'none' }}
         src={audioEndpoint}
         onEnded={() => dispatch({ type: 'setIsPlaying', isPlaying: false })}
-        onLoadedMetaData={() => {
-          dispatch({
-            type: 'setDuration',
-            duration: ref.current?.audio?.current?.duration || 0,
-          });
-        }}
       />
       {children}
     </AudioPlayerContext.Provider>
@@ -144,8 +130,6 @@ export function useAudioPlayer(): {
 
   isPlaying: boolean;
   setIsPlaying: (isPlaying: boolean) => void;
-
-  duration: number;
 } {
   const [state, dispatch] = useAudioPlayerContext();
 
@@ -163,7 +147,6 @@ export function useAudioPlayer(): {
     setAudioUri,
     isPlaying: state.isPlaying,
     setIsPlaying,
-    duration: state.duration,
   };
 }
 

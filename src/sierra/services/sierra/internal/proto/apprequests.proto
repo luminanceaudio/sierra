@@ -5,11 +5,23 @@ import "appbase.proto";
 
 option go_package = "client/models";
 
-message GetSamplesResponse {
+message QuerySamplesRequest {
+  string query = 1;
+  int32 page = 2;
+  int32 size = 3;
+  SortDirection.Enum sort_direction = 4;
+  SortColumn.Enum sort_column = 5;
+}
+
+message QuerySamplesResponse {
   repeated Sample samples = 1;
 }
 
-message GetSamplesCountResponse {
+message QuerySamplesCountRequest {
+  string query = 1;
+}
+
+message QuerySamplesCountResponse {
   int64 count = 1;
 }
 

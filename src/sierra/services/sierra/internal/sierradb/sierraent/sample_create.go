@@ -37,16 +37,16 @@ func (sc *SampleCreate) SetNillableFormat(s *string) *SampleCreate {
 	return sc
 }
 
-// SetLength sets the "length" field.
-func (sc *SampleCreate) SetLength(i int64) *SampleCreate {
-	sc.mutation.SetLength(i)
+// SetDuration sets the "duration" field.
+func (sc *SampleCreate) SetDuration(i int64) *SampleCreate {
+	sc.mutation.SetDuration(i)
 	return sc
 }
 
-// SetNillableLength sets the "length" field if the given value is not nil.
-func (sc *SampleCreate) SetNillableLength(i *int64) *SampleCreate {
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (sc *SampleCreate) SetNillableDuration(i *int64) *SampleCreate {
 	if i != nil {
-		sc.SetLength(*i)
+		sc.SetDuration(*i)
 	}
 	return sc
 }
@@ -146,9 +146,9 @@ func (sc *SampleCreate) createSpec() (*Sample, *sqlgraph.CreateSpec) {
 		_spec.SetField(sample.FieldFormat, field.TypeString, value)
 		_node.Format = value
 	}
-	if value, ok := sc.mutation.Length(); ok {
-		_spec.SetField(sample.FieldLength, field.TypeInt64, value)
-		_node.Length = value
+	if value, ok := sc.mutation.Duration(); ok {
+		_spec.SetField(sample.FieldDuration, field.TypeInt64, value)
+		_node.Duration = value
 	}
 	if nodes := sc.mutation.SourceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -236,27 +236,27 @@ func (u *SampleUpsert) ClearFormat() *SampleUpsert {
 	return u
 }
 
-// SetLength sets the "length" field.
-func (u *SampleUpsert) SetLength(v int64) *SampleUpsert {
-	u.Set(sample.FieldLength, v)
+// SetDuration sets the "duration" field.
+func (u *SampleUpsert) SetDuration(v int64) *SampleUpsert {
+	u.Set(sample.FieldDuration, v)
 	return u
 }
 
-// UpdateLength sets the "length" field to the value that was provided on create.
-func (u *SampleUpsert) UpdateLength() *SampleUpsert {
-	u.SetExcluded(sample.FieldLength)
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *SampleUpsert) UpdateDuration() *SampleUpsert {
+	u.SetExcluded(sample.FieldDuration)
 	return u
 }
 
-// AddLength adds v to the "length" field.
-func (u *SampleUpsert) AddLength(v int64) *SampleUpsert {
-	u.Add(sample.FieldLength, v)
+// AddDuration adds v to the "duration" field.
+func (u *SampleUpsert) AddDuration(v int64) *SampleUpsert {
+	u.Add(sample.FieldDuration, v)
 	return u
 }
 
-// ClearLength clears the value of the "length" field.
-func (u *SampleUpsert) ClearLength() *SampleUpsert {
-	u.SetNull(sample.FieldLength)
+// ClearDuration clears the value of the "duration" field.
+func (u *SampleUpsert) ClearDuration() *SampleUpsert {
+	u.SetNull(sample.FieldDuration)
 	return u
 }
 
@@ -329,31 +329,31 @@ func (u *SampleUpsertOne) ClearFormat() *SampleUpsertOne {
 	})
 }
 
-// SetLength sets the "length" field.
-func (u *SampleUpsertOne) SetLength(v int64) *SampleUpsertOne {
+// SetDuration sets the "duration" field.
+func (u *SampleUpsertOne) SetDuration(v int64) *SampleUpsertOne {
 	return u.Update(func(s *SampleUpsert) {
-		s.SetLength(v)
+		s.SetDuration(v)
 	})
 }
 
-// AddLength adds v to the "length" field.
-func (u *SampleUpsertOne) AddLength(v int64) *SampleUpsertOne {
+// AddDuration adds v to the "duration" field.
+func (u *SampleUpsertOne) AddDuration(v int64) *SampleUpsertOne {
 	return u.Update(func(s *SampleUpsert) {
-		s.AddLength(v)
+		s.AddDuration(v)
 	})
 }
 
-// UpdateLength sets the "length" field to the value that was provided on create.
-func (u *SampleUpsertOne) UpdateLength() *SampleUpsertOne {
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *SampleUpsertOne) UpdateDuration() *SampleUpsertOne {
 	return u.Update(func(s *SampleUpsert) {
-		s.UpdateLength()
+		s.UpdateDuration()
 	})
 }
 
-// ClearLength clears the value of the "length" field.
-func (u *SampleUpsertOne) ClearLength() *SampleUpsertOne {
+// ClearDuration clears the value of the "duration" field.
+func (u *SampleUpsertOne) ClearDuration() *SampleUpsertOne {
 	return u.Update(func(s *SampleUpsert) {
-		s.ClearLength()
+		s.ClearDuration()
 	})
 }
 
@@ -592,31 +592,31 @@ func (u *SampleUpsertBulk) ClearFormat() *SampleUpsertBulk {
 	})
 }
 
-// SetLength sets the "length" field.
-func (u *SampleUpsertBulk) SetLength(v int64) *SampleUpsertBulk {
+// SetDuration sets the "duration" field.
+func (u *SampleUpsertBulk) SetDuration(v int64) *SampleUpsertBulk {
 	return u.Update(func(s *SampleUpsert) {
-		s.SetLength(v)
+		s.SetDuration(v)
 	})
 }
 
-// AddLength adds v to the "length" field.
-func (u *SampleUpsertBulk) AddLength(v int64) *SampleUpsertBulk {
+// AddDuration adds v to the "duration" field.
+func (u *SampleUpsertBulk) AddDuration(v int64) *SampleUpsertBulk {
 	return u.Update(func(s *SampleUpsert) {
-		s.AddLength(v)
+		s.AddDuration(v)
 	})
 }
 
-// UpdateLength sets the "length" field to the value that was provided on create.
-func (u *SampleUpsertBulk) UpdateLength() *SampleUpsertBulk {
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *SampleUpsertBulk) UpdateDuration() *SampleUpsertBulk {
 	return u.Update(func(s *SampleUpsert) {
-		s.UpdateLength()
+		s.UpdateDuration()
 	})
 }
 
-// ClearLength clears the value of the "length" field.
-func (u *SampleUpsertBulk) ClearLength() *SampleUpsertBulk {
+// ClearDuration clears the value of the "duration" field.
+func (u *SampleUpsertBulk) ClearDuration() *SampleUpsertBulk {
 	return u.Update(func(s *SampleUpsert) {
-		s.ClearLength()
+		s.ClearDuration()
 	})
 }
 

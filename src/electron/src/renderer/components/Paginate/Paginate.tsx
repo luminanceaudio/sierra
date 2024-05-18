@@ -42,7 +42,7 @@ function Paginate({
       <span>{totalItems ? `${page}/${maxPage}` : ''}</span>
 
       <div style={{ display: 'flex', flexDirection: 'column', width: 30 }}>
-        {page === maxPage ? (
+        {maxPage === 0 || page === maxPage ? (
           ''
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>

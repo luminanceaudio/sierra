@@ -1,16 +1,16 @@
 package format
 
 import (
-	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/format"
+	"github.com/luminanceaudio/sierra/src/sierra/tests/resources/samplessanity"
 	"github.com/stretchr/testify/require"
 	"io"
-	"sierra/tests/resources/samplessanity"
 	"testing"
 )
 
 func TestWavParse16Bit(t *testing.T) {
 	f, err := samplessanity.Files.Open(samplessanity.SierraDrum1_16BitWav)
 	require.NoError(t, err)
+	defer f.Close()
 
 	readSeeker, isReadSeeker := f.(io.ReadSeeker)
 	require.True(t, isReadSeeker)
@@ -19,7 +19,7 @@ func TestWavParse16Bit(t *testing.T) {
 	require.NoError(t, err)
 
 	require.True(t, valid)
-	require.Equal(t, formatStruct.Type, format.TypeWav)
+	require.Equal(t, formatStruct.Type, TypeWav)
 	require.Equal(t, uint16(2), formatStruct.Channels)
 	require.Equal(t, uint32(48000), formatStruct.SampleRate)
 	require.Equal(t, uint16(16), formatStruct.BitsPerSample)
@@ -28,6 +28,7 @@ func TestWavParse16Bit(t *testing.T) {
 func TestWavParse24Bit(t *testing.T) {
 	f, err := samplessanity.Files.Open(samplessanity.SierraDrum2_24BitWav)
 	require.NoError(t, err)
+	defer f.Close()
 
 	readSeeker, isReadSeeker := f.(io.ReadSeeker)
 	require.True(t, isReadSeeker)
@@ -36,7 +37,7 @@ func TestWavParse24Bit(t *testing.T) {
 	require.NoError(t, err)
 
 	require.True(t, valid)
-	require.Equal(t, formatStruct.Type, format.TypeWav)
+	require.Equal(t, formatStruct.Type, TypeWav)
 	require.Equal(t, uint16(2), formatStruct.Channels)
 	require.Equal(t, uint32(48000), formatStruct.SampleRate)
 	require.Equal(t, uint16(24), formatStruct.BitsPerSample)
@@ -45,6 +46,7 @@ func TestWavParse24Bit(t *testing.T) {
 func TestWavParseNoJunk(t *testing.T) {
 	f, err := samplessanity.Files.Open(samplessanity.SierraPianoNoJunkWav)
 	require.NoError(t, err)
+	defer f.Close()
 
 	readSeeker, isReadSeeker := f.(io.ReadSeeker)
 	require.True(t, isReadSeeker)
@@ -53,7 +55,7 @@ func TestWavParseNoJunk(t *testing.T) {
 	require.NoError(t, err)
 
 	require.True(t, valid)
-	require.Equal(t, formatStruct.Type, format.TypeWav)
+	require.Equal(t, formatStruct.Type, TypeWav)
 	require.Equal(t, uint16(2), formatStruct.Channels)
 	require.Equal(t, uint32(48000), formatStruct.SampleRate)
 	require.Equal(t, uint16(16), formatStruct.BitsPerSample)

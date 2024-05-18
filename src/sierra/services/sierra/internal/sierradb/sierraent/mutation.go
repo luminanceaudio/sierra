@@ -38,8 +38,8 @@ type SampleMutation struct {
 	typ           string
 	id            *string
 	format        *string
-	length        *int64
-	addlength     *int64
+	duration      *int64
+	addduration   *int64
 	clearedFields map[string]struct{}
 	source        map[string]struct{}
 	removedsource map[string]struct{}
@@ -202,74 +202,74 @@ func (m *SampleMutation) ResetFormat() {
 	delete(m.clearedFields, sample.FieldFormat)
 }
 
-// SetLength sets the "length" field.
-func (m *SampleMutation) SetLength(i int64) {
-	m.length = &i
-	m.addlength = nil
+// SetDuration sets the "duration" field.
+func (m *SampleMutation) SetDuration(i int64) {
+	m.duration = &i
+	m.addduration = nil
 }
 
-// Length returns the value of the "length" field in the mutation.
-func (m *SampleMutation) Length() (r int64, exists bool) {
-	v := m.length
+// Duration returns the value of the "duration" field in the mutation.
+func (m *SampleMutation) Duration() (r int64, exists bool) {
+	v := m.duration
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLength returns the old "length" field's value of the Sample entity.
+// OldDuration returns the old "duration" field's value of the Sample entity.
 // If the Sample object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SampleMutation) OldLength(ctx context.Context) (v int64, err error) {
+func (m *SampleMutation) OldDuration(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLength is only allowed on UpdateOne operations")
+		return v, errors.New("OldDuration is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLength requires an ID field in the mutation")
+		return v, errors.New("OldDuration requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLength: %w", err)
+		return v, fmt.Errorf("querying old value for OldDuration: %w", err)
 	}
-	return oldValue.Length, nil
+	return oldValue.Duration, nil
 }
 
-// AddLength adds i to the "length" field.
-func (m *SampleMutation) AddLength(i int64) {
-	if m.addlength != nil {
-		*m.addlength += i
+// AddDuration adds i to the "duration" field.
+func (m *SampleMutation) AddDuration(i int64) {
+	if m.addduration != nil {
+		*m.addduration += i
 	} else {
-		m.addlength = &i
+		m.addduration = &i
 	}
 }
 
-// AddedLength returns the value that was added to the "length" field in this mutation.
-func (m *SampleMutation) AddedLength() (r int64, exists bool) {
-	v := m.addlength
+// AddedDuration returns the value that was added to the "duration" field in this mutation.
+func (m *SampleMutation) AddedDuration() (r int64, exists bool) {
+	v := m.addduration
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ClearLength clears the value of the "length" field.
-func (m *SampleMutation) ClearLength() {
-	m.length = nil
-	m.addlength = nil
-	m.clearedFields[sample.FieldLength] = struct{}{}
+// ClearDuration clears the value of the "duration" field.
+func (m *SampleMutation) ClearDuration() {
+	m.duration = nil
+	m.addduration = nil
+	m.clearedFields[sample.FieldDuration] = struct{}{}
 }
 
-// LengthCleared returns if the "length" field was cleared in this mutation.
-func (m *SampleMutation) LengthCleared() bool {
-	_, ok := m.clearedFields[sample.FieldLength]
+// DurationCleared returns if the "duration" field was cleared in this mutation.
+func (m *SampleMutation) DurationCleared() bool {
+	_, ok := m.clearedFields[sample.FieldDuration]
 	return ok
 }
 
-// ResetLength resets all changes to the "length" field.
-func (m *SampleMutation) ResetLength() {
-	m.length = nil
-	m.addlength = nil
-	delete(m.clearedFields, sample.FieldLength)
+// ResetDuration resets all changes to the "duration" field.
+func (m *SampleMutation) ResetDuration() {
+	m.duration = nil
+	m.addduration = nil
+	delete(m.clearedFields, sample.FieldDuration)
 }
 
 // AddSourceIDs adds the "source" edge to the SourceSample entity by ids.
@@ -364,8 +364,8 @@ func (m *SampleMutation) Fields() []string {
 	if m.format != nil {
 		fields = append(fields, sample.FieldFormat)
 	}
-	if m.length != nil {
-		fields = append(fields, sample.FieldLength)
+	if m.duration != nil {
+		fields = append(fields, sample.FieldDuration)
 	}
 	return fields
 }
@@ -377,8 +377,8 @@ func (m *SampleMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case sample.FieldFormat:
 		return m.Format()
-	case sample.FieldLength:
-		return m.Length()
+	case sample.FieldDuration:
+		return m.Duration()
 	}
 	return nil, false
 }
@@ -390,8 +390,8 @@ func (m *SampleMutation) OldField(ctx context.Context, name string) (ent.Value, 
 	switch name {
 	case sample.FieldFormat:
 		return m.OldFormat(ctx)
-	case sample.FieldLength:
-		return m.OldLength(ctx)
+	case sample.FieldDuration:
+		return m.OldDuration(ctx)
 	}
 	return nil, fmt.Errorf("unknown Sample field %s", name)
 }
@@ -408,12 +408,12 @@ func (m *SampleMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetFormat(v)
 		return nil
-	case sample.FieldLength:
+	case sample.FieldDuration:
 		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLength(v)
+		m.SetDuration(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Sample field %s", name)
@@ -423,8 +423,8 @@ func (m *SampleMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *SampleMutation) AddedFields() []string {
 	var fields []string
-	if m.addlength != nil {
-		fields = append(fields, sample.FieldLength)
+	if m.addduration != nil {
+		fields = append(fields, sample.FieldDuration)
 	}
 	return fields
 }
@@ -434,8 +434,8 @@ func (m *SampleMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *SampleMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case sample.FieldLength:
-		return m.AddedLength()
+	case sample.FieldDuration:
+		return m.AddedDuration()
 	}
 	return nil, false
 }
@@ -445,12 +445,12 @@ func (m *SampleMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *SampleMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case sample.FieldLength:
+	case sample.FieldDuration:
 		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddLength(v)
+		m.AddDuration(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Sample numeric field %s", name)
@@ -463,8 +463,8 @@ func (m *SampleMutation) ClearedFields() []string {
 	if m.FieldCleared(sample.FieldFormat) {
 		fields = append(fields, sample.FieldFormat)
 	}
-	if m.FieldCleared(sample.FieldLength) {
-		fields = append(fields, sample.FieldLength)
+	if m.FieldCleared(sample.FieldDuration) {
+		fields = append(fields, sample.FieldDuration)
 	}
 	return fields
 }
@@ -483,8 +483,8 @@ func (m *SampleMutation) ClearField(name string) error {
 	case sample.FieldFormat:
 		m.ClearFormat()
 		return nil
-	case sample.FieldLength:
-		m.ClearLength()
+	case sample.FieldDuration:
+		m.ClearDuration()
 		return nil
 	}
 	return fmt.Errorf("unknown Sample nullable field %s", name)
@@ -497,8 +497,8 @@ func (m *SampleMutation) ResetField(name string) error {
 	case sample.FieldFormat:
 		m.ResetFormat()
 		return nil
-	case sample.FieldLength:
-		m.ResetLength()
+	case sample.FieldDuration:
+		m.ResetDuration()
 		return nil
 	}
 	return fmt.Errorf("unknown Sample field %s", name)
@@ -1020,6 +1020,7 @@ type SourceSampleMutation struct {
 	typ           string
 	id            *string
 	relative_path *string
+	filename      *string
 	clearedFields map[string]struct{}
 	source        *string
 	clearedsource bool
@@ -1170,6 +1171,42 @@ func (m *SourceSampleMutation) ResetRelativePath() {
 	m.relative_path = nil
 }
 
+// SetFilename sets the "filename" field.
+func (m *SourceSampleMutation) SetFilename(s string) {
+	m.filename = &s
+}
+
+// Filename returns the value of the "filename" field in the mutation.
+func (m *SourceSampleMutation) Filename() (r string, exists bool) {
+	v := m.filename
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFilename returns the old "filename" field's value of the SourceSample entity.
+// If the SourceSample object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SourceSampleMutation) OldFilename(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFilename is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFilename requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFilename: %w", err)
+	}
+	return oldValue.Filename, nil
+}
+
+// ResetFilename resets all changes to the "filename" field.
+func (m *SourceSampleMutation) ResetFilename() {
+	m.filename = nil
+}
+
 // SetSourceID sets the "source" edge to the Source entity by id.
 func (m *SourceSampleMutation) SetSourceID(id string) {
 	m.source = &id
@@ -1282,9 +1319,12 @@ func (m *SourceSampleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SourceSampleMutation) Fields() []string {
-	fields := make([]string, 0, 1)
+	fields := make([]string, 0, 2)
 	if m.relative_path != nil {
 		fields = append(fields, sourcesample.FieldRelativePath)
+	}
+	if m.filename != nil {
+		fields = append(fields, sourcesample.FieldFilename)
 	}
 	return fields
 }
@@ -1296,6 +1336,8 @@ func (m *SourceSampleMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case sourcesample.FieldRelativePath:
 		return m.RelativePath()
+	case sourcesample.FieldFilename:
+		return m.Filename()
 	}
 	return nil, false
 }
@@ -1307,6 +1349,8 @@ func (m *SourceSampleMutation) OldField(ctx context.Context, name string) (ent.V
 	switch name {
 	case sourcesample.FieldRelativePath:
 		return m.OldRelativePath(ctx)
+	case sourcesample.FieldFilename:
+		return m.OldFilename(ctx)
 	}
 	return nil, fmt.Errorf("unknown SourceSample field %s", name)
 }
@@ -1322,6 +1366,13 @@ func (m *SourceSampleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRelativePath(v)
+		return nil
+	case sourcesample.FieldFilename:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFilename(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SourceSample field %s", name)
@@ -1374,6 +1425,9 @@ func (m *SourceSampleMutation) ResetField(name string) error {
 	switch name {
 	case sourcesample.FieldRelativePath:
 		m.ResetRelativePath()
+		return nil
+	case sourcesample.FieldFilename:
+		m.ResetFilename()
 		return nil
 	}
 	return fmt.Errorf("unknown SourceSample field %s", name)

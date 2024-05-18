@@ -11,8 +11,7 @@ export type SampleProps = {
 };
 
 function Sample({ sample }: SampleProps): React.ReactNode {
-  const { audioUri, setAudioUri, isPlaying, setIsPlaying, duration } =
-    useAudioPlayer();
+  const { audioUri, setAudioUri, isPlaying, setIsPlaying } = useAudioPlayer();
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, uri: string) => {
     e.preventDefault();
@@ -22,52 +21,49 @@ function Sample({ sample }: SampleProps): React.ReactNode {
   const isCurrentAudio = audioUri === sample.uri;
 
   return (
-    <div
+    <tr
       key={sample.sha256}
       style={{
-        display: 'flex',
-        flex: 1,
-        gap: 10,
-        alignItems: 'center',
-        border: '3px solid #f1f1f1',
-        borderRadius: 50,
         position: 'relative',
-        overflow: 'hidden',
       }}
       draggable
       onDragStart={(e) => handleDragStart(e, sample.uri)}
     >
-      {isCurrentAudio && isPlaying ? (
-        <StyledProgress
-          style={{
-            animationPlayState: 'running',
-            animationDuration: `${duration}s`,
-          }}
-        />
-      ) : (
-        ''
-      )}
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <Button
-        onClick={() => {
-          if (!isCurrentAudio) {
-            setAudioUri(sample.uri);
-            return;
-          }
-
-          setIsPlaying(!isPlaying);
-        }}
-      >
+      <td style={{ width: '10%' }}>
         {isCurrentAudio && isPlaying ? (
-          <PauseIcon width={20} />
+          <StyledProgress
+            style={{
+              animationPlayState: 'running',
+              animationDuration: `${sample.duration / 1000.0}s`,
+            }}
+          />
         ) : (
-          <PlayIcon width={20} />
+          ''
         )}
-      </Button>
-      <span style={{ color: '#333333', fontSize: 13 }}>
+        <Button
+          onClick={() => {
+            if (!isCurrentAudio) {
+              setAudioUri(sample.uri);
+              return;
+            }
+
+            setIsPlaying(!isPlaying);
+          }}
+        >
+          {isCurrentAudio && isPlaying ? (
+            <PauseIcon width={15} />
+          ) : (
+            <PlayIcon width={15} />
+          )}
+        </Button>
+      </td>
+
+      <td style={{ color: '#333333', width: '70%' }}>
         {path.basename(sample.uri)}
-      </span>
-    </div>
+      </td>
+      <td style={{ width: '20%' }}>{Math.ceil(sample.duration / 1000.0)}s</td>
+    </tr>
   );
 }
 

@@ -3,17 +3,27 @@ import { useSamples, useSamplesCount } from '../../../api/samples';
 import Search from '../Search/Search';
 import Sample from './Sample';
 import Paginate from '../Paginate/Paginate';
+/* eslint-disable camelcase */
+import {
+  SortColumn_Enum,
+  SortDirection_Enum,
+} from '../../../proto/app/appbase';
+import TableHead from '../Table/TableHead';
 
 const pageSize = 8;
 
 function Samples(): React.ReactElement {
   const [search, setSearch] = React.useState('');
   const [page, setPage] = React.useState(1);
+  const [sortColumn, setSortColumn] = React.useState(SortColumn_Enum.Name);
+  const [sortDirection, setSortDirection] = React.useState<SortDirection_Enum>(
+    SortDirection_Enum.Asc,
+  );
   const {
     data: samples,
     isLoading,
     refetch,
-  } = useSamples(search, page, pageSize);
+  } = useSamples(search, page, pageSize, sortColumn, sortDirection);
   const { data: totalCount } = useSamplesCount(search);
 
   useEffect(() => {
@@ -42,24 +52,47 @@ function Samples(): React.ReactElement {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
         }}
       >
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
-            width: '100%',
-            maxWidth: 300,
             gap: 15,
           }}
         >
-          {isLoading
-            ? ''
-            : samples?.data?.samples?.map((sample) => {
-                return <Sample key={sample.uri} sample={sample} />;
-              })}
-
+          <table style={{ flex: 1, textAlign: 'left', fontSize: 14 }}>
+            <thead>
+              <tr>
+                <th />
+                <TableHead
+                  name="Name"
+                  column={SortColumn_Enum.Name}
+                  setPage={setPage}
+                  sortColumn={sortColumn}
+                  setSortColumn={setSortColumn}
+                  sortDirection={sortDirection}
+                  setSortDirection={setSortDirection}
+                />
+                <TableHead
+                  name="Duration"
+                  column={SortColumn_Enum.Duration}
+                  setPage={setPage}
+                  sortColumn={sortColumn}
+                  setSortColumn={setSortColumn}
+                  sortDirection={sortDirection}
+                  setSortDirection={setSortDirection}
+                />
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading
+                ? null
+                : samples?.data?.samples?.map((sample) => {
+                    return <Sample key={sample.uri} sample={sample} />;
+                  })}
+            </tbody>
+          </table>
           <Paginate
             page={page}
             onChangePage={setPage}

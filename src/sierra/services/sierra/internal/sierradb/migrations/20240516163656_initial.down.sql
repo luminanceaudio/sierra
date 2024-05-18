@@ -1,3 +1,5 @@
+-- reverse: create index "sourcesample_relative_path" to table: "source_samples"
+DROP INDEX `sourcesample_relative_path`;
 -- reverse: create index "sourcesample_uri" to table: "source_samples"
 DROP INDEX `sourcesample_uri`;
 -- reverse: create "source_samples" table

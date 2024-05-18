@@ -30,6 +30,12 @@ func (ssc *SourceSampleCreate) SetRelativePath(s string) *SourceSampleCreate {
 	return ssc
 }
 
+// SetFilename sets the "filename" field.
+func (ssc *SourceSampleCreate) SetFilename(s string) *SourceSampleCreate {
+	ssc.mutation.SetFilename(s)
+	return ssc
+}
+
 // SetID sets the "id" field.
 func (ssc *SourceSampleCreate) SetID(s string) *SourceSampleCreate {
 	ssc.mutation.SetID(s)
@@ -111,6 +117,9 @@ func (ssc *SourceSampleCreate) check() error {
 	if _, ok := ssc.mutation.RelativePath(); !ok {
 		return &ValidationError{Name: "relative_path", err: errors.New(`sierraent: missing required field "SourceSample.relative_path"`)}
 	}
+	if _, ok := ssc.mutation.Filename(); !ok {
+		return &ValidationError{Name: "filename", err: errors.New(`sierraent: missing required field "SourceSample.filename"`)}
+	}
 	return nil
 }
 
@@ -150,6 +159,10 @@ func (ssc *SourceSampleCreate) createSpec() (*SourceSample, *sqlgraph.CreateSpec
 	if value, ok := ssc.mutation.RelativePath(); ok {
 		_spec.SetField(sourcesample.FieldRelativePath, field.TypeString, value)
 		_node.RelativePath = value
+	}
+	if value, ok := ssc.mutation.Filename(); ok {
+		_spec.SetField(sourcesample.FieldFilename, field.TypeString, value)
+		_node.Filename = value
 	}
 	if nodes := ssc.mutation.SourceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -256,6 +269,9 @@ func (u *SourceSampleUpsertOne) UpdateNewValues() *SourceSampleUpsertOne {
 		}
 		if _, exists := u.create.mutation.RelativePath(); exists {
 			s.SetIgnore(sourcesample.FieldRelativePath)
+		}
+		if _, exists := u.create.mutation.Filename(); exists {
+			s.SetIgnore(sourcesample.FieldFilename)
 		}
 	}))
 	return u
@@ -472,6 +488,9 @@ func (u *SourceSampleUpsertBulk) UpdateNewValues() *SourceSampleUpsertBulk {
 			}
 			if _, exists := b.mutation.RelativePath(); exists {
 				s.SetIgnore(sourcesample.FieldRelativePath)
+			}
+			if _, exists := b.mutation.Filename(); exists {
+				s.SetIgnore(sourcesample.FieldFilename)
 			}
 		}
 	}))

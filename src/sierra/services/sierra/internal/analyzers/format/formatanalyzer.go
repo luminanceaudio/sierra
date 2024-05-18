@@ -7,8 +7,6 @@ import (
 	"slices"
 )
 
-// TODO: Make it so when a new analyzer version is out it will invalidate the existing data
-
 var blacklistedFilenames = []string{
 	".DS_Store",
 }
