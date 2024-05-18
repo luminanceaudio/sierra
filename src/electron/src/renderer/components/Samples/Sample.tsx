@@ -30,7 +30,7 @@ function Sample({ sample }: SampleProps): React.ReactNode {
       onDragStart={(e) => handleDragStart(e, sample.uri)}
     >
       {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <td>
+      <td style={{ width: '10%' }}>
         {isCurrentAudio && isPlaying ? (
           <StyledProgress
             style={{
@@ -59,8 +59,10 @@ function Sample({ sample }: SampleProps): React.ReactNode {
         </Button>
       </td>
 
-      <td style={{ color: '#333333' }}>{path.basename(sample.uri)}</td>
-      <td>{Math.ceil(sample.duration / 1000.0)}s</td>
+      <td style={{ color: '#333333', width: '70%' }}>
+        {path.basename(sample.uri)}
+      </td>
+      <td style={{ width: '20%' }}>{Math.ceil(sample.duration / 1000.0)}s</td>
     </tr>
   );
 }

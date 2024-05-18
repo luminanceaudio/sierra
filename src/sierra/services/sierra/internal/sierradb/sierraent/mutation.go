@@ -1020,6 +1020,7 @@ type SourceSampleMutation struct {
 	typ           string
 	id            *string
 	relative_path *string
+	filename      *string
 	clearedFields map[string]struct{}
 	source        *string
 	clearedsource bool
@@ -1170,6 +1171,42 @@ func (m *SourceSampleMutation) ResetRelativePath() {
 	m.relative_path = nil
 }
 
+// SetFilename sets the "filename" field.
+func (m *SourceSampleMutation) SetFilename(s string) {
+	m.filename = &s
+}
+
+// Filename returns the value of the "filename" field in the mutation.
+func (m *SourceSampleMutation) Filename() (r string, exists bool) {
+	v := m.filename
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFilename returns the old "filename" field's value of the SourceSample entity.
+// If the SourceSample object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SourceSampleMutation) OldFilename(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFilename is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFilename requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFilename: %w", err)
+	}
+	return oldValue.Filename, nil
+}
+
+// ResetFilename resets all changes to the "filename" field.
+func (m *SourceSampleMutation) ResetFilename() {
+	m.filename = nil
+}
+
 // SetSourceID sets the "source" edge to the Source entity by id.
 func (m *SourceSampleMutation) SetSourceID(id string) {
 	m.source = &id
@@ -1282,9 +1319,12 @@ func (m *SourceSampleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SourceSampleMutation) Fields() []string {
-	fields := make([]string, 0, 1)
+	fields := make([]string, 0, 2)
 	if m.relative_path != nil {
 		fields = append(fields, sourcesample.FieldRelativePath)
+	}
+	if m.filename != nil {
+		fields = append(fields, sourcesample.FieldFilename)
 	}
 	return fields
 }
@@ -1296,6 +1336,8 @@ func (m *SourceSampleMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case sourcesample.FieldRelativePath:
 		return m.RelativePath()
+	case sourcesample.FieldFilename:
+		return m.Filename()
 	}
 	return nil, false
 }
@@ -1307,6 +1349,8 @@ func (m *SourceSampleMutation) OldField(ctx context.Context, name string) (ent.V
 	switch name {
 	case sourcesample.FieldRelativePath:
 		return m.OldRelativePath(ctx)
+	case sourcesample.FieldFilename:
+		return m.OldFilename(ctx)
 	}
 	return nil, fmt.Errorf("unknown SourceSample field %s", name)
 }
@@ -1322,6 +1366,13 @@ func (m *SourceSampleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRelativePath(v)
+		return nil
+	case sourcesample.FieldFilename:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFilename(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SourceSample field %s", name)
@@ -1374,6 +1425,9 @@ func (m *SourceSampleMutation) ResetField(name string) error {
 	switch name {
 	case sourcesample.FieldRelativePath:
 		m.ResetRelativePath()
+		return nil
+	case sourcesample.FieldFilename:
+		m.ResetFilename()
 		return nil
 	}
 	return fmt.Errorf("unknown SourceSample field %s", name)

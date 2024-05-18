@@ -68,6 +68,11 @@ func RelativePath(v string) predicate.SourceSample {
 	return predicate.SourceSample(sql.FieldEQ(FieldRelativePath, v))
 }
 
+// Filename applies equality check predicate on the "filename" field. It's identical to FilenameEQ.
+func Filename(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldEQ(FieldFilename, v))
+}
+
 // RelativePathEQ applies the EQ predicate on the "relative_path" field.
 func RelativePathEQ(v string) predicate.SourceSample {
 	return predicate.SourceSample(sql.FieldEQ(FieldRelativePath, v))
@@ -131,6 +136,71 @@ func RelativePathEqualFold(v string) predicate.SourceSample {
 // RelativePathContainsFold applies the ContainsFold predicate on the "relative_path" field.
 func RelativePathContainsFold(v string) predicate.SourceSample {
 	return predicate.SourceSample(sql.FieldContainsFold(FieldRelativePath, v))
+}
+
+// FilenameEQ applies the EQ predicate on the "filename" field.
+func FilenameEQ(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldEQ(FieldFilename, v))
+}
+
+// FilenameNEQ applies the NEQ predicate on the "filename" field.
+func FilenameNEQ(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldNEQ(FieldFilename, v))
+}
+
+// FilenameIn applies the In predicate on the "filename" field.
+func FilenameIn(vs ...string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldIn(FieldFilename, vs...))
+}
+
+// FilenameNotIn applies the NotIn predicate on the "filename" field.
+func FilenameNotIn(vs ...string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldNotIn(FieldFilename, vs...))
+}
+
+// FilenameGT applies the GT predicate on the "filename" field.
+func FilenameGT(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldGT(FieldFilename, v))
+}
+
+// FilenameGTE applies the GTE predicate on the "filename" field.
+func FilenameGTE(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldGTE(FieldFilename, v))
+}
+
+// FilenameLT applies the LT predicate on the "filename" field.
+func FilenameLT(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldLT(FieldFilename, v))
+}
+
+// FilenameLTE applies the LTE predicate on the "filename" field.
+func FilenameLTE(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldLTE(FieldFilename, v))
+}
+
+// FilenameContains applies the Contains predicate on the "filename" field.
+func FilenameContains(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldContains(FieldFilename, v))
+}
+
+// FilenameHasPrefix applies the HasPrefix predicate on the "filename" field.
+func FilenameHasPrefix(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldHasPrefix(FieldFilename, v))
+}
+
+// FilenameHasSuffix applies the HasSuffix predicate on the "filename" field.
+func FilenameHasSuffix(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldHasSuffix(FieldFilename, v))
+}
+
+// FilenameEqualFold applies the EqualFold predicate on the "filename" field.
+func FilenameEqualFold(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldEqualFold(FieldFilename, v))
+}
+
+// FilenameContainsFold applies the ContainsFold predicate on the "filename" field.
+func FilenameContainsFold(v string) predicate.SourceSample {
+	return predicate.SourceSample(sql.FieldContainsFold(FieldFilename, v))
 }
 
 // HasSource applies the HasEdge predicate on the "source" edge.

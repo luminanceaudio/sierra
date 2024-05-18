@@ -1,16 +1,14 @@
 import React, { useEffect } from 'react';
-import { ChevronUpDownIcon } from '@heroicons/react/24/solid';
 import { useSamples, useSamplesCount } from '../../../api/samples';
 import Search from '../Search/Search';
 import Sample from './Sample';
 import Paginate from '../Paginate/Paginate';
-import { StyledTableHead } from './Samples.style';
-import Clickable from '../Clickable/Clickable';
 /* eslint-disable camelcase */
 import {
   SortColumn_Enum,
   SortDirection_Enum,
 } from '../../../proto/app/appbase';
+import TableHead from '../Table/TableHead';
 
 const pageSize = 8;
 
@@ -66,33 +64,25 @@ function Samples(): React.ReactElement {
           <table style={{ flex: 1, textAlign: 'left', fontSize: 14 }}>
             <thead>
               <tr>
-                <StyledTableHead />
-                <StyledTableHead>Name</StyledTableHead>
-                <StyledTableHead>
-                  <Clickable
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2,
-                      fontWeight: 'inherit',
-                      fontSize: 'inherit',
-                    }}
-                    onClick={() => {
-                      setSortColumn(SortColumn_Enum.Duration);
-                      setSortDirection(
-                        sortDirection === SortDirection_Enum.Asc
-                          ? SortDirection_Enum.Desc
-                          : SortDirection_Enum.Asc,
-                      );
-                    }}
-                  >
-                    Duration
-                    <ChevronUpDownIcon
-                      width={15}
-                      style={{ color: '#787878' }}
-                    />
-                  </Clickable>
-                </StyledTableHead>
+                <th />
+                <TableHead
+                  name="Name"
+                  column={SortColumn_Enum.Name}
+                  setPage={setPage}
+                  sortColumn={sortColumn}
+                  setSortColumn={setSortColumn}
+                  sortDirection={sortDirection}
+                  setSortDirection={setSortDirection}
+                />
+                <TableHead
+                  name="Duration"
+                  column={SortColumn_Enum.Duration}
+                  setPage={setPage}
+                  sortColumn={sortColumn}
+                  setSortColumn={setSortColumn}
+                  sortDirection={sortDirection}
+                  setSortDirection={setSortDirection}
+                />
               </tr>
             </thead>
             <tbody>

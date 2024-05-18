@@ -49,6 +49,7 @@ var (
 	SourceSamplesColumns = []*schema.Column{
 		{Name: "uri", Type: field.TypeString, Unique: true},
 		{Name: "relative_path", Type: field.TypeString},
+		{Name: "filename", Type: field.TypeString},
 		{Name: "source", Type: field.TypeString, Nullable: true},
 		{Name: "sample", Type: field.TypeString, Nullable: true},
 	}
@@ -60,13 +61,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "source_samples_sources_source",
-				Columns:    []*schema.Column{SourceSamplesColumns[2]},
+				Columns:    []*schema.Column{SourceSamplesColumns[3]},
 				RefColumns: []*schema.Column{SourcesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "source_samples_samples_sample",
-				Columns:    []*schema.Column{SourceSamplesColumns[3]},
+				Columns:    []*schema.Column{SourceSamplesColumns[4]},
 				RefColumns: []*schema.Column{SamplesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -81,6 +82,11 @@ var (
 				Name:    "sourcesample_relative_path",
 				Unique:  false,
 				Columns: []*schema.Column{SourceSamplesColumns[1]},
+			},
+			{
+				Name:    "sourcesample_filename",
+				Unique:  false,
+				Columns: []*schema.Column{SourceSamplesColumns[2]},
 			},
 		},
 	}

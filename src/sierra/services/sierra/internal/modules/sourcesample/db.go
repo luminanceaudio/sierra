@@ -13,6 +13,7 @@ import (
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 	"github.com/sirupsen/logrus"
+	"path/filepath"
 	"strings"
 )
 
@@ -89,7 +90,7 @@ func getAll(ctx context.Context, query string, page, size *int, sortDirection *m
 	if sortColumn != nil {
 		switch *sortColumn {
 		case models.SortColumn_Name:
-			q = q.Order(sourcesample.ByRelativePath(order))
+			q = q.Order(sourcesample.ByFilename(order))
 		case models.SortColumn_Duration:
 			q = q.Order(sourcesample.BySampleField(sample.FieldDuration, order))
 		}
@@ -143,6 +144,7 @@ func Upsert(ctx context.Context, sha256Str string, sourceUri, fileUri *uri.URI) 
 		SetSampleID(sha256Str).
 		SetSourceID(sourceUri.String()).
 		SetRelativePath(relativePath).
+		SetFilename(filepath.Base(relativePath)).
 		OnConflictColumns(sourcesample.FieldID).
 		UpdateNewValues().
 		Exec(ctx)

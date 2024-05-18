@@ -14,6 +14,8 @@ const (
 	FieldID = "uri"
 	// FieldRelativePath holds the string denoting the relative_path field in the database.
 	FieldRelativePath = "relative_path"
+	// FieldFilename holds the string denoting the filename field in the database.
+	FieldFilename = "filename"
 	// EdgeSource holds the string denoting the source edge name in mutations.
 	EdgeSource = "source"
 	// EdgeSample holds the string denoting the sample edge name in mutations.
@@ -42,6 +44,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldRelativePath,
+	FieldFilename,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "source_samples"
@@ -77,6 +80,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByRelativePath orders the results by the relative_path field.
 func ByRelativePath(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRelativePath, opts...).ToFunc()
+}
+
+// ByFilename orders the results by the filename field.
+func ByFilename(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFilename, opts...).ToFunc()
 }
 
 // BySourceField orders the results by source field.
