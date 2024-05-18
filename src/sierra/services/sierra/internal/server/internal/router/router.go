@@ -23,11 +23,10 @@ func ListenAndServe(ctx context.Context) error {
 	api.RoutePOST(router, api.Public, "/api/v1/app/source/delete", sources.DeleteSource)
 
 	// Samples
-	api.RouteGET(router, api.Public, "/api/v1/app/sample/search/paginated/:page", samples.SearchSamples)
-	api.RouteGET(router, api.Public, "/api/v1/app/sample/search/paginated/:page/:query", samples.SearchSamples)
+	api.RoutePOST(router, api.Public, "/api/v1/app/sample/query", samples.QuerySamples)
 
-	api.RouteGET(router, api.Public, "/api/v1/app/sample/search/count", samples.GetSamplesCount)
-	api.RouteGET(router, api.Public, "/api/v1/app/sample/search/count/:query", samples.GetSamplesCount)
+	api.RoutePOST(router, api.Public, "/api/v1/app/sample/query/count", samples.QuerySamplesCount)
+	api.RoutePOST(router, api.Public, "/api/v1/app/sample/query/count/:query", samples.QuerySamplesCount)
 
 	api.RouteGET(router, api.Public, "/api/v1/app/sample/load/*uri", audio.Load)
 

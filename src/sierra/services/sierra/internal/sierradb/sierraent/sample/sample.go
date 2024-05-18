@@ -14,8 +14,8 @@ const (
 	FieldID = "sha256"
 	// FieldFormat holds the string denoting the format field in the database.
 	FieldFormat = "format"
-	// FieldLength holds the string denoting the length field in the database.
-	FieldLength = "length"
+	// FieldDuration holds the string denoting the duration field in the database.
+	FieldDuration = "duration"
 	// EdgeSource holds the string denoting the source edge name in mutations.
 	EdgeSource = "source"
 	// SourceSampleFieldID holds the string denoting the ID field of the SourceSample.
@@ -35,7 +35,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldFormat,
-	FieldLength,
+	FieldDuration,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -61,9 +61,9 @@ func ByFormat(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFormat, opts...).ToFunc()
 }
 
-// ByLength orders the results by the length field.
-func ByLength(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLength, opts...).ToFunc()
+// ByDuration orders the results by the duration field.
+func ByDuration(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDuration, opts...).ToFunc()
 }
 
 // BySourceCount orders the results by source count.

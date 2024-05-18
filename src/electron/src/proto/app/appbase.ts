@@ -1,4 +1,5 @@
 /* eslint-disable */
+import Long from "long";
 import _m0 from "protobufjs/minimal";
 import { Timestamp } from "./google/protobuf/timestamp";
 
@@ -9,6 +10,7 @@ export interface Sample {
   format: string;
   sourceUri: string;
   uri: string;
+  duration: number;
 }
 
 export interface Source {
@@ -16,8 +18,86 @@ export interface Source {
   createTime: Date | undefined;
 }
 
+export interface SortDirection {
+}
+
+export enum SortDirection_Enum {
+  Asc = 0,
+  Desc = 1,
+  UNRECOGNIZED = -1,
+}
+
+export function sortDirection_EnumFromJSON(object: any): SortDirection_Enum {
+  switch (object) {
+    case 0:
+    case "Asc":
+      return SortDirection_Enum.Asc;
+    case 1:
+    case "Desc":
+      return SortDirection_Enum.Desc;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return SortDirection_Enum.UNRECOGNIZED;
+  }
+}
+
+export function sortDirection_EnumToJSON(object: SortDirection_Enum): string {
+  switch (object) {
+    case SortDirection_Enum.Asc:
+      return "Asc";
+    case SortDirection_Enum.Desc:
+      return "Desc";
+    case SortDirection_Enum.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
+export interface SortColumn {
+}
+
+export enum SortColumn_Enum {
+  None = 0,
+  Name = 1,
+  Duration = 2,
+  UNRECOGNIZED = -1,
+}
+
+export function sortColumn_EnumFromJSON(object: any): SortColumn_Enum {
+  switch (object) {
+    case 0:
+    case "None":
+      return SortColumn_Enum.None;
+    case 1:
+    case "Name":
+      return SortColumn_Enum.Name;
+    case 2:
+    case "Duration":
+      return SortColumn_Enum.Duration;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return SortColumn_Enum.UNRECOGNIZED;
+  }
+}
+
+export function sortColumn_EnumToJSON(object: SortColumn_Enum): string {
+  switch (object) {
+    case SortColumn_Enum.None:
+      return "None";
+    case SortColumn_Enum.Name:
+      return "Name";
+    case SortColumn_Enum.Duration:
+      return "Duration";
+    case SortColumn_Enum.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 function createBaseSample(): Sample {
-  return { sha256: "", format: "", sourceUri: "", uri: "" };
+  return { sha256: "", format: "", sourceUri: "", uri: "", duration: 0 };
 }
 
 export const Sample = {
@@ -33,6 +113,9 @@ export const Sample = {
     }
     if (message.uri !== "") {
       writer.uint32(34).string(message.uri);
+    }
+    if (message.duration !== 0) {
+      writer.uint32(40).int64(message.duration);
     }
     return writer;
   },
@@ -72,6 +155,13 @@ export const Sample = {
 
           message.uri = reader.string();
           continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.duration = longToNumber(reader.int64() as Long);
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -87,6 +177,7 @@ export const Sample = {
       format: isSet(object.format) ? String(object.format) : "",
       sourceUri: isSet(object.sourceUri) ? String(object.sourceUri) : "",
       uri: isSet(object.uri) ? String(object.uri) : "",
+      duration: isSet(object.duration) ? Number(object.duration) : 0,
     };
   },
 
@@ -104,6 +195,9 @@ export const Sample = {
     if (message.uri !== "") {
       obj.uri = message.uri;
     }
+    if (message.duration !== 0) {
+      obj.duration = Math.round(message.duration);
+    }
     return obj;
   },
 
@@ -116,6 +210,7 @@ export const Sample = {
     message.format = object.format ?? "";
     message.sourceUri = object.sourceUri ?? "";
     message.uri = object.uri ?? "";
+    message.duration = object.duration ?? 0;
     return message;
   },
 };
@@ -194,6 +289,111 @@ export const Source = {
   },
 };
 
+function createBaseSortDirection(): SortDirection {
+  return {};
+}
+
+export const SortDirection = {
+  encode(_: SortDirection, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SortDirection {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSortDirection();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): SortDirection {
+    return {};
+  },
+
+  toJSON(_: SortDirection): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SortDirection>, I>>(base?: I): SortDirection {
+    return SortDirection.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SortDirection>, I>>(_: I): SortDirection {
+    const message = createBaseSortDirection();
+    return message;
+  },
+};
+
+function createBaseSortColumn(): SortColumn {
+  return {};
+}
+
+export const SortColumn = {
+  encode(_: SortColumn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SortColumn {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSortColumn();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): SortColumn {
+    return {};
+  },
+
+  toJSON(_: SortColumn): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<SortColumn>, I>>(base?: I): SortColumn {
+    return SortColumn.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<SortColumn>, I>>(_: I): SortColumn {
+    const message = createBaseSortColumn();
+    return message;
+  },
+};
+
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
+  throw "Unable to locate global object";
+})();
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -225,6 +425,18 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
+}
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
 }
 
 function isSet(value: any): boolean {

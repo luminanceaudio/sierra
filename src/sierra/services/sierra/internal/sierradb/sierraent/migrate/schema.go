@@ -12,7 +12,7 @@ var (
 	SamplesColumns = []*schema.Column{
 		{Name: "sha256", Type: field.TypeString, Unique: true},
 		{Name: "format", Type: field.TypeString, Nullable: true},
-		{Name: "length", Type: field.TypeInt64, Nullable: true},
+		{Name: "duration", Type: field.TypeInt64, Nullable: true},
 	}
 	// SamplesTable holds the schema information for the "samples" table.
 	SamplesTable = &schema.Table{

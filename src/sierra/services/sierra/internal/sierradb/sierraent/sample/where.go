@@ -68,9 +68,9 @@ func Format(v string) predicate.Sample {
 	return predicate.Sample(sql.FieldEQ(FieldFormat, v))
 }
 
-// Length applies equality check predicate on the "length" field. It's identical to LengthEQ.
-func Length(v int64) predicate.Sample {
-	return predicate.Sample(sql.FieldEQ(FieldLength, v))
+// Duration applies equality check predicate on the "duration" field. It's identical to DurationEQ.
+func Duration(v int64) predicate.Sample {
+	return predicate.Sample(sql.FieldEQ(FieldDuration, v))
 }
 
 // FormatEQ applies the EQ predicate on the "format" field.
@@ -148,54 +148,54 @@ func FormatContainsFold(v string) predicate.Sample {
 	return predicate.Sample(sql.FieldContainsFold(FieldFormat, v))
 }
 
-// LengthEQ applies the EQ predicate on the "length" field.
-func LengthEQ(v int64) predicate.Sample {
-	return predicate.Sample(sql.FieldEQ(FieldLength, v))
+// DurationEQ applies the EQ predicate on the "duration" field.
+func DurationEQ(v int64) predicate.Sample {
+	return predicate.Sample(sql.FieldEQ(FieldDuration, v))
 }
 
-// LengthNEQ applies the NEQ predicate on the "length" field.
-func LengthNEQ(v int64) predicate.Sample {
-	return predicate.Sample(sql.FieldNEQ(FieldLength, v))
+// DurationNEQ applies the NEQ predicate on the "duration" field.
+func DurationNEQ(v int64) predicate.Sample {
+	return predicate.Sample(sql.FieldNEQ(FieldDuration, v))
 }
 
-// LengthIn applies the In predicate on the "length" field.
-func LengthIn(vs ...int64) predicate.Sample {
-	return predicate.Sample(sql.FieldIn(FieldLength, vs...))
+// DurationIn applies the In predicate on the "duration" field.
+func DurationIn(vs ...int64) predicate.Sample {
+	return predicate.Sample(sql.FieldIn(FieldDuration, vs...))
 }
 
-// LengthNotIn applies the NotIn predicate on the "length" field.
-func LengthNotIn(vs ...int64) predicate.Sample {
-	return predicate.Sample(sql.FieldNotIn(FieldLength, vs...))
+// DurationNotIn applies the NotIn predicate on the "duration" field.
+func DurationNotIn(vs ...int64) predicate.Sample {
+	return predicate.Sample(sql.FieldNotIn(FieldDuration, vs...))
 }
 
-// LengthGT applies the GT predicate on the "length" field.
-func LengthGT(v int64) predicate.Sample {
-	return predicate.Sample(sql.FieldGT(FieldLength, v))
+// DurationGT applies the GT predicate on the "duration" field.
+func DurationGT(v int64) predicate.Sample {
+	return predicate.Sample(sql.FieldGT(FieldDuration, v))
 }
 
-// LengthGTE applies the GTE predicate on the "length" field.
-func LengthGTE(v int64) predicate.Sample {
-	return predicate.Sample(sql.FieldGTE(FieldLength, v))
+// DurationGTE applies the GTE predicate on the "duration" field.
+func DurationGTE(v int64) predicate.Sample {
+	return predicate.Sample(sql.FieldGTE(FieldDuration, v))
 }
 
-// LengthLT applies the LT predicate on the "length" field.
-func LengthLT(v int64) predicate.Sample {
-	return predicate.Sample(sql.FieldLT(FieldLength, v))
+// DurationLT applies the LT predicate on the "duration" field.
+func DurationLT(v int64) predicate.Sample {
+	return predicate.Sample(sql.FieldLT(FieldDuration, v))
 }
 
-// LengthLTE applies the LTE predicate on the "length" field.
-func LengthLTE(v int64) predicate.Sample {
-	return predicate.Sample(sql.FieldLTE(FieldLength, v))
+// DurationLTE applies the LTE predicate on the "duration" field.
+func DurationLTE(v int64) predicate.Sample {
+	return predicate.Sample(sql.FieldLTE(FieldDuration, v))
 }
 
-// LengthIsNil applies the IsNil predicate on the "length" field.
-func LengthIsNil() predicate.Sample {
-	return predicate.Sample(sql.FieldIsNull(FieldLength))
+// DurationIsNil applies the IsNil predicate on the "duration" field.
+func DurationIsNil() predicate.Sample {
+	return predicate.Sample(sql.FieldIsNull(FieldDuration))
 }
 
-// LengthNotNil applies the NotNil predicate on the "length" field.
-func LengthNotNil() predicate.Sample {
-	return predicate.Sample(sql.FieldNotNull(FieldLength))
+// DurationNotNil applies the NotNil predicate on the "duration" field.
+func DurationNotNil() predicate.Sample {
+	return predicate.Sample(sql.FieldNotNull(FieldDuration))
 }
 
 // HasSource applies the HasEdge predicate on the "source" edge.

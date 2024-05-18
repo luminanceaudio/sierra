@@ -1,15 +1,36 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import { Sample, Source } from "./appbase";
+import {
+  Sample,
+  SortColumn_Enum,
+  sortColumn_EnumFromJSON,
+  sortColumn_EnumToJSON,
+  SortDirection_Enum,
+  sortDirection_EnumFromJSON,
+  sortDirection_EnumToJSON,
+  Source,
+} from "./appbase";
 
 export const protobufPackage = "sierra_app";
 
-export interface GetSamplesResponse {
+export interface QuerySamplesRequest {
+  query: string;
+  page: number;
+  size: number;
+  sortDirection: SortDirection_Enum;
+  sortColumn: SortColumn_Enum;
+}
+
+export interface QuerySamplesResponse {
   samples: Sample[];
 }
 
-export interface GetSamplesCountResponse {
+export interface QuerySamplesCountRequest {
+  query: string;
+}
+
+export interface QuerySamplesCountResponse {
   count: number;
 }
 
@@ -31,22 +52,141 @@ export interface DeleteSourceRequest {
 export interface DeleteSourceResponse {
 }
 
-function createBaseGetSamplesResponse(): GetSamplesResponse {
+function createBaseQuerySamplesRequest(): QuerySamplesRequest {
+  return { query: "", page: 0, size: 0, sortDirection: 0, sortColumn: 0 };
+}
+
+export const QuerySamplesRequest = {
+  encode(message: QuerySamplesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.query !== "") {
+      writer.uint32(10).string(message.query);
+    }
+    if (message.page !== 0) {
+      writer.uint32(16).int32(message.page);
+    }
+    if (message.size !== 0) {
+      writer.uint32(24).int32(message.size);
+    }
+    if (message.sortDirection !== 0) {
+      writer.uint32(32).int32(message.sortDirection);
+    }
+    if (message.sortColumn !== 0) {
+      writer.uint32(40).int32(message.sortColumn);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QuerySamplesRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySamplesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.query = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.page = reader.int32();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.size = reader.int32();
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.sortDirection = reader.int32() as any;
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
+          message.sortColumn = reader.int32() as any;
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QuerySamplesRequest {
+    return {
+      query: isSet(object.query) ? String(object.query) : "",
+      page: isSet(object.page) ? Number(object.page) : 0,
+      size: isSet(object.size) ? Number(object.size) : 0,
+      sortDirection: isSet(object.sortDirection) ? sortDirection_EnumFromJSON(object.sortDirection) : 0,
+      sortColumn: isSet(object.sortColumn) ? sortColumn_EnumFromJSON(object.sortColumn) : 0,
+    };
+  },
+
+  toJSON(message: QuerySamplesRequest): unknown {
+    const obj: any = {};
+    if (message.query !== "") {
+      obj.query = message.query;
+    }
+    if (message.page !== 0) {
+      obj.page = Math.round(message.page);
+    }
+    if (message.size !== 0) {
+      obj.size = Math.round(message.size);
+    }
+    if (message.sortDirection !== 0) {
+      obj.sortDirection = sortDirection_EnumToJSON(message.sortDirection);
+    }
+    if (message.sortColumn !== 0) {
+      obj.sortColumn = sortColumn_EnumToJSON(message.sortColumn);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QuerySamplesRequest>, I>>(base?: I): QuerySamplesRequest {
+    return QuerySamplesRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QuerySamplesRequest>, I>>(object: I): QuerySamplesRequest {
+    const message = createBaseQuerySamplesRequest();
+    message.query = object.query ?? "";
+    message.page = object.page ?? 0;
+    message.size = object.size ?? 0;
+    message.sortDirection = object.sortDirection ?? 0;
+    message.sortColumn = object.sortColumn ?? 0;
+    return message;
+  },
+};
+
+function createBaseQuerySamplesResponse(): QuerySamplesResponse {
   return { samples: [] };
 }
 
-export const GetSamplesResponse = {
-  encode(message: GetSamplesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QuerySamplesResponse = {
+  encode(message: QuerySamplesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.samples) {
       Sample.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetSamplesResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QuerySamplesResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetSamplesResponse();
+    const message = createBaseQuerySamplesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -66,11 +206,11 @@ export const GetSamplesResponse = {
     return message;
   },
 
-  fromJSON(object: any): GetSamplesResponse {
+  fromJSON(object: any): QuerySamplesResponse {
     return { samples: Array.isArray(object?.samples) ? object.samples.map((e: any) => Sample.fromJSON(e)) : [] };
   },
 
-  toJSON(message: GetSamplesResponse): unknown {
+  toJSON(message: QuerySamplesResponse): unknown {
     const obj: any = {};
     if (message.samples?.length) {
       obj.samples = message.samples.map((e) => Sample.toJSON(e));
@@ -78,32 +218,89 @@ export const GetSamplesResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetSamplesResponse>, I>>(base?: I): GetSamplesResponse {
-    return GetSamplesResponse.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<QuerySamplesResponse>, I>>(base?: I): QuerySamplesResponse {
+    return QuerySamplesResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetSamplesResponse>, I>>(object: I): GetSamplesResponse {
-    const message = createBaseGetSamplesResponse();
+  fromPartial<I extends Exact<DeepPartial<QuerySamplesResponse>, I>>(object: I): QuerySamplesResponse {
+    const message = createBaseQuerySamplesResponse();
     message.samples = object.samples?.map((e) => Sample.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBaseGetSamplesCountResponse(): GetSamplesCountResponse {
+function createBaseQuerySamplesCountRequest(): QuerySamplesCountRequest {
+  return { query: "" };
+}
+
+export const QuerySamplesCountRequest = {
+  encode(message: QuerySamplesCountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.query !== "") {
+      writer.uint32(10).string(message.query);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QuerySamplesCountRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQuerySamplesCountRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.query = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QuerySamplesCountRequest {
+    return { query: isSet(object.query) ? String(object.query) : "" };
+  },
+
+  toJSON(message: QuerySamplesCountRequest): unknown {
+    const obj: any = {};
+    if (message.query !== "") {
+      obj.query = message.query;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<QuerySamplesCountRequest>, I>>(base?: I): QuerySamplesCountRequest {
+    return QuerySamplesCountRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<QuerySamplesCountRequest>, I>>(object: I): QuerySamplesCountRequest {
+    const message = createBaseQuerySamplesCountRequest();
+    message.query = object.query ?? "";
+    return message;
+  },
+};
+
+function createBaseQuerySamplesCountResponse(): QuerySamplesCountResponse {
   return { count: 0 };
 }
 
-export const GetSamplesCountResponse = {
-  encode(message: GetSamplesCountResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QuerySamplesCountResponse = {
+  encode(message: QuerySamplesCountResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.count !== 0) {
       writer.uint32(8).int64(message.count);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetSamplesCountResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QuerySamplesCountResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetSamplesCountResponse();
+    const message = createBaseQuerySamplesCountResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -123,11 +320,11 @@ export const GetSamplesCountResponse = {
     return message;
   },
 
-  fromJSON(object: any): GetSamplesCountResponse {
+  fromJSON(object: any): QuerySamplesCountResponse {
     return { count: isSet(object.count) ? Number(object.count) : 0 };
   },
 
-  toJSON(message: GetSamplesCountResponse): unknown {
+  toJSON(message: QuerySamplesCountResponse): unknown {
     const obj: any = {};
     if (message.count !== 0) {
       obj.count = Math.round(message.count);
@@ -135,11 +332,11 @@ export const GetSamplesCountResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetSamplesCountResponse>, I>>(base?: I): GetSamplesCountResponse {
-    return GetSamplesCountResponse.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<QuerySamplesCountResponse>, I>>(base?: I): QuerySamplesCountResponse {
+    return QuerySamplesCountResponse.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<GetSamplesCountResponse>, I>>(object: I): GetSamplesCountResponse {
-    const message = createBaseGetSamplesCountResponse();
+  fromPartial<I extends Exact<DeepPartial<QuerySamplesCountResponse>, I>>(object: I): QuerySamplesCountResponse {
+    const message = createBaseQuerySamplesCountResponse();
     message.count = object.count ?? 0;
     return message;
   },

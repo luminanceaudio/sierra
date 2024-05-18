@@ -2,13 +2,14 @@ package sourcesample
 
 import (
 	"context"
+	"entgo.io/ent/dialect/sql"
 	"fmt"
 	"github.com/luminanceaudio/sierra/src/sierra/common/sha256"
 	"github.com/luminanceaudio/sierra/src/sierra/common/uri"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/client/models"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent"
-	sample2 "github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
 	"github.com/sirupsen/logrus"
@@ -42,7 +43,7 @@ func GetBySampleSha256(ctx context.Context, sha256 sha256.Sha256) (*models.Sampl
 	sourceSample, err := sierraDb.Client.SourceSample.Query().
 		WithSample().
 		WithSource().
-		Where(sourcesample.HasSampleWith(sample2.ID(sha256))).
+		Where(sourcesample.HasSampleWith(sample.ID(sha256))).
 		Only(ctx)
 	if err != nil {
 		return nil, err
@@ -51,7 +52,7 @@ func GetBySampleSha256(ctx context.Context, sha256 sha256.Sha256) (*models.Sampl
 	return translateSample(sourceSample), nil
 }
 
-func getAll(ctx context.Context, query string, page, size *int) (*sierraent.SourceSampleQuery, error) {
+func getAll(ctx context.Context, query string, page, size *int, sortDirection *models.SortDirection_Enum, sortColumn *models.SortColumn_Enum) (*sierraent.SourceSampleQuery, error) {
 	sierraDb, err := sierradb.Load(ctx)
 	if err != nil {
 		return nil, err
@@ -61,6 +62,7 @@ func getAll(ctx context.Context, query string, page, size *int) (*sierraent.Sour
 		WithSource().
 		WithSample()
 
+	// Pagination
 	if page != nil && size != nil {
 		if *page <= 0 {
 			return nil, fmt.Errorf("page must be a positive integer")
@@ -73,15 +75,31 @@ func getAll(ctx context.Context, query string, page, size *int) (*sierraent.Sour
 		q = q.Offset((*page - 1) * *size).Limit(*size)
 	}
 
+	// Search
 	if query != "" {
 		q = q.Where(sourcesample.RelativePathContains(query))
+	}
+
+	// Sort
+	order := sql.OrderAsc()
+	if sortDirection != nil && *sortDirection == models.SortDirection_Desc {
+		order = sql.OrderDesc()
+	}
+
+	if sortColumn != nil {
+		switch *sortColumn {
+		case models.SortColumn_Name:
+			q = q.Order(sourcesample.ByRelativePath(order))
+		case models.SortColumn_Duration:
+			q = q.Order(sourcesample.BySampleField(sample.FieldDuration, order))
+		}
 	}
 
 	return q, nil
 }
 
-func Query(ctx context.Context, query string, page, size int) ([]*models.Sample, error) {
-	q, err := getAll(ctx, query, &page, &size)
+func Query(ctx context.Context, query string, page, size int, sortDirection models.SortDirection_Enum, sortColumn models.SortColumn_Enum) ([]*models.Sample, error) {
+	q, err := getAll(ctx, query, &page, &size, &sortDirection, &sortColumn)
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +113,7 @@ func Query(ctx context.Context, query string, page, size int) ([]*models.Sample,
 }
 
 func QueryCount(ctx context.Context, query string) (int, error) {
-	q, err := getAll(ctx, query, nil, nil)
+	q, err := getAll(ctx, query, nil, nil, nil, nil)
 	if err != nil {
 		return 0, err
 	}

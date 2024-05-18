@@ -20,16 +20,20 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type GetSamplesResponse struct {
+type QuerySamplesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Samples []*Sample `protobuf:"bytes,1,rep,name=samples,proto3" json:"samples,omitempty"`
+	Query         string             `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	Page          int32              `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	Size          int32              `protobuf:"varint,3,opt,name=size,proto3" json:"size,omitempty"`
+	SortDirection SortDirection_Enum `protobuf:"varint,4,opt,name=sort_direction,json=sortDirection,proto3,enum=sierra_app.SortDirection_Enum" json:"sort_direction,omitempty"`
+	SortColumn    SortColumn_Enum    `protobuf:"varint,5,opt,name=sort_column,json=sortColumn,proto3,enum=sierra_app.SortColumn_Enum" json:"sort_column,omitempty"`
 }
 
-func (x *GetSamplesResponse) Reset() {
-	*x = GetSamplesResponse{}
+func (x *QuerySamplesRequest) Reset() {
+	*x = QuerySamplesRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_apprequests_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -37,13 +41,13 @@ func (x *GetSamplesResponse) Reset() {
 	}
 }
 
-func (x *GetSamplesResponse) String() string {
+func (x *QuerySamplesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetSamplesResponse) ProtoMessage() {}
+func (*QuerySamplesRequest) ProtoMessage() {}
 
-func (x *GetSamplesResponse) ProtoReflect() protoreflect.Message {
+func (x *QuerySamplesRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_apprequests_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,28 +59,56 @@ func (x *GetSamplesResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetSamplesResponse.ProtoReflect.Descriptor instead.
-func (*GetSamplesResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use QuerySamplesRequest.ProtoReflect.Descriptor instead.
+func (*QuerySamplesRequest) Descriptor() ([]byte, []int) {
 	return file_apprequests_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GetSamplesResponse) GetSamples() []*Sample {
+func (x *QuerySamplesRequest) GetQuery() string {
 	if x != nil {
-		return x.Samples
+		return x.Query
 	}
-	return nil
+	return ""
 }
 
-type GetSamplesCountResponse struct {
+func (x *QuerySamplesRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *QuerySamplesRequest) GetSize() int32 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *QuerySamplesRequest) GetSortDirection() SortDirection_Enum {
+	if x != nil {
+		return x.SortDirection
+	}
+	return SortDirection_Asc
+}
+
+func (x *QuerySamplesRequest) GetSortColumn() SortColumn_Enum {
+	if x != nil {
+		return x.SortColumn
+	}
+	return SortColumn_None
+}
+
+type QuerySamplesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Count int64 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	Samples []*Sample `protobuf:"bytes,1,rep,name=samples,proto3" json:"samples,omitempty"`
 }
 
-func (x *GetSamplesCountResponse) Reset() {
-	*x = GetSamplesCountResponse{}
+func (x *QuerySamplesResponse) Reset() {
+	*x = QuerySamplesResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_apprequests_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -84,13 +116,13 @@ func (x *GetSamplesCountResponse) Reset() {
 	}
 }
 
-func (x *GetSamplesCountResponse) String() string {
+func (x *QuerySamplesResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetSamplesCountResponse) ProtoMessage() {}
+func (*QuerySamplesResponse) ProtoMessage() {}
 
-func (x *GetSamplesCountResponse) ProtoReflect() protoreflect.Message {
+func (x *QuerySamplesResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_apprequests_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -102,12 +134,106 @@ func (x *GetSamplesCountResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetSamplesCountResponse.ProtoReflect.Descriptor instead.
-func (*GetSamplesCountResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use QuerySamplesResponse.ProtoReflect.Descriptor instead.
+func (*QuerySamplesResponse) Descriptor() ([]byte, []int) {
 	return file_apprequests_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetSamplesCountResponse) GetCount() int64 {
+func (x *QuerySamplesResponse) GetSamples() []*Sample {
+	if x != nil {
+		return x.Samples
+	}
+	return nil
+}
+
+type QuerySamplesCountRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Query string `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+}
+
+func (x *QuerySamplesCountRequest) Reset() {
+	*x = QuerySamplesCountRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_apprequests_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QuerySamplesCountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QuerySamplesCountRequest) ProtoMessage() {}
+
+func (x *QuerySamplesCountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_apprequests_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QuerySamplesCountRequest.ProtoReflect.Descriptor instead.
+func (*QuerySamplesCountRequest) Descriptor() ([]byte, []int) {
+	return file_apprequests_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *QuerySamplesCountRequest) GetQuery() string {
+	if x != nil {
+		return x.Query
+	}
+	return ""
+}
+
+type QuerySamplesCountResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Count int64 `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+}
+
+func (x *QuerySamplesCountResponse) Reset() {
+	*x = QuerySamplesCountResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_apprequests_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *QuerySamplesCountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QuerySamplesCountResponse) ProtoMessage() {}
+
+func (x *QuerySamplesCountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_apprequests_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QuerySamplesCountResponse.ProtoReflect.Descriptor instead.
+func (*QuerySamplesCountResponse) Descriptor() ([]byte, []int) {
+	return file_apprequests_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *QuerySamplesCountResponse) GetCount() int64 {
 	if x != nil {
 		return x.Count
 	}
@@ -125,7 +251,7 @@ type GetSourcesResponse struct {
 func (x *GetSourcesResponse) Reset() {
 	*x = GetSourcesResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_apprequests_proto_msgTypes[2]
+		mi := &file_apprequests_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -138,7 +264,7 @@ func (x *GetSourcesResponse) String() string {
 func (*GetSourcesResponse) ProtoMessage() {}
 
 func (x *GetSourcesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_apprequests_proto_msgTypes[2]
+	mi := &file_apprequests_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -151,7 +277,7 @@ func (x *GetSourcesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSourcesResponse.ProtoReflect.Descriptor instead.
 func (*GetSourcesResponse) Descriptor() ([]byte, []int) {
-	return file_apprequests_proto_rawDescGZIP(), []int{2}
+	return file_apprequests_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetSourcesResponse) GetSources() []*Source {
@@ -172,7 +298,7 @@ type CreateSourceRequest struct {
 func (x *CreateSourceRequest) Reset() {
 	*x = CreateSourceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_apprequests_proto_msgTypes[3]
+		mi := &file_apprequests_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -185,7 +311,7 @@ func (x *CreateSourceRequest) String() string {
 func (*CreateSourceRequest) ProtoMessage() {}
 
 func (x *CreateSourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_apprequests_proto_msgTypes[3]
+	mi := &file_apprequests_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -198,7 +324,7 @@ func (x *CreateSourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSourceRequest.ProtoReflect.Descriptor instead.
 func (*CreateSourceRequest) Descriptor() ([]byte, []int) {
-	return file_apprequests_proto_rawDescGZIP(), []int{3}
+	return file_apprequests_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreateSourceRequest) GetUri() string {
@@ -217,7 +343,7 @@ type CreateSourceResponse struct {
 func (x *CreateSourceResponse) Reset() {
 	*x = CreateSourceResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_apprequests_proto_msgTypes[4]
+		mi := &file_apprequests_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -230,7 +356,7 @@ func (x *CreateSourceResponse) String() string {
 func (*CreateSourceResponse) ProtoMessage() {}
 
 func (x *CreateSourceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_apprequests_proto_msgTypes[4]
+	mi := &file_apprequests_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -243,7 +369,7 @@ func (x *CreateSourceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSourceResponse.ProtoReflect.Descriptor instead.
 func (*CreateSourceResponse) Descriptor() ([]byte, []int) {
-	return file_apprequests_proto_rawDescGZIP(), []int{4}
+	return file_apprequests_proto_rawDescGZIP(), []int{6}
 }
 
 type DeleteSourceRequest struct {
@@ -257,7 +383,7 @@ type DeleteSourceRequest struct {
 func (x *DeleteSourceRequest) Reset() {
 	*x = DeleteSourceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_apprequests_proto_msgTypes[5]
+		mi := &file_apprequests_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -270,7 +396,7 @@ func (x *DeleteSourceRequest) String() string {
 func (*DeleteSourceRequest) ProtoMessage() {}
 
 func (x *DeleteSourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_apprequests_proto_msgTypes[5]
+	mi := &file_apprequests_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -283,7 +409,7 @@ func (x *DeleteSourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSourceRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSourceRequest) Descriptor() ([]byte, []int) {
-	return file_apprequests_proto_rawDescGZIP(), []int{5}
+	return file_apprequests_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteSourceRequest) GetUri() string {
@@ -302,7 +428,7 @@ type DeleteSourceResponse struct {
 func (x *DeleteSourceResponse) Reset() {
 	*x = DeleteSourceResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_apprequests_proto_msgTypes[6]
+		mi := &file_apprequests_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -315,7 +441,7 @@ func (x *DeleteSourceResponse) String() string {
 func (*DeleteSourceResponse) ProtoMessage() {}
 
 func (x *DeleteSourceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_apprequests_proto_msgTypes[6]
+	mi := &file_apprequests_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -328,7 +454,7 @@ func (x *DeleteSourceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSourceResponse.ProtoReflect.Descriptor instead.
 func (*DeleteSourceResponse) Descriptor() ([]byte, []int) {
-	return file_apprequests_proto_rawDescGZIP(), []int{6}
+	return file_apprequests_proto_rawDescGZIP(), []int{8}
 }
 
 var File_apprequests_proto protoreflect.FileDescriptor
@@ -336,29 +462,46 @@ var File_apprequests_proto protoreflect.FileDescriptor
 var file_apprequests_proto_rawDesc = []byte{
 	0x0a, 0x11, 0x61, 0x70, 0x70, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x73, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x73, 0x69, 0x65, 0x72, 0x72, 0x61, 0x5f, 0x61, 0x70, 0x70, 0x1a,
-	0x0d, 0x61, 0x70, 0x70, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x42,
-	0x0a, 0x12, 0x47, 0x65, 0x74, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x07, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x73, 0x69, 0x65, 0x72, 0x72, 0x61, 0x5f, 0x61,
-	0x70, 0x70, 0x2e, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x52, 0x07, 0x73, 0x61, 0x6d, 0x70, 0x6c,
-	0x65, 0x73, 0x22, 0x2f, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73,
-	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14, 0x0a,
-	0x05, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x22, 0x42, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x07, 0x73, 0x6f, 0x75,
-	0x72, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x73, 0x69, 0x65,
-	0x72, 0x72, 0x61, 0x5f, 0x61, 0x70, 0x70, 0x2e, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x07,
-	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x22, 0x27, 0x0a, 0x13, 0x43, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10,
-	0x0a, 0x03, 0x75, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x69,
-	0x22, 0x16, 0x0a, 0x14, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x27, 0x0a, 0x13, 0x44, 0x65, 0x6c, 0x65,
+	0x0d, 0x61, 0x70, 0x70, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xd8,
+	0x01, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x12, 0x12, 0x0a, 0x04,
+	0x70, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x70, 0x61, 0x67, 0x65,
+	0x12, 0x12, 0x0a, 0x04, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04,
+	0x73, 0x69, 0x7a, 0x65, 0x12, 0x45, 0x0a, 0x0e, 0x73, 0x6f, 0x72, 0x74, 0x5f, 0x64, 0x69, 0x72,
+	0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x73,
+	0x69, 0x65, 0x72, 0x72, 0x61, 0x5f, 0x61, 0x70, 0x70, 0x2e, 0x53, 0x6f, 0x72, 0x74, 0x44, 0x69,
+	0x72, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x45, 0x6e, 0x75, 0x6d, 0x52, 0x0d, 0x73, 0x6f,
+	0x72, 0x74, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3c, 0x0a, 0x0b, 0x73,
+	0x6f, 0x72, 0x74, 0x5f, 0x63, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x1b, 0x2e, 0x73, 0x69, 0x65, 0x72, 0x72, 0x61, 0x5f, 0x61, 0x70, 0x70, 0x2e, 0x53, 0x6f,
+	0x72, 0x74, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x2e, 0x45, 0x6e, 0x75, 0x6d, 0x52, 0x0a, 0x73,
+	0x6f, 0x72, 0x74, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x22, 0x44, 0x0a, 0x14, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x2c, 0x0a, 0x07, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x12, 0x2e, 0x73, 0x69, 0x65, 0x72, 0x72, 0x61, 0x5f, 0x61, 0x70, 0x70, 0x2e,
+	0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x52, 0x07, 0x73, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x22,
+	0x30, 0x0a, 0x18, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x73, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x71,
+	0x75, 0x65, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x71, 0x75, 0x65, 0x72,
+	0x79, 0x22, 0x31, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x61, 0x6d, 0x70, 0x6c, 0x65,
+	0x73, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x14,
+	0x0a, 0x05, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x22, 0x42, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x53, 0x6f, 0x75, 0x72, 0x63,
+	0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2c, 0x0a, 0x07, 0x73, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x73, 0x69,
+	0x65, 0x72, 0x72, 0x61, 0x5f, 0x61, 0x70, 0x70, 0x2e, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52,
+	0x07, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x22, 0x27, 0x0a, 0x13, 0x43, 0x72, 0x65, 0x61,
 	0x74, 0x65, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
 	0x10, 0x0a, 0x03, 0x75, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72,
-	0x69, 0x22, 0x16, 0x0a, 0x14, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x53, 0x6f, 0x75, 0x72, 0x63,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x0f, 0x5a, 0x0d, 0x63, 0x6c, 0x69,
-	0x65, 0x6e, 0x74, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x69, 0x22, 0x16, 0x0a, 0x14, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x53, 0x6f, 0x75, 0x72, 0x63,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x27, 0x0a, 0x13, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x53, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75,
+	0x72, 0x69, 0x22, 0x16, 0x0a, 0x14, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x53, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x0f, 0x5a, 0x0d, 0x63, 0x6c,
+	0x69, 0x65, 0x6e, 0x74, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -373,26 +516,32 @@ func file_apprequests_proto_rawDescGZIP() []byte {
 	return file_apprequests_proto_rawDescData
 }
 
-var file_apprequests_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_apprequests_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_apprequests_proto_goTypes = []interface{}{
-	(*GetSamplesResponse)(nil),      // 0: sierra_app.GetSamplesResponse
-	(*GetSamplesCountResponse)(nil), // 1: sierra_app.GetSamplesCountResponse
-	(*GetSourcesResponse)(nil),      // 2: sierra_app.GetSourcesResponse
-	(*CreateSourceRequest)(nil),     // 3: sierra_app.CreateSourceRequest
-	(*CreateSourceResponse)(nil),    // 4: sierra_app.CreateSourceResponse
-	(*DeleteSourceRequest)(nil),     // 5: sierra_app.DeleteSourceRequest
-	(*DeleteSourceResponse)(nil),    // 6: sierra_app.DeleteSourceResponse
-	(*Sample)(nil),                  // 7: sierra_app.Sample
-	(*Source)(nil),                  // 8: sierra_app.Source
+	(*QuerySamplesRequest)(nil),       // 0: sierra_app.QuerySamplesRequest
+	(*QuerySamplesResponse)(nil),      // 1: sierra_app.QuerySamplesResponse
+	(*QuerySamplesCountRequest)(nil),  // 2: sierra_app.QuerySamplesCountRequest
+	(*QuerySamplesCountResponse)(nil), // 3: sierra_app.QuerySamplesCountResponse
+	(*GetSourcesResponse)(nil),        // 4: sierra_app.GetSourcesResponse
+	(*CreateSourceRequest)(nil),       // 5: sierra_app.CreateSourceRequest
+	(*CreateSourceResponse)(nil),      // 6: sierra_app.CreateSourceResponse
+	(*DeleteSourceRequest)(nil),       // 7: sierra_app.DeleteSourceRequest
+	(*DeleteSourceResponse)(nil),      // 8: sierra_app.DeleteSourceResponse
+	(SortDirection_Enum)(0),           // 9: sierra_app.SortDirection.Enum
+	(SortColumn_Enum)(0),              // 10: sierra_app.SortColumn.Enum
+	(*Sample)(nil),                    // 11: sierra_app.Sample
+	(*Source)(nil),                    // 12: sierra_app.Source
 }
 var file_apprequests_proto_depIdxs = []int32{
-	7, // 0: sierra_app.GetSamplesResponse.samples:type_name -> sierra_app.Sample
-	8, // 1: sierra_app.GetSourcesResponse.sources:type_name -> sierra_app.Source
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	9,  // 0: sierra_app.QuerySamplesRequest.sort_direction:type_name -> sierra_app.SortDirection.Enum
+	10, // 1: sierra_app.QuerySamplesRequest.sort_column:type_name -> sierra_app.SortColumn.Enum
+	11, // 2: sierra_app.QuerySamplesResponse.samples:type_name -> sierra_app.Sample
+	12, // 3: sierra_app.GetSourcesResponse.sources:type_name -> sierra_app.Source
+	4,  // [4:4] is the sub-list for method output_type
+	4,  // [4:4] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_apprequests_proto_init() }
@@ -403,7 +552,7 @@ func file_apprequests_proto_init() {
 	file_appbase_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_apprequests_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetSamplesResponse); i {
+			switch v := v.(*QuerySamplesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -415,7 +564,7 @@ func file_apprequests_proto_init() {
 			}
 		}
 		file_apprequests_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetSamplesCountResponse); i {
+			switch v := v.(*QuerySamplesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -427,7 +576,7 @@ func file_apprequests_proto_init() {
 			}
 		}
 		file_apprequests_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetSourcesResponse); i {
+			switch v := v.(*QuerySamplesCountRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -439,7 +588,7 @@ func file_apprequests_proto_init() {
 			}
 		}
 		file_apprequests_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateSourceRequest); i {
+			switch v := v.(*QuerySamplesCountResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -451,7 +600,7 @@ func file_apprequests_proto_init() {
 			}
 		}
 		file_apprequests_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateSourceResponse); i {
+			switch v := v.(*GetSourcesResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -463,7 +612,7 @@ func file_apprequests_proto_init() {
 			}
 		}
 		file_apprequests_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeleteSourceRequest); i {
+			switch v := v.(*CreateSourceRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -475,6 +624,30 @@ func file_apprequests_proto_init() {
 			}
 		}
 		file_apprequests_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateSourceResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_apprequests_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteSourceRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_apprequests_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DeleteSourceResponse); i {
 			case 0:
 				return &v.state
@@ -493,7 +666,7 @@ func file_apprequests_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_apprequests_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -113,7 +113,7 @@ func indexFile(ctx context.Context, src source.Source, fileUri *uri.URI, forceRe
 
 	if !forceReindex {
 		// TODO: Don't fetch one by one
-		_, err = sourcesample.GetBySampleSha256(ctx, *sha256Str)
+		_, err = sourcesample.Get(ctx, fileUri)
 		if err == nil {
 			// TODO: Make a smarter caching mechanism
 			// Don't reindex file
@@ -135,7 +135,7 @@ func indexFile(ctx context.Context, src source.Source, fileUri *uri.URI, forceRe
 		return nil
 	}
 
-	err = sample.Upsert(ctx, *sha256Str, foundFormat.Type)
+	err = sample.Upsert(ctx, *sha256Str, foundFormat.Type, int64(foundFormat.Duration))
 	if err != nil {
 		return fmt.Errorf("failed saving sample to db: %w", err)
 	}

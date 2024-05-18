@@ -22,6 +22,7 @@ func translateSample(sample *sierraent.SourceSample) *models.Sample {
 		sample.Edges.Sample.ID,
 		sample.Edges.Sample.Format,
 		sample.Edges.Source.ID,
+		sample.Edges.Sample.Duration,
 	)
 }
 

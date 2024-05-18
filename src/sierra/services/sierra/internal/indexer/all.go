@@ -8,7 +8,7 @@ import (
 )
 
 func IndexAllInterval(ctx context.Context) error {
-	err := IndexAll(ctx)
+	err := IndexAll(ctx, true)
 	if err != nil {
 		logrus.WithError(err).Error("failed to index all during interval (initial run)")
 	}
@@ -18,7 +18,7 @@ func IndexAllInterval(ctx context.Context) error {
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-time.After(30 * time.Second):
-			err := IndexAll(ctx)
+			err := IndexAll(ctx, false)
 			if err != nil {
 				logrus.WithError(err).Error("failed to index all during interval")
 			}
@@ -27,7 +27,7 @@ func IndexAllInterval(ctx context.Context) error {
 
 }
 
-func IndexAll(ctx context.Context) error {
+func IndexAll(ctx context.Context, forceReindex bool) error {
 	logrus.Info("Indexing all sources")
 
 	sources, err := source.GetAll(ctx)
@@ -36,7 +36,7 @@ func IndexAll(ctx context.Context) error {
 	}
 
 	for _, src := range sources {
-		err = Singleton().Index(ctx, src, false, true)
+		err = Singleton().Index(ctx, src, forceReindex, true)
 		if err != nil {
 			logrus.WithError(err).WithField("sourceUri", src.GetURI().String()).Warn("failed to index source during index all")
 			continue

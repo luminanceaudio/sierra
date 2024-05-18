@@ -1,7 +1,3 @@
-h1:TSc5RMvnyfp9feuhY7Dt7iCA/UJgm1QnvVFWQHnXJmw=
-20240511164937_add_other_index.down.sql h1:Cu+pluEmls8MADKRX5AM/tw2AYoN/VT7c/qK/iJDA8k=
-20240511164937_add_other_index.up.sql h1:QliSmWVNKyiPb2r3hDjgaGiBpRA2159XsQmChK+mIdI=
-20240513174226_add_relative_path.down.sql h1:Gi9QB9NpO8HvqGVgAzcE5i9oqDve37L3F5XJKD2bI+0=
-20240513174226_add_relative_path.up.sql h1:0VRbfIr5dXlw8nsCUgHMYqYNImt2qjCgvKNlOxUwrVA=
-20240513174820_add_relative_path_index.down.sql h1:BZIjzve/3/sQYVbLAnp2DMivfvXrxxXyXBjyFwvMMDQ=
-20240513174820_add_relative_path_index.up.sql h1:MsSkgdAmdF9xNnKAyXu6mH7J6cXKF2DXEZZpCAIPmxk=
+h1:30syc6DBHESWOaKhMxh5myzoVB0+SPfT3d5HCig65pU=
+20240516163656_initial.down.sql h1:R+JFVmwKMwLJJjqDIMOj74v+v01RwFYsJFYuxEFkwZo=
+20240516163656_initial.up.sql h1:VJP2+6LhzWKnQSUMoFhhd0PW6W9J9c+18uiDGbRefd0=

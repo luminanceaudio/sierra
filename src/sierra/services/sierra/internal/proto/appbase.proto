@@ -10,9 +10,26 @@ message Sample {
   string format = 2;
   string source_uri = 3;
   string uri = 4;
+  int64 duration = 5;
 }
 
 message Source {
   string uri = 1;
   google.protobuf.Timestamp create_time = 2;
+}
+
+message SortDirection {
+  enum Enum {
+    Asc = 0;
+    Desc = 1;
+  }
+}
+
+
+message SortColumn {
+  enum Enum {
+    None = 0;
+    Name = 1;
+    Duration = 2;
+  }
 }

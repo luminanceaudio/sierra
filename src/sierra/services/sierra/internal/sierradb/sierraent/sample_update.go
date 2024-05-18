@@ -48,30 +48,30 @@ func (su *SampleUpdate) ClearFormat() *SampleUpdate {
 	return su
 }
 
-// SetLength sets the "length" field.
-func (su *SampleUpdate) SetLength(i int64) *SampleUpdate {
-	su.mutation.ResetLength()
-	su.mutation.SetLength(i)
+// SetDuration sets the "duration" field.
+func (su *SampleUpdate) SetDuration(i int64) *SampleUpdate {
+	su.mutation.ResetDuration()
+	su.mutation.SetDuration(i)
 	return su
 }
 
-// SetNillableLength sets the "length" field if the given value is not nil.
-func (su *SampleUpdate) SetNillableLength(i *int64) *SampleUpdate {
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (su *SampleUpdate) SetNillableDuration(i *int64) *SampleUpdate {
 	if i != nil {
-		su.SetLength(*i)
+		su.SetDuration(*i)
 	}
 	return su
 }
 
-// AddLength adds i to the "length" field.
-func (su *SampleUpdate) AddLength(i int64) *SampleUpdate {
-	su.mutation.AddLength(i)
+// AddDuration adds i to the "duration" field.
+func (su *SampleUpdate) AddDuration(i int64) *SampleUpdate {
+	su.mutation.AddDuration(i)
 	return su
 }
 
-// ClearLength clears the value of the "length" field.
-func (su *SampleUpdate) ClearLength() *SampleUpdate {
-	su.mutation.ClearLength()
+// ClearDuration clears the value of the "duration" field.
+func (su *SampleUpdate) ClearDuration() *SampleUpdate {
+	su.mutation.ClearDuration()
 	return su
 }
 
@@ -158,14 +158,14 @@ func (su *SampleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if su.mutation.FormatCleared() {
 		_spec.ClearField(sample.FieldFormat, field.TypeString)
 	}
-	if value, ok := su.mutation.Length(); ok {
-		_spec.SetField(sample.FieldLength, field.TypeInt64, value)
+	if value, ok := su.mutation.Duration(); ok {
+		_spec.SetField(sample.FieldDuration, field.TypeInt64, value)
 	}
-	if value, ok := su.mutation.AddedLength(); ok {
-		_spec.AddField(sample.FieldLength, field.TypeInt64, value)
+	if value, ok := su.mutation.AddedDuration(); ok {
+		_spec.AddField(sample.FieldDuration, field.TypeInt64, value)
 	}
-	if su.mutation.LengthCleared() {
-		_spec.ClearField(sample.FieldLength, field.TypeInt64)
+	if su.mutation.DurationCleared() {
+		_spec.ClearField(sample.FieldDuration, field.TypeInt64)
 	}
 	if su.mutation.SourceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -252,30 +252,30 @@ func (suo *SampleUpdateOne) ClearFormat() *SampleUpdateOne {
 	return suo
 }
 
-// SetLength sets the "length" field.
-func (suo *SampleUpdateOne) SetLength(i int64) *SampleUpdateOne {
-	suo.mutation.ResetLength()
-	suo.mutation.SetLength(i)
+// SetDuration sets the "duration" field.
+func (suo *SampleUpdateOne) SetDuration(i int64) *SampleUpdateOne {
+	suo.mutation.ResetDuration()
+	suo.mutation.SetDuration(i)
 	return suo
 }
 
-// SetNillableLength sets the "length" field if the given value is not nil.
-func (suo *SampleUpdateOne) SetNillableLength(i *int64) *SampleUpdateOne {
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (suo *SampleUpdateOne) SetNillableDuration(i *int64) *SampleUpdateOne {
 	if i != nil {
-		suo.SetLength(*i)
+		suo.SetDuration(*i)
 	}
 	return suo
 }
 
-// AddLength adds i to the "length" field.
-func (suo *SampleUpdateOne) AddLength(i int64) *SampleUpdateOne {
-	suo.mutation.AddLength(i)
+// AddDuration adds i to the "duration" field.
+func (suo *SampleUpdateOne) AddDuration(i int64) *SampleUpdateOne {
+	suo.mutation.AddDuration(i)
 	return suo
 }
 
-// ClearLength clears the value of the "length" field.
-func (suo *SampleUpdateOne) ClearLength() *SampleUpdateOne {
-	suo.mutation.ClearLength()
+// ClearDuration clears the value of the "duration" field.
+func (suo *SampleUpdateOne) ClearDuration() *SampleUpdateOne {
+	suo.mutation.ClearDuration()
 	return suo
 }
 
@@ -392,14 +392,14 @@ func (suo *SampleUpdateOne) sqlSave(ctx context.Context) (_node *Sample, err err
 	if suo.mutation.FormatCleared() {
 		_spec.ClearField(sample.FieldFormat, field.TypeString)
 	}
-	if value, ok := suo.mutation.Length(); ok {
-		_spec.SetField(sample.FieldLength, field.TypeInt64, value)
+	if value, ok := suo.mutation.Duration(); ok {
+		_spec.SetField(sample.FieldDuration, field.TypeInt64, value)
 	}
-	if value, ok := suo.mutation.AddedLength(); ok {
-		_spec.AddField(sample.FieldLength, field.TypeInt64, value)
+	if value, ok := suo.mutation.AddedDuration(); ok {
+		_spec.AddField(sample.FieldDuration, field.TypeInt64, value)
 	}
-	if suo.mutation.LengthCleared() {
-		_spec.ClearField(sample.FieldLength, field.TypeInt64)
+	if suo.mutation.DurationCleared() {
+		_spec.ClearField(sample.FieldDuration, field.TypeInt64)
 	}
 	if suo.mutation.SourceCleared() {
 		edge := &sqlgraph.EdgeSpec{
