@@ -83,7 +83,6 @@ function Samples(): React.ReactElement {
                   sortDirection={sortDirection}
                   setSortDirection={setSortDirection}
                 />
-                <th />
               </tr>
             </thead>
             <tbody>

@@ -1,7 +1,6 @@
 import React from 'react';
 import path from 'path';
 import { PlayIcon, PauseIcon } from '@heroicons/react/24/solid';
-import { PlusIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { Sample as SampleModel } from '../../../proto/app/appbase';
 import Button from '../Button/Button';
 import { useAudioPlayer } from '../AudioPlayerProvider/AudioPlayerProvider';
@@ -65,12 +64,7 @@ function Sample({ sample }: SampleProps): React.ReactNode {
       >
         {path.basename(sample.uri)}
       </td>
-      <td style={{ width: '15%' }}>{Math.ceil(sample.duration / 1000.0)}s</td>
-      <td style={{ width: '15%' }}>
-        <Button type="secondary" onClick={() => {}}>
-          <PlusIcon width={15} />
-        </Button>
-      </td>
+      <td style={{ width: '30%' }}>{Math.ceil(sample.duration / 1000.0)}s</td>
     </tr>
   );
 }
