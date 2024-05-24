@@ -2,7 +2,6 @@ package schema
 
 import (
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
@@ -38,7 +37,6 @@ func (CollectionSample) Fields() []ent.Field {
 func (CollectionSample) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("sample", SourceSample.Type).Required().Unique().Field("sample_id"),
-		edge.To("collection", Collection.Type).Required().Unique().Field("collection_id").
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+		edge.To("collection", Collection.Type).Required().Unique().Field("collection_id"),
 	}
 }
