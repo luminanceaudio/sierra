@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/schema"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collection"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collectionsample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
 )
 
@@ -13,6 +15,24 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	collectionMixin := schema.Collection{}.Mixin()
+	collectionMixinFields0 := collectionMixin[0].Fields()
+	_ = collectionMixinFields0
+	collectionFields := schema.Collection{}.Fields()
+	_ = collectionFields
+	// collectionDescCreateTime is the schema descriptor for create_time field.
+	collectionDescCreateTime := collectionMixinFields0[0].Descriptor()
+	// collection.DefaultCreateTime holds the default value on creation for the create_time field.
+	collection.DefaultCreateTime = collectionDescCreateTime.Default.(func() time.Time)
+	collectionsampleMixin := schema.CollectionSample{}.Mixin()
+	collectionsampleMixinFields0 := collectionsampleMixin[0].Fields()
+	_ = collectionsampleMixinFields0
+	collectionsampleFields := schema.CollectionSample{}.Fields()
+	_ = collectionsampleFields
+	// collectionsampleDescCreateTime is the schema descriptor for create_time field.
+	collectionsampleDescCreateTime := collectionsampleMixinFields0[0].Descriptor()
+	// collectionsample.DefaultCreateTime holds the default value on creation for the create_time field.
+	collectionsample.DefaultCreateTime = collectionsampleDescCreateTime.Default.(func() time.Time)
 	sourceMixin := schema.Source{}.Mixin()
 	sourceMixinFields0 := sourceMixin[0].Fields()
 	_ = sourceMixinFields0

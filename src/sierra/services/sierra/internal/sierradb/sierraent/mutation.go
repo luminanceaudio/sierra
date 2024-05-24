@@ -11,6 +11,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collection"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collectionsample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/predicate"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
@@ -26,10 +29,1108 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeSample       = "Sample"
-	TypeSource       = "Source"
-	TypeSourceSample = "SourceSample"
+	TypeCollection       = "Collection"
+	TypeCollectionSample = "CollectionSample"
+	TypeSample           = "Sample"
+	TypeSource           = "Source"
+	TypeSourceSample     = "SourceSample"
 )
+
+// CollectionMutation represents an operation that mutates the Collection nodes in the graph.
+type CollectionMutation struct {
+	config
+	op                        Op
+	typ                       string
+	id                        *uuid.UUID
+	create_time               *time.Time
+	name                      *string
+	clearedFields             map[string]struct{}
+	sample                    map[string]struct{}
+	removedsample             map[string]struct{}
+	clearedsample             bool
+	collection_samples        map[int]struct{}
+	removedcollection_samples map[int]struct{}
+	clearedcollection_samples bool
+	done                      bool
+	oldValue                  func(context.Context) (*Collection, error)
+	predicates                []predicate.Collection
+}
+
+var _ ent.Mutation = (*CollectionMutation)(nil)
+
+// collectionOption allows management of the mutation configuration using functional options.
+type collectionOption func(*CollectionMutation)
+
+// newCollectionMutation creates new mutation for the Collection entity.
+func newCollectionMutation(c config, op Op, opts ...collectionOption) *CollectionMutation {
+	m := &CollectionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCollection,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCollectionID sets the ID field of the mutation.
+func withCollectionID(id uuid.UUID) collectionOption {
+	return func(m *CollectionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Collection
+		)
+		m.oldValue = func(ctx context.Context) (*Collection, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Collection.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCollection sets the old Collection of the mutation.
+func withCollection(node *Collection) collectionOption {
+	return func(m *CollectionMutation) {
+		m.oldValue = func(context.Context) (*Collection, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CollectionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CollectionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("sierraent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Collection entities.
+func (m *CollectionMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CollectionMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CollectionMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Collection.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *CollectionMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *CollectionMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the Collection entity.
+// If the Collection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CollectionMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *CollectionMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetName sets the "name" field.
+func (m *CollectionMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *CollectionMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Collection entity.
+// If the Collection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CollectionMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *CollectionMutation) ResetName() {
+	m.name = nil
+}
+
+// AddSampleIDs adds the "sample" edge to the SourceSample entity by ids.
+func (m *CollectionMutation) AddSampleIDs(ids ...string) {
+	if m.sample == nil {
+		m.sample = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.sample[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSample clears the "sample" edge to the SourceSample entity.
+func (m *CollectionMutation) ClearSample() {
+	m.clearedsample = true
+}
+
+// SampleCleared reports if the "sample" edge to the SourceSample entity was cleared.
+func (m *CollectionMutation) SampleCleared() bool {
+	return m.clearedsample
+}
+
+// RemoveSampleIDs removes the "sample" edge to the SourceSample entity by IDs.
+func (m *CollectionMutation) RemoveSampleIDs(ids ...string) {
+	if m.removedsample == nil {
+		m.removedsample = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.sample, ids[i])
+		m.removedsample[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSample returns the removed IDs of the "sample" edge to the SourceSample entity.
+func (m *CollectionMutation) RemovedSampleIDs() (ids []string) {
+	for id := range m.removedsample {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SampleIDs returns the "sample" edge IDs in the mutation.
+func (m *CollectionMutation) SampleIDs() (ids []string) {
+	for id := range m.sample {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSample resets all changes to the "sample" edge.
+func (m *CollectionMutation) ResetSample() {
+	m.sample = nil
+	m.clearedsample = false
+	m.removedsample = nil
+}
+
+// AddCollectionSampleIDs adds the "collection_samples" edge to the CollectionSample entity by ids.
+func (m *CollectionMutation) AddCollectionSampleIDs(ids ...int) {
+	if m.collection_samples == nil {
+		m.collection_samples = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.collection_samples[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCollectionSamples clears the "collection_samples" edge to the CollectionSample entity.
+func (m *CollectionMutation) ClearCollectionSamples() {
+	m.clearedcollection_samples = true
+}
+
+// CollectionSamplesCleared reports if the "collection_samples" edge to the CollectionSample entity was cleared.
+func (m *CollectionMutation) CollectionSamplesCleared() bool {
+	return m.clearedcollection_samples
+}
+
+// RemoveCollectionSampleIDs removes the "collection_samples" edge to the CollectionSample entity by IDs.
+func (m *CollectionMutation) RemoveCollectionSampleIDs(ids ...int) {
+	if m.removedcollection_samples == nil {
+		m.removedcollection_samples = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.collection_samples, ids[i])
+		m.removedcollection_samples[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCollectionSamples returns the removed IDs of the "collection_samples" edge to the CollectionSample entity.
+func (m *CollectionMutation) RemovedCollectionSamplesIDs() (ids []int) {
+	for id := range m.removedcollection_samples {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CollectionSamplesIDs returns the "collection_samples" edge IDs in the mutation.
+func (m *CollectionMutation) CollectionSamplesIDs() (ids []int) {
+	for id := range m.collection_samples {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCollectionSamples resets all changes to the "collection_samples" edge.
+func (m *CollectionMutation) ResetCollectionSamples() {
+	m.collection_samples = nil
+	m.clearedcollection_samples = false
+	m.removedcollection_samples = nil
+}
+
+// Where appends a list predicates to the CollectionMutation builder.
+func (m *CollectionMutation) Where(ps ...predicate.Collection) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CollectionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CollectionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Collection, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CollectionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CollectionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Collection).
+func (m *CollectionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CollectionMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.create_time != nil {
+		fields = append(fields, collection.FieldCreateTime)
+	}
+	if m.name != nil {
+		fields = append(fields, collection.FieldName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CollectionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case collection.FieldCreateTime:
+		return m.CreateTime()
+	case collection.FieldName:
+		return m.Name()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CollectionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case collection.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case collection.FieldName:
+		return m.OldName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Collection field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CollectionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case collection.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case collection.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Collection field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CollectionMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CollectionMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CollectionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Collection numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CollectionMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CollectionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CollectionMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Collection nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CollectionMutation) ResetField(name string) error {
+	switch name {
+	case collection.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case collection.FieldName:
+		m.ResetName()
+		return nil
+	}
+	return fmt.Errorf("unknown Collection field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CollectionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.sample != nil {
+		edges = append(edges, collection.EdgeSample)
+	}
+	if m.collection_samples != nil {
+		edges = append(edges, collection.EdgeCollectionSamples)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CollectionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case collection.EdgeSample:
+		ids := make([]ent.Value, 0, len(m.sample))
+		for id := range m.sample {
+			ids = append(ids, id)
+		}
+		return ids
+	case collection.EdgeCollectionSamples:
+		ids := make([]ent.Value, 0, len(m.collection_samples))
+		for id := range m.collection_samples {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CollectionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedsample != nil {
+		edges = append(edges, collection.EdgeSample)
+	}
+	if m.removedcollection_samples != nil {
+		edges = append(edges, collection.EdgeCollectionSamples)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CollectionMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case collection.EdgeSample:
+		ids := make([]ent.Value, 0, len(m.removedsample))
+		for id := range m.removedsample {
+			ids = append(ids, id)
+		}
+		return ids
+	case collection.EdgeCollectionSamples:
+		ids := make([]ent.Value, 0, len(m.removedcollection_samples))
+		for id := range m.removedcollection_samples {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CollectionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedsample {
+		edges = append(edges, collection.EdgeSample)
+	}
+	if m.clearedcollection_samples {
+		edges = append(edges, collection.EdgeCollectionSamples)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CollectionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case collection.EdgeSample:
+		return m.clearedsample
+	case collection.EdgeCollectionSamples:
+		return m.clearedcollection_samples
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CollectionMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Collection unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CollectionMutation) ResetEdge(name string) error {
+	switch name {
+	case collection.EdgeSample:
+		m.ResetSample()
+		return nil
+	case collection.EdgeCollectionSamples:
+		m.ResetCollectionSamples()
+		return nil
+	}
+	return fmt.Errorf("unknown Collection edge %s", name)
+}
+
+// CollectionSampleMutation represents an operation that mutates the CollectionSample nodes in the graph.
+type CollectionSampleMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int
+	create_time       *time.Time
+	clearedFields     map[string]struct{}
+	sample            *string
+	clearedsample     bool
+	collection        *uuid.UUID
+	clearedcollection bool
+	done              bool
+	oldValue          func(context.Context) (*CollectionSample, error)
+	predicates        []predicate.CollectionSample
+}
+
+var _ ent.Mutation = (*CollectionSampleMutation)(nil)
+
+// collectionsampleOption allows management of the mutation configuration using functional options.
+type collectionsampleOption func(*CollectionSampleMutation)
+
+// newCollectionSampleMutation creates new mutation for the CollectionSample entity.
+func newCollectionSampleMutation(c config, op Op, opts ...collectionsampleOption) *CollectionSampleMutation {
+	m := &CollectionSampleMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCollectionSample,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCollectionSampleID sets the ID field of the mutation.
+func withCollectionSampleID(id int) collectionsampleOption {
+	return func(m *CollectionSampleMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CollectionSample
+		)
+		m.oldValue = func(ctx context.Context) (*CollectionSample, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CollectionSample.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCollectionSample sets the old CollectionSample of the mutation.
+func withCollectionSample(node *CollectionSample) collectionsampleOption {
+	return func(m *CollectionSampleMutation) {
+		m.oldValue = func(context.Context) (*CollectionSample, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CollectionSampleMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CollectionSampleMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("sierraent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CollectionSampleMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CollectionSampleMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CollectionSample.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *CollectionSampleMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *CollectionSampleMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the CollectionSample entity.
+// If the CollectionSample object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CollectionSampleMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *CollectionSampleMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetSampleID sets the "sample_id" field.
+func (m *CollectionSampleMutation) SetSampleID(s string) {
+	m.sample = &s
+}
+
+// SampleID returns the value of the "sample_id" field in the mutation.
+func (m *CollectionSampleMutation) SampleID() (r string, exists bool) {
+	v := m.sample
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSampleID returns the old "sample_id" field's value of the CollectionSample entity.
+// If the CollectionSample object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CollectionSampleMutation) OldSampleID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSampleID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSampleID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSampleID: %w", err)
+	}
+	return oldValue.SampleID, nil
+}
+
+// ResetSampleID resets all changes to the "sample_id" field.
+func (m *CollectionSampleMutation) ResetSampleID() {
+	m.sample = nil
+}
+
+// SetCollectionID sets the "collection_id" field.
+func (m *CollectionSampleMutation) SetCollectionID(u uuid.UUID) {
+	m.collection = &u
+}
+
+// CollectionID returns the value of the "collection_id" field in the mutation.
+func (m *CollectionSampleMutation) CollectionID() (r uuid.UUID, exists bool) {
+	v := m.collection
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCollectionID returns the old "collection_id" field's value of the CollectionSample entity.
+// If the CollectionSample object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CollectionSampleMutation) OldCollectionID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCollectionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCollectionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCollectionID: %w", err)
+	}
+	return oldValue.CollectionID, nil
+}
+
+// ResetCollectionID resets all changes to the "collection_id" field.
+func (m *CollectionSampleMutation) ResetCollectionID() {
+	m.collection = nil
+}
+
+// ClearSample clears the "sample" edge to the SourceSample entity.
+func (m *CollectionSampleMutation) ClearSample() {
+	m.clearedsample = true
+	m.clearedFields[collectionsample.FieldSampleID] = struct{}{}
+}
+
+// SampleCleared reports if the "sample" edge to the SourceSample entity was cleared.
+func (m *CollectionSampleMutation) SampleCleared() bool {
+	return m.clearedsample
+}
+
+// SampleIDs returns the "sample" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SampleID instead. It exists only for internal usage by the builders.
+func (m *CollectionSampleMutation) SampleIDs() (ids []string) {
+	if id := m.sample; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSample resets all changes to the "sample" edge.
+func (m *CollectionSampleMutation) ResetSample() {
+	m.sample = nil
+	m.clearedsample = false
+}
+
+// ClearCollection clears the "collection" edge to the Collection entity.
+func (m *CollectionSampleMutation) ClearCollection() {
+	m.clearedcollection = true
+	m.clearedFields[collectionsample.FieldCollectionID] = struct{}{}
+}
+
+// CollectionCleared reports if the "collection" edge to the Collection entity was cleared.
+func (m *CollectionSampleMutation) CollectionCleared() bool {
+	return m.clearedcollection
+}
+
+// CollectionIDs returns the "collection" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CollectionID instead. It exists only for internal usage by the builders.
+func (m *CollectionSampleMutation) CollectionIDs() (ids []uuid.UUID) {
+	if id := m.collection; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCollection resets all changes to the "collection" edge.
+func (m *CollectionSampleMutation) ResetCollection() {
+	m.collection = nil
+	m.clearedcollection = false
+}
+
+// Where appends a list predicates to the CollectionSampleMutation builder.
+func (m *CollectionSampleMutation) Where(ps ...predicate.CollectionSample) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CollectionSampleMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CollectionSampleMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CollectionSample, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CollectionSampleMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CollectionSampleMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CollectionSample).
+func (m *CollectionSampleMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CollectionSampleMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.create_time != nil {
+		fields = append(fields, collectionsample.FieldCreateTime)
+	}
+	if m.sample != nil {
+		fields = append(fields, collectionsample.FieldSampleID)
+	}
+	if m.collection != nil {
+		fields = append(fields, collectionsample.FieldCollectionID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CollectionSampleMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case collectionsample.FieldCreateTime:
+		return m.CreateTime()
+	case collectionsample.FieldSampleID:
+		return m.SampleID()
+	case collectionsample.FieldCollectionID:
+		return m.CollectionID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CollectionSampleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case collectionsample.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case collectionsample.FieldSampleID:
+		return m.OldSampleID(ctx)
+	case collectionsample.FieldCollectionID:
+		return m.OldCollectionID(ctx)
+	}
+	return nil, fmt.Errorf("unknown CollectionSample field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CollectionSampleMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case collectionsample.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case collectionsample.FieldSampleID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSampleID(v)
+		return nil
+	case collectionsample.FieldCollectionID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCollectionID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CollectionSample field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CollectionSampleMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CollectionSampleMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CollectionSampleMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown CollectionSample numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CollectionSampleMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CollectionSampleMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CollectionSampleMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown CollectionSample nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CollectionSampleMutation) ResetField(name string) error {
+	switch name {
+	case collectionsample.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case collectionsample.FieldSampleID:
+		m.ResetSampleID()
+		return nil
+	case collectionsample.FieldCollectionID:
+		m.ResetCollectionID()
+		return nil
+	}
+	return fmt.Errorf("unknown CollectionSample field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CollectionSampleMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.sample != nil {
+		edges = append(edges, collectionsample.EdgeSample)
+	}
+	if m.collection != nil {
+		edges = append(edges, collectionsample.EdgeCollection)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CollectionSampleMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case collectionsample.EdgeSample:
+		if id := m.sample; id != nil {
+			return []ent.Value{*id}
+		}
+	case collectionsample.EdgeCollection:
+		if id := m.collection; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CollectionSampleMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CollectionSampleMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CollectionSampleMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedsample {
+		edges = append(edges, collectionsample.EdgeSample)
+	}
+	if m.clearedcollection {
+		edges = append(edges, collectionsample.EdgeCollection)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CollectionSampleMutation) EdgeCleared(name string) bool {
+	switch name {
+	case collectionsample.EdgeSample:
+		return m.clearedsample
+	case collectionsample.EdgeCollection:
+		return m.clearedcollection
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CollectionSampleMutation) ClearEdge(name string) error {
+	switch name {
+	case collectionsample.EdgeSample:
+		m.ClearSample()
+		return nil
+	case collectionsample.EdgeCollection:
+		m.ClearCollection()
+		return nil
+	}
+	return fmt.Errorf("unknown CollectionSample unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CollectionSampleMutation) ResetEdge(name string) error {
+	switch name {
+	case collectionsample.EdgeSample:
+		m.ResetSample()
+		return nil
+	case collectionsample.EdgeCollection:
+		m.ResetCollection()
+		return nil
+	}
+	return fmt.Errorf("unknown CollectionSample edge %s", name)
+}
 
 // SampleMutation represents an operation that mutates the Sample nodes in the graph.
 type SampleMutation struct {
@@ -1016,19 +2117,25 @@ func (m *SourceMutation) ResetEdge(name string) error {
 // SourceSampleMutation represents an operation that mutates the SourceSample nodes in the graph.
 type SourceSampleMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	relative_path *string
-	filename      *string
-	clearedFields map[string]struct{}
-	source        *string
-	clearedsource bool
-	sample        *string
-	clearedsample bool
-	done          bool
-	oldValue      func(context.Context) (*SourceSample, error)
-	predicates    []predicate.SourceSample
+	op                        Op
+	typ                       string
+	id                        *string
+	relative_path             *string
+	filename                  *string
+	clearedFields             map[string]struct{}
+	source                    *string
+	clearedsource             bool
+	sample                    *string
+	clearedsample             bool
+	collection                map[uuid.UUID]struct{}
+	removedcollection         map[uuid.UUID]struct{}
+	clearedcollection         bool
+	collection_samples        map[int]struct{}
+	removedcollection_samples map[int]struct{}
+	clearedcollection_samples bool
+	done                      bool
+	oldValue                  func(context.Context) (*SourceSample, error)
+	predicates                []predicate.SourceSample
 }
 
 var _ ent.Mutation = (*SourceSampleMutation)(nil)
@@ -1285,6 +2392,114 @@ func (m *SourceSampleMutation) ResetSample() {
 	m.clearedsample = false
 }
 
+// AddCollectionIDs adds the "collection" edge to the Collection entity by ids.
+func (m *SourceSampleMutation) AddCollectionIDs(ids ...uuid.UUID) {
+	if m.collection == nil {
+		m.collection = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.collection[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCollection clears the "collection" edge to the Collection entity.
+func (m *SourceSampleMutation) ClearCollection() {
+	m.clearedcollection = true
+}
+
+// CollectionCleared reports if the "collection" edge to the Collection entity was cleared.
+func (m *SourceSampleMutation) CollectionCleared() bool {
+	return m.clearedcollection
+}
+
+// RemoveCollectionIDs removes the "collection" edge to the Collection entity by IDs.
+func (m *SourceSampleMutation) RemoveCollectionIDs(ids ...uuid.UUID) {
+	if m.removedcollection == nil {
+		m.removedcollection = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.collection, ids[i])
+		m.removedcollection[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCollection returns the removed IDs of the "collection" edge to the Collection entity.
+func (m *SourceSampleMutation) RemovedCollectionIDs() (ids []uuid.UUID) {
+	for id := range m.removedcollection {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CollectionIDs returns the "collection" edge IDs in the mutation.
+func (m *SourceSampleMutation) CollectionIDs() (ids []uuid.UUID) {
+	for id := range m.collection {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCollection resets all changes to the "collection" edge.
+func (m *SourceSampleMutation) ResetCollection() {
+	m.collection = nil
+	m.clearedcollection = false
+	m.removedcollection = nil
+}
+
+// AddCollectionSampleIDs adds the "collection_samples" edge to the CollectionSample entity by ids.
+func (m *SourceSampleMutation) AddCollectionSampleIDs(ids ...int) {
+	if m.collection_samples == nil {
+		m.collection_samples = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.collection_samples[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCollectionSamples clears the "collection_samples" edge to the CollectionSample entity.
+func (m *SourceSampleMutation) ClearCollectionSamples() {
+	m.clearedcollection_samples = true
+}
+
+// CollectionSamplesCleared reports if the "collection_samples" edge to the CollectionSample entity was cleared.
+func (m *SourceSampleMutation) CollectionSamplesCleared() bool {
+	return m.clearedcollection_samples
+}
+
+// RemoveCollectionSampleIDs removes the "collection_samples" edge to the CollectionSample entity by IDs.
+func (m *SourceSampleMutation) RemoveCollectionSampleIDs(ids ...int) {
+	if m.removedcollection_samples == nil {
+		m.removedcollection_samples = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.collection_samples, ids[i])
+		m.removedcollection_samples[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCollectionSamples returns the removed IDs of the "collection_samples" edge to the CollectionSample entity.
+func (m *SourceSampleMutation) RemovedCollectionSamplesIDs() (ids []int) {
+	for id := range m.removedcollection_samples {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CollectionSamplesIDs returns the "collection_samples" edge IDs in the mutation.
+func (m *SourceSampleMutation) CollectionSamplesIDs() (ids []int) {
+	for id := range m.collection_samples {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCollectionSamples resets all changes to the "collection_samples" edge.
+func (m *SourceSampleMutation) ResetCollectionSamples() {
+	m.collection_samples = nil
+	m.clearedcollection_samples = false
+	m.removedcollection_samples = nil
+}
+
 // Where appends a list predicates to the SourceSampleMutation builder.
 func (m *SourceSampleMutation) Where(ps ...predicate.SourceSample) {
 	m.predicates = append(m.predicates, ps...)
@@ -1435,12 +2650,18 @@ func (m *SourceSampleMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SourceSampleMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.source != nil {
 		edges = append(edges, sourcesample.EdgeSource)
 	}
 	if m.sample != nil {
 		edges = append(edges, sourcesample.EdgeSample)
+	}
+	if m.collection != nil {
+		edges = append(edges, sourcesample.EdgeCollection)
+	}
+	if m.collection_samples != nil {
+		edges = append(edges, sourcesample.EdgeCollectionSamples)
 	}
 	return edges
 }
@@ -1457,30 +2678,68 @@ func (m *SourceSampleMutation) AddedIDs(name string) []ent.Value {
 		if id := m.sample; id != nil {
 			return []ent.Value{*id}
 		}
+	case sourcesample.EdgeCollection:
+		ids := make([]ent.Value, 0, len(m.collection))
+		for id := range m.collection {
+			ids = append(ids, id)
+		}
+		return ids
+	case sourcesample.EdgeCollectionSamples:
+		ids := make([]ent.Value, 0, len(m.collection_samples))
+		for id := range m.collection_samples {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SourceSampleMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
+	if m.removedcollection != nil {
+		edges = append(edges, sourcesample.EdgeCollection)
+	}
+	if m.removedcollection_samples != nil {
+		edges = append(edges, sourcesample.EdgeCollectionSamples)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *SourceSampleMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case sourcesample.EdgeCollection:
+		ids := make([]ent.Value, 0, len(m.removedcollection))
+		for id := range m.removedcollection {
+			ids = append(ids, id)
+		}
+		return ids
+	case sourcesample.EdgeCollectionSamples:
+		ids := make([]ent.Value, 0, len(m.removedcollection_samples))
+		for id := range m.removedcollection_samples {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SourceSampleMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.clearedsource {
 		edges = append(edges, sourcesample.EdgeSource)
 	}
 	if m.clearedsample {
 		edges = append(edges, sourcesample.EdgeSample)
+	}
+	if m.clearedcollection {
+		edges = append(edges, sourcesample.EdgeCollection)
+	}
+	if m.clearedcollection_samples {
+		edges = append(edges, sourcesample.EdgeCollectionSamples)
 	}
 	return edges
 }
@@ -1493,6 +2752,10 @@ func (m *SourceSampleMutation) EdgeCleared(name string) bool {
 		return m.clearedsource
 	case sourcesample.EdgeSample:
 		return m.clearedsample
+	case sourcesample.EdgeCollection:
+		return m.clearedcollection
+	case sourcesample.EdgeCollectionSamples:
+		return m.clearedcollection_samples
 	}
 	return false
 }
@@ -1520,6 +2783,12 @@ func (m *SourceSampleMutation) ResetEdge(name string) error {
 		return nil
 	case sourcesample.EdgeSample:
 		m.ResetSample()
+		return nil
+	case sourcesample.EdgeCollection:
+		m.ResetCollection()
+		return nil
+	case sourcesample.EdgeCollectionSamples:
+		m.ResetCollectionSamples()
 		return nil
 	}
 	return fmt.Errorf("unknown SourceSample edge %s", name)

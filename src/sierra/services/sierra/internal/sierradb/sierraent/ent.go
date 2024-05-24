@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collection"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collectionsample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
@@ -75,9 +77,11 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			sample.Table:       sample.ValidColumn,
-			source.Table:       source.ValidColumn,
-			sourcesample.Table: sourcesample.ValidColumn,
+			collection.Table:       collection.ValidColumn,
+			collectionsample.Table: collectionsample.ValidColumn,
+			sample.Table:           sample.ValidColumn,
+			source.Table:           source.ValidColumn,
+			sourcesample.Table:     sourcesample.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

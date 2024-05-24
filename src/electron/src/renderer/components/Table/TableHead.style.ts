@@ -8,7 +8,7 @@ export const StyledTableHead = styled.th`
   > button {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 3px;
     font-weight: inherit;
     font-size: inherit;
   }

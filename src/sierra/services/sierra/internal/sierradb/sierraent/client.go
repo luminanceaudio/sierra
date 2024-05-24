@@ -9,12 +9,15 @@ import (
 	"log"
 	"reflect"
 
+	"github.com/google/uuid"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collection"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collectionsample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
@@ -25,6 +28,10 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Collection is the client for interacting with the Collection builders.
+	Collection *CollectionClient
+	// CollectionSample is the client for interacting with the CollectionSample builders.
+	CollectionSample *CollectionSampleClient
 	// Sample is the client for interacting with the Sample builders.
 	Sample *SampleClient
 	// Source is the client for interacting with the Source builders.
@@ -42,6 +49,8 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Collection = NewCollectionClient(c.config)
+	c.CollectionSample = NewCollectionSampleClient(c.config)
 	c.Sample = NewSampleClient(c.config)
 	c.Source = NewSourceClient(c.config)
 	c.SourceSample = NewSourceSampleClient(c.config)
@@ -135,11 +144,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Sample:       NewSampleClient(cfg),
-		Source:       NewSourceClient(cfg),
-		SourceSample: NewSourceSampleClient(cfg),
+		ctx:              ctx,
+		config:           cfg,
+		Collection:       NewCollectionClient(cfg),
+		CollectionSample: NewCollectionSampleClient(cfg),
+		Sample:           NewSampleClient(cfg),
+		Source:           NewSourceClient(cfg),
+		SourceSample:     NewSourceSampleClient(cfg),
 	}, nil
 }
 
@@ -157,18 +168,20 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:          ctx,
-		config:       cfg,
-		Sample:       NewSampleClient(cfg),
-		Source:       NewSourceClient(cfg),
-		SourceSample: NewSourceSampleClient(cfg),
+		ctx:              ctx,
+		config:           cfg,
+		Collection:       NewCollectionClient(cfg),
+		CollectionSample: NewCollectionSampleClient(cfg),
+		Sample:           NewSampleClient(cfg),
+		Source:           NewSourceClient(cfg),
+		SourceSample:     NewSourceSampleClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Sample.
+//		Collection.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -190,6 +203,8 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Collection.Use(hooks...)
+	c.CollectionSample.Use(hooks...)
 	c.Sample.Use(hooks...)
 	c.Source.Use(hooks...)
 	c.SourceSample.Use(hooks...)
@@ -198,6 +213,8 @@ func (c *Client) Use(hooks ...Hook) {
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.Collection.Intercept(interceptors...)
+	c.CollectionSample.Intercept(interceptors...)
 	c.Sample.Intercept(interceptors...)
 	c.Source.Intercept(interceptors...)
 	c.SourceSample.Intercept(interceptors...)
@@ -206,6 +223,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *CollectionMutation:
+		return c.Collection.mutate(ctx, m)
+	case *CollectionSampleMutation:
+		return c.CollectionSample.mutate(ctx, m)
 	case *SampleMutation:
 		return c.Sample.mutate(ctx, m)
 	case *SourceMutation:
@@ -214,6 +235,336 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.SourceSample.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("sierraent: unknown mutation type %T", m)
+	}
+}
+
+// CollectionClient is a client for the Collection schema.
+type CollectionClient struct {
+	config
+}
+
+// NewCollectionClient returns a client for the Collection from the given config.
+func NewCollectionClient(c config) *CollectionClient {
+	return &CollectionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `collection.Hooks(f(g(h())))`.
+func (c *CollectionClient) Use(hooks ...Hook) {
+	c.hooks.Collection = append(c.hooks.Collection, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `collection.Intercept(f(g(h())))`.
+func (c *CollectionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Collection = append(c.inters.Collection, interceptors...)
+}
+
+// Create returns a builder for creating a Collection entity.
+func (c *CollectionClient) Create() *CollectionCreate {
+	mutation := newCollectionMutation(c.config, OpCreate)
+	return &CollectionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Collection entities.
+func (c *CollectionClient) CreateBulk(builders ...*CollectionCreate) *CollectionCreateBulk {
+	return &CollectionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CollectionClient) MapCreateBulk(slice any, setFunc func(*CollectionCreate, int)) *CollectionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CollectionCreateBulk{err: fmt.Errorf("calling to CollectionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CollectionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CollectionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Collection.
+func (c *CollectionClient) Update() *CollectionUpdate {
+	mutation := newCollectionMutation(c.config, OpUpdate)
+	return &CollectionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CollectionClient) UpdateOne(co *Collection) *CollectionUpdateOne {
+	mutation := newCollectionMutation(c.config, OpUpdateOne, withCollection(co))
+	return &CollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CollectionClient) UpdateOneID(id uuid.UUID) *CollectionUpdateOne {
+	mutation := newCollectionMutation(c.config, OpUpdateOne, withCollectionID(id))
+	return &CollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Collection.
+func (c *CollectionClient) Delete() *CollectionDelete {
+	mutation := newCollectionMutation(c.config, OpDelete)
+	return &CollectionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CollectionClient) DeleteOne(co *Collection) *CollectionDeleteOne {
+	return c.DeleteOneID(co.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CollectionClient) DeleteOneID(id uuid.UUID) *CollectionDeleteOne {
+	builder := c.Delete().Where(collection.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CollectionDeleteOne{builder}
+}
+
+// Query returns a query builder for Collection.
+func (c *CollectionClient) Query() *CollectionQuery {
+	return &CollectionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCollection},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Collection entity by its id.
+func (c *CollectionClient) Get(ctx context.Context, id uuid.UUID) (*Collection, error) {
+	return c.Query().Where(collection.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CollectionClient) GetX(ctx context.Context, id uuid.UUID) *Collection {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySample queries the sample edge of a Collection.
+func (c *CollectionClient) QuerySample(co *Collection) *SourceSampleQuery {
+	query := (&SourceSampleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(collection.Table, collection.FieldID, id),
+			sqlgraph.To(sourcesample.Table, sourcesample.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, collection.SampleTable, collection.SamplePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCollectionSamples queries the collection_samples edge of a Collection.
+func (c *CollectionClient) QueryCollectionSamples(co *Collection) *CollectionSampleQuery {
+	query := (&CollectionSampleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(collection.Table, collection.FieldID, id),
+			sqlgraph.To(collectionsample.Table, collectionsample.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, collection.CollectionSamplesTable, collection.CollectionSamplesColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CollectionClient) Hooks() []Hook {
+	return c.hooks.Collection
+}
+
+// Interceptors returns the client interceptors.
+func (c *CollectionClient) Interceptors() []Interceptor {
+	return c.inters.Collection
+}
+
+func (c *CollectionClient) mutate(ctx context.Context, m *CollectionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CollectionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CollectionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CollectionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("sierraent: unknown Collection mutation op: %q", m.Op())
+	}
+}
+
+// CollectionSampleClient is a client for the CollectionSample schema.
+type CollectionSampleClient struct {
+	config
+}
+
+// NewCollectionSampleClient returns a client for the CollectionSample from the given config.
+func NewCollectionSampleClient(c config) *CollectionSampleClient {
+	return &CollectionSampleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `collectionsample.Hooks(f(g(h())))`.
+func (c *CollectionSampleClient) Use(hooks ...Hook) {
+	c.hooks.CollectionSample = append(c.hooks.CollectionSample, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `collectionsample.Intercept(f(g(h())))`.
+func (c *CollectionSampleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CollectionSample = append(c.inters.CollectionSample, interceptors...)
+}
+
+// Create returns a builder for creating a CollectionSample entity.
+func (c *CollectionSampleClient) Create() *CollectionSampleCreate {
+	mutation := newCollectionSampleMutation(c.config, OpCreate)
+	return &CollectionSampleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CollectionSample entities.
+func (c *CollectionSampleClient) CreateBulk(builders ...*CollectionSampleCreate) *CollectionSampleCreateBulk {
+	return &CollectionSampleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CollectionSampleClient) MapCreateBulk(slice any, setFunc func(*CollectionSampleCreate, int)) *CollectionSampleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CollectionSampleCreateBulk{err: fmt.Errorf("calling to CollectionSampleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CollectionSampleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CollectionSampleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CollectionSample.
+func (c *CollectionSampleClient) Update() *CollectionSampleUpdate {
+	mutation := newCollectionSampleMutation(c.config, OpUpdate)
+	return &CollectionSampleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CollectionSampleClient) UpdateOne(cs *CollectionSample) *CollectionSampleUpdateOne {
+	mutation := newCollectionSampleMutation(c.config, OpUpdateOne, withCollectionSample(cs))
+	return &CollectionSampleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CollectionSampleClient) UpdateOneID(id int) *CollectionSampleUpdateOne {
+	mutation := newCollectionSampleMutation(c.config, OpUpdateOne, withCollectionSampleID(id))
+	return &CollectionSampleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CollectionSample.
+func (c *CollectionSampleClient) Delete() *CollectionSampleDelete {
+	mutation := newCollectionSampleMutation(c.config, OpDelete)
+	return &CollectionSampleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CollectionSampleClient) DeleteOne(cs *CollectionSample) *CollectionSampleDeleteOne {
+	return c.DeleteOneID(cs.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CollectionSampleClient) DeleteOneID(id int) *CollectionSampleDeleteOne {
+	builder := c.Delete().Where(collectionsample.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CollectionSampleDeleteOne{builder}
+}
+
+// Query returns a query builder for CollectionSample.
+func (c *CollectionSampleClient) Query() *CollectionSampleQuery {
+	return &CollectionSampleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCollectionSample},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CollectionSample entity by its id.
+func (c *CollectionSampleClient) Get(ctx context.Context, id int) (*CollectionSample, error) {
+	return c.Query().Where(collectionsample.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CollectionSampleClient) GetX(ctx context.Context, id int) *CollectionSample {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySample queries the sample edge of a CollectionSample.
+func (c *CollectionSampleClient) QuerySample(cs *CollectionSample) *SourceSampleQuery {
+	query := (&SourceSampleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := cs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(collectionsample.Table, collectionsample.FieldID, id),
+			sqlgraph.To(sourcesample.Table, sourcesample.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, collectionsample.SampleTable, collectionsample.SampleColumn),
+		)
+		fromV = sqlgraph.Neighbors(cs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCollection queries the collection edge of a CollectionSample.
+func (c *CollectionSampleClient) QueryCollection(cs *CollectionSample) *CollectionQuery {
+	query := (&CollectionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := cs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(collectionsample.Table, collectionsample.FieldID, id),
+			sqlgraph.To(collection.Table, collection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, collectionsample.CollectionTable, collectionsample.CollectionColumn),
+		)
+		fromV = sqlgraph.Neighbors(cs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CollectionSampleClient) Hooks() []Hook {
+	return c.hooks.CollectionSample
+}
+
+// Interceptors returns the client interceptors.
+func (c *CollectionSampleClient) Interceptors() []Interceptor {
+	return c.inters.CollectionSample
+}
+
+func (c *CollectionSampleClient) mutate(ctx context.Context, m *CollectionSampleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CollectionSampleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CollectionSampleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CollectionSampleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CollectionSampleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("sierraent: unknown CollectionSample mutation op: %q", m.Op())
 	}
 }
 
@@ -655,6 +1006,38 @@ func (c *SourceSampleClient) QuerySample(ss *SourceSample) *SampleQuery {
 	return query
 }
 
+// QueryCollection queries the collection edge of a SourceSample.
+func (c *SourceSampleClient) QueryCollection(ss *SourceSample) *CollectionQuery {
+	query := (&CollectionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sourcesample.Table, sourcesample.FieldID, id),
+			sqlgraph.To(collection.Table, collection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, sourcesample.CollectionTable, sourcesample.CollectionPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCollectionSamples queries the collection_samples edge of a SourceSample.
+func (c *SourceSampleClient) QueryCollectionSamples(ss *SourceSample) *CollectionSampleQuery {
+	query := (&CollectionSampleClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sourcesample.Table, sourcesample.FieldID, id),
+			sqlgraph.To(collectionsample.Table, collectionsample.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, sourcesample.CollectionSamplesTable, sourcesample.CollectionSamplesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *SourceSampleClient) Hooks() []Hook {
 	return c.hooks.SourceSample
@@ -683,9 +1066,9 @@ func (c *SourceSampleClient) mutate(ctx context.Context, m *SourceSampleMutation
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Sample, Source, SourceSample []ent.Hook
+		Collection, CollectionSample, Sample, Source, SourceSample []ent.Hook
 	}
 	inters struct {
-		Sample, Source, SourceSample []ent.Interceptor
+		Collection, CollectionSample, Sample, Source, SourceSample []ent.Interceptor
 	}
 )

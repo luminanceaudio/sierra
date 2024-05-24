@@ -29,7 +29,8 @@ func (SourceSample) Fields() []ent.Field {
 
 func (SourceSample) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("source", Source.Type).Unique().StorageKey(edge.Column("source")),
-		edge.To("sample", Sample.Type).Unique().StorageKey(edge.Column("sample")),
+		edge.To("source", Source.Type).Unique().StorageKey(edge.Column("source")).Required(),
+		edge.To("sample", Sample.Type).Unique().StorageKey(edge.Column("sample")).Required(),
+		edge.To("collection", Collection.Type).Through("collection_samples", CollectionSample.Type),
 	}
 }

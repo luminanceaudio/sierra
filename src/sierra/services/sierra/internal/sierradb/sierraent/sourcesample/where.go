@@ -249,6 +249,52 @@ func HasSampleWith(preds ...predicate.Sample) predicate.SourceSample {
 	})
 }
 
+// HasCollection applies the HasEdge predicate on the "collection" edge.
+func HasCollection() predicate.SourceSample {
+	return predicate.SourceSample(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, CollectionTable, CollectionPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCollectionWith applies the HasEdge predicate on the "collection" edge with a given conditions (other predicates).
+func HasCollectionWith(preds ...predicate.Collection) predicate.SourceSample {
+	return predicate.SourceSample(func(s *sql.Selector) {
+		step := newCollectionStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCollectionSamples applies the HasEdge predicate on the "collection_samples" edge.
+func HasCollectionSamples() predicate.SourceSample {
+	return predicate.SourceSample(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, CollectionSamplesTable, CollectionSamplesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCollectionSamplesWith applies the HasEdge predicate on the "collection_samples" edge with a given conditions (other predicates).
+func HasCollectionSamplesWith(preds ...predicate.CollectionSample) predicate.SourceSample {
+	return predicate.SourceSample(func(s *sql.Selector) {
+		step := newCollectionSamplesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.SourceSample) predicate.SourceSample {
 	return predicate.SourceSample(sql.AndPredicates(predicates...))

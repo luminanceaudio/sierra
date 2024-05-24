@@ -6,6 +6,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Collection is the predicate function for collection builders.
+type Collection func(*sql.Selector)
+
+// CollectionSample is the predicate function for collectionsample builders.
+type CollectionSample func(*sql.Selector)
+
 // Sample is the predicate function for sample builders.
 type Sample func(*sql.Selector)
 

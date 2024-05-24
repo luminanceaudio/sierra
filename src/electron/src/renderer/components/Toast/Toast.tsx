@@ -15,7 +15,7 @@ function Toast({ error }: ToastProps) {
       durationMs={2000}
     >
       <ExclamationCircleIcon width={20} color="#cf1212" />
-      Toasted
+      {error}
     </StyledToast>
   );
 }

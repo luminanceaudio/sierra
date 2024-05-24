@@ -11,6 +11,7 @@ export interface Sample {
   sourceUri: string;
   uri: string;
   duration: number;
+  added: boolean;
 }
 
 export interface Source {
@@ -97,7 +98,7 @@ export function sortColumn_EnumToJSON(object: SortColumn_Enum): string {
 }
 
 function createBaseSample(): Sample {
-  return { sha256: "", format: "", sourceUri: "", uri: "", duration: 0 };
+  return { sha256: "", format: "", sourceUri: "", uri: "", duration: 0, added: false };
 }
 
 export const Sample = {
@@ -116,6 +117,9 @@ export const Sample = {
     }
     if (message.duration !== 0) {
       writer.uint32(40).int64(message.duration);
+    }
+    if (message.added === true) {
+      writer.uint32(48).bool(message.added);
     }
     return writer;
   },
@@ -162,6 +166,13 @@ export const Sample = {
 
           message.duration = longToNumber(reader.int64() as Long);
           continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.added = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -178,6 +189,7 @@ export const Sample = {
       sourceUri: isSet(object.sourceUri) ? String(object.sourceUri) : "",
       uri: isSet(object.uri) ? String(object.uri) : "",
       duration: isSet(object.duration) ? Number(object.duration) : 0,
+      added: isSet(object.added) ? Boolean(object.added) : false,
     };
   },
 
@@ -198,6 +210,9 @@ export const Sample = {
     if (message.duration !== 0) {
       obj.duration = Math.round(message.duration);
     }
+    if (message.added === true) {
+      obj.added = message.added;
+    }
     return obj;
   },
 
@@ -211,6 +226,7 @@ export const Sample = {
     message.sourceUri = object.sourceUri ?? "";
     message.uri = object.uri ?? "";
     message.duration = object.duration ?? 0;
+    message.added = object.added ?? false;
     return message;
   },
 };

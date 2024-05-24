@@ -17,7 +17,7 @@ function SideMenu() {
         <Title style={{ marginBottom: 50 }}>
           <TextGradient>Sierra</TextGradient>
         </Title>
-        <SideMenuItem route="/" name="Samples" />
+        <SideMenuItem route="/" name="Explore" />
         <SideMenuItem route="/sources" name="Sources" />
       </div>
     </div>

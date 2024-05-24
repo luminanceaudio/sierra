@@ -1,5 +1,11 @@
-h1:Y9ZX1Y0kCNvDRDOwOEuLJZi9WOgUZ5LAmNKMzx+PhBE=
+h1:IHsPSTEaS5xJ/TD195qTWiUxllmdPLmXQCuPKQlYdiM=
 20240516163656_initial.down.sql h1:R+JFVmwKMwLJJjqDIMOj74v+v01RwFYsJFYuxEFkwZo=
 20240516163656_initial.up.sql h1:VJP2+6LhzWKnQSUMoFhhd0PW6W9J9c+18uiDGbRefd0=
 20240518081127_add_filename.down.sql h1:NdNvmrtUuVmp+yTaiK1omsWcoy1/bGDKk7dy49huCb4=
 20240518081127_add_filename.up.sql h1:Fg0JQENBlhM1NiaElqSy1ck7/maL17ydLcEq8mwmV3M=
+20240518095353_add_collection.down.sql h1:a4lSrB6H9IBud5Cw3lhRISwiVxeNPS5+OCO7g9FPjaA=
+20240518095353_add_collection.up.sql h1:vaNH3iN7ZEJhWV1QfsyusKIo8mTpLw3Ju2JciGyS48g=
+20240518102243_require_edges.down.sql h1:qyEOqgjsZhKZRpHYgPSJPXEuh1Z6q97BIweiUAxc5QE=
+20240518102243_require_edges.up.sql h1:H2+3auQef3qeVZ+Xn6qj9dafzuW0QMc4btdK4xuB2yA=
+20240524084004_cascade_delete.down.sql h1:w+F7omfSQIxMOb/O1NHvSdxQULX/wL+vzteS5SOItjg=
+20240524084004_cascade_delete.up.sql h1:DsT2MY71NKPHIqEznYTsSedNjxnrZX5kFEXuVrVkiKM=

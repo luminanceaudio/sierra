@@ -36,9 +36,13 @@ type SourceSampleEdges struct {
 	Source *Source `json:"source,omitempty"`
 	// Sample holds the value of the sample edge.
 	Sample *Sample `json:"sample,omitempty"`
+	// Collection holds the value of the collection edge.
+	Collection []*Collection `json:"collection,omitempty"`
+	// CollectionSamples holds the value of the collection_samples edge.
+	CollectionSamples []*CollectionSample `json:"collection_samples,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [4]bool
 }
 
 // SourceOrErr returns the Source value or an error if the edge
@@ -61,6 +65,24 @@ func (e SourceSampleEdges) SampleOrErr() (*Sample, error) {
 		return nil, &NotFoundError{label: sample.Label}
 	}
 	return nil, &NotLoadedError{edge: "sample"}
+}
+
+// CollectionOrErr returns the Collection value or an error if the edge
+// was not loaded in eager-loading.
+func (e SourceSampleEdges) CollectionOrErr() ([]*Collection, error) {
+	if e.loadedTypes[2] {
+		return e.Collection, nil
+	}
+	return nil, &NotLoadedError{edge: "collection"}
+}
+
+// CollectionSamplesOrErr returns the CollectionSamples value or an error if the edge
+// was not loaded in eager-loading.
+func (e SourceSampleEdges) CollectionSamplesOrErr() ([]*CollectionSample, error) {
+	if e.loadedTypes[3] {
+		return e.CollectionSamples, nil
+	}
+	return nil, &NotLoadedError{edge: "collection_samples"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -142,6 +164,16 @@ func (ss *SourceSample) QuerySource() *SourceQuery {
 // QuerySample queries the "sample" edge of the SourceSample entity.
 func (ss *SourceSample) QuerySample() *SampleQuery {
 	return NewSourceSampleClient(ss.config).QuerySample(ss)
+}
+
+// QueryCollection queries the "collection" edge of the SourceSample entity.
+func (ss *SourceSample) QueryCollection() *CollectionQuery {
+	return NewSourceSampleClient(ss.config).QueryCollection(ss)
+}
+
+// QueryCollectionSamples queries the "collection_samples" edge of the SourceSample entity.
+func (ss *SourceSample) QueryCollectionSamples() *CollectionSampleQuery {
+	return NewSourceSampleClient(ss.config).QueryCollectionSamples(ss)
 }
 
 // Update returns a builder for updating this SourceSample.

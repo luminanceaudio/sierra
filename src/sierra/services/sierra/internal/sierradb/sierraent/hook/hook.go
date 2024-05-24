@@ -9,6 +9,30 @@ import (
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent"
 )
 
+// The CollectionFunc type is an adapter to allow the use of ordinary
+// function as Collection mutator.
+type CollectionFunc func(context.Context, *sierraent.CollectionMutation) (sierraent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CollectionFunc) Mutate(ctx context.Context, m sierraent.Mutation) (sierraent.Value, error) {
+	if mv, ok := m.(*sierraent.CollectionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *sierraent.CollectionMutation", m)
+}
+
+// The CollectionSampleFunc type is an adapter to allow the use of ordinary
+// function as CollectionSample mutator.
+type CollectionSampleFunc func(context.Context, *sierraent.CollectionSampleMutation) (sierraent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CollectionSampleFunc) Mutate(ctx context.Context, m sierraent.Mutation) (sierraent.Value, error) {
+	if mv, ok := m.(*sierraent.CollectionSampleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *sierraent.CollectionSampleMutation", m)
+}
+
 // The SampleFunc type is an adapter to allow the use of ordinary
 // function as Sample mutator.
 type SampleFunc func(context.Context, *sierraent.SampleMutation) (sierraent.Value, error)

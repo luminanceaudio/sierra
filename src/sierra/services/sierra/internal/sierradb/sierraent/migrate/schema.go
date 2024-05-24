@@ -8,6 +8,74 @@ import (
 )
 
 var (
+	// CollectionsColumns holds the columns for the "collections" table.
+	CollectionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+	}
+	// CollectionsTable holds the schema information for the "collections" table.
+	CollectionsTable = &schema.Table{
+		Name:       "collections",
+		Columns:    CollectionsColumns,
+		PrimaryKey: []*schema.Column{CollectionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "collection_id",
+				Unique:  true,
+				Columns: []*schema.Column{CollectionsColumns[0]},
+			},
+			{
+				Name:    "collection_name",
+				Unique:  false,
+				Columns: []*schema.Column{CollectionsColumns[2]},
+			},
+		},
+	}
+	// CollectionSamplesColumns holds the columns for the "collection_samples" table.
+	CollectionSamplesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "sample_id", Type: field.TypeString},
+		{Name: "collection_id", Type: field.TypeUUID},
+	}
+	// CollectionSamplesTable holds the schema information for the "collection_samples" table.
+	CollectionSamplesTable = &schema.Table{
+		Name:       "collection_samples",
+		Columns:    CollectionSamplesColumns,
+		PrimaryKey: []*schema.Column{CollectionSamplesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "collection_samples_source_samples_sample",
+				Columns:    []*schema.Column{CollectionSamplesColumns[2]},
+				RefColumns: []*schema.Column{SourceSamplesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "collection_samples_collections_collection",
+				Columns:    []*schema.Column{CollectionSamplesColumns[3]},
+				RefColumns: []*schema.Column{CollectionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "collectionsample_sample_id",
+				Unique:  false,
+				Columns: []*schema.Column{CollectionSamplesColumns[2]},
+			},
+			{
+				Name:    "collectionsample_collection_id",
+				Unique:  false,
+				Columns: []*schema.Column{CollectionSamplesColumns[3]},
+			},
+			{
+				Name:    "collectionsample_sample_id_collection_id",
+				Unique:  true,
+				Columns: []*schema.Column{CollectionSamplesColumns[2], CollectionSamplesColumns[3]},
+			},
+		},
+	}
 	// SamplesColumns holds the columns for the "samples" table.
 	SamplesColumns = []*schema.Column{
 		{Name: "sha256", Type: field.TypeString, Unique: true},
@@ -50,8 +118,8 @@ var (
 		{Name: "uri", Type: field.TypeString, Unique: true},
 		{Name: "relative_path", Type: field.TypeString},
 		{Name: "filename", Type: field.TypeString},
-		{Name: "source", Type: field.TypeString, Nullable: true},
-		{Name: "sample", Type: field.TypeString, Nullable: true},
+		{Name: "source", Type: field.TypeString},
+		{Name: "sample", Type: field.TypeString},
 	}
 	// SourceSamplesTable holds the schema information for the "source_samples" table.
 	SourceSamplesTable = &schema.Table{
@@ -63,13 +131,13 @@ var (
 				Symbol:     "source_samples_sources_source",
 				Columns:    []*schema.Column{SourceSamplesColumns[3]},
 				RefColumns: []*schema.Column{SourcesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "source_samples_samples_sample",
 				Columns:    []*schema.Column{SourceSamplesColumns[4]},
 				RefColumns: []*schema.Column{SamplesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -92,6 +160,8 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		CollectionsTable,
+		CollectionSamplesTable,
 		SamplesTable,
 		SourcesTable,
 		SourceSamplesTable,
@@ -99,6 +169,8 @@ var (
 )
 
 func init() {
+	CollectionSamplesTable.ForeignKeys[0].RefTable = SourceSamplesTable
+	CollectionSamplesTable.ForeignKeys[1].RefTable = CollectionsTable
 	SourceSamplesTable.ForeignKeys[0].RefTable = SourcesTable
 	SourceSamplesTable.ForeignKeys[1].RefTable = SamplesTable
 }

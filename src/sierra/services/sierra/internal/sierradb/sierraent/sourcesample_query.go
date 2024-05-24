@@ -4,12 +4,16 @@ package sierraent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collection"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collectionsample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/predicate"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
@@ -19,13 +23,15 @@ import (
 // SourceSampleQuery is the builder for querying SourceSample entities.
 type SourceSampleQuery struct {
 	config
-	ctx        *QueryContext
-	order      []sourcesample.OrderOption
-	inters     []Interceptor
-	predicates []predicate.SourceSample
-	withSource *SourceQuery
-	withSample *SampleQuery
-	withFKs    bool
+	ctx                   *QueryContext
+	order                 []sourcesample.OrderOption
+	inters                []Interceptor
+	predicates            []predicate.SourceSample
+	withSource            *SourceQuery
+	withSample            *SampleQuery
+	withCollection        *CollectionQuery
+	withCollectionSamples *CollectionSampleQuery
+	withFKs               bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -99,6 +105,50 @@ func (ssq *SourceSampleQuery) QuerySample() *SampleQuery {
 			sqlgraph.From(sourcesample.Table, sourcesample.FieldID, selector),
 			sqlgraph.To(sample.Table, sample.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, sourcesample.SampleTable, sourcesample.SampleColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ssq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCollection chains the current query on the "collection" edge.
+func (ssq *SourceSampleQuery) QueryCollection() *CollectionQuery {
+	query := (&CollectionClient{config: ssq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ssq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ssq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sourcesample.Table, sourcesample.FieldID, selector),
+			sqlgraph.To(collection.Table, collection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, sourcesample.CollectionTable, sourcesample.CollectionPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(ssq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCollectionSamples chains the current query on the "collection_samples" edge.
+func (ssq *SourceSampleQuery) QueryCollectionSamples() *CollectionSampleQuery {
+	query := (&CollectionSampleClient{config: ssq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ssq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ssq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sourcesample.Table, sourcesample.FieldID, selector),
+			sqlgraph.To(collectionsample.Table, collectionsample.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, sourcesample.CollectionSamplesTable, sourcesample.CollectionSamplesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ssq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,13 +343,15 @@ func (ssq *SourceSampleQuery) Clone() *SourceSampleQuery {
 		return nil
 	}
 	return &SourceSampleQuery{
-		config:     ssq.config,
-		ctx:        ssq.ctx.Clone(),
-		order:      append([]sourcesample.OrderOption{}, ssq.order...),
-		inters:     append([]Interceptor{}, ssq.inters...),
-		predicates: append([]predicate.SourceSample{}, ssq.predicates...),
-		withSource: ssq.withSource.Clone(),
-		withSample: ssq.withSample.Clone(),
+		config:                ssq.config,
+		ctx:                   ssq.ctx.Clone(),
+		order:                 append([]sourcesample.OrderOption{}, ssq.order...),
+		inters:                append([]Interceptor{}, ssq.inters...),
+		predicates:            append([]predicate.SourceSample{}, ssq.predicates...),
+		withSource:            ssq.withSource.Clone(),
+		withSample:            ssq.withSample.Clone(),
+		withCollection:        ssq.withCollection.Clone(),
+		withCollectionSamples: ssq.withCollectionSamples.Clone(),
 		// clone intermediate query.
 		sql:  ssq.sql.Clone(),
 		path: ssq.path,
@@ -325,6 +377,28 @@ func (ssq *SourceSampleQuery) WithSample(opts ...func(*SampleQuery)) *SourceSamp
 		opt(query)
 	}
 	ssq.withSample = query
+	return ssq
+}
+
+// WithCollection tells the query-builder to eager-load the nodes that are connected to
+// the "collection" edge. The optional arguments are used to configure the query builder of the edge.
+func (ssq *SourceSampleQuery) WithCollection(opts ...func(*CollectionQuery)) *SourceSampleQuery {
+	query := (&CollectionClient{config: ssq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ssq.withCollection = query
+	return ssq
+}
+
+// WithCollectionSamples tells the query-builder to eager-load the nodes that are connected to
+// the "collection_samples" edge. The optional arguments are used to configure the query builder of the edge.
+func (ssq *SourceSampleQuery) WithCollectionSamples(opts ...func(*CollectionSampleQuery)) *SourceSampleQuery {
+	query := (&CollectionSampleClient{config: ssq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ssq.withCollectionSamples = query
 	return ssq
 }
 
@@ -407,9 +481,11 @@ func (ssq *SourceSampleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		nodes       = []*SourceSample{}
 		withFKs     = ssq.withFKs
 		_spec       = ssq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [4]bool{
 			ssq.withSource != nil,
 			ssq.withSample != nil,
+			ssq.withCollection != nil,
+			ssq.withCollectionSamples != nil,
 		}
 	)
 	if ssq.withSource != nil || ssq.withSample != nil {
@@ -445,6 +521,22 @@ func (ssq *SourceSampleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if query := ssq.withSample; query != nil {
 		if err := ssq.loadSample(ctx, query, nodes, nil,
 			func(n *SourceSample, e *Sample) { n.Edges.Sample = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := ssq.withCollection; query != nil {
+		if err := ssq.loadCollection(ctx, query, nodes,
+			func(n *SourceSample) { n.Edges.Collection = []*Collection{} },
+			func(n *SourceSample, e *Collection) { n.Edges.Collection = append(n.Edges.Collection, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := ssq.withCollectionSamples; query != nil {
+		if err := ssq.loadCollectionSamples(ctx, query, nodes,
+			func(n *SourceSample) { n.Edges.CollectionSamples = []*CollectionSample{} },
+			func(n *SourceSample, e *CollectionSample) {
+				n.Edges.CollectionSamples = append(n.Edges.CollectionSamples, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -512,6 +604,97 @@ func (ssq *SourceSampleQuery) loadSample(ctx context.Context, query *SampleQuery
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (ssq *SourceSampleQuery) loadCollection(ctx context.Context, query *CollectionQuery, nodes []*SourceSample, init func(*SourceSample), assign func(*SourceSample, *Collection)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*SourceSample)
+	nids := make(map[uuid.UUID]map[*SourceSample]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(sourcesample.CollectionTable)
+		s.Join(joinT).On(s.C(collection.FieldID), joinT.C(sourcesample.CollectionPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(sourcesample.CollectionPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(sourcesample.CollectionPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := *values[1].(*uuid.UUID)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*SourceSample]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Collection](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "collection" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (ssq *SourceSampleQuery) loadCollectionSamples(ctx context.Context, query *CollectionSampleQuery, nodes []*SourceSample, init func(*SourceSample), assign func(*SourceSample, *CollectionSample)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*SourceSample)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(collectionsample.FieldSampleID)
+	}
+	query.Where(predicate.CollectionSample(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(sourcesample.CollectionSamplesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.SampleID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "sample_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

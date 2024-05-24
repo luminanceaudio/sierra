@@ -10,6 +10,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collection"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collectionsample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/predicate"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
@@ -35,14 +38,6 @@ func (ssu *SourceSampleUpdate) SetSourceID(id string) *SourceSampleUpdate {
 	return ssu
 }
 
-// SetNillableSourceID sets the "source" edge to the Source entity by ID if the given value is not nil.
-func (ssu *SourceSampleUpdate) SetNillableSourceID(id *string) *SourceSampleUpdate {
-	if id != nil {
-		ssu = ssu.SetSourceID(*id)
-	}
-	return ssu
-}
-
 // SetSource sets the "source" edge to the Source entity.
 func (ssu *SourceSampleUpdate) SetSource(s *Source) *SourceSampleUpdate {
 	return ssu.SetSourceID(s.ID)
@@ -54,17 +49,39 @@ func (ssu *SourceSampleUpdate) SetSampleID(id string) *SourceSampleUpdate {
 	return ssu
 }
 
-// SetNillableSampleID sets the "sample" edge to the Sample entity by ID if the given value is not nil.
-func (ssu *SourceSampleUpdate) SetNillableSampleID(id *string) *SourceSampleUpdate {
-	if id != nil {
-		ssu = ssu.SetSampleID(*id)
-	}
-	return ssu
-}
-
 // SetSample sets the "sample" edge to the Sample entity.
 func (ssu *SourceSampleUpdate) SetSample(s *Sample) *SourceSampleUpdate {
 	return ssu.SetSampleID(s.ID)
+}
+
+// AddCollectionIDs adds the "collection" edge to the Collection entity by IDs.
+func (ssu *SourceSampleUpdate) AddCollectionIDs(ids ...uuid.UUID) *SourceSampleUpdate {
+	ssu.mutation.AddCollectionIDs(ids...)
+	return ssu
+}
+
+// AddCollection adds the "collection" edges to the Collection entity.
+func (ssu *SourceSampleUpdate) AddCollection(c ...*Collection) *SourceSampleUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssu.AddCollectionIDs(ids...)
+}
+
+// AddCollectionSampleIDs adds the "collection_samples" edge to the CollectionSample entity by IDs.
+func (ssu *SourceSampleUpdate) AddCollectionSampleIDs(ids ...int) *SourceSampleUpdate {
+	ssu.mutation.AddCollectionSampleIDs(ids...)
+	return ssu
+}
+
+// AddCollectionSamples adds the "collection_samples" edges to the CollectionSample entity.
+func (ssu *SourceSampleUpdate) AddCollectionSamples(c ...*CollectionSample) *SourceSampleUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssu.AddCollectionSampleIDs(ids...)
 }
 
 // Mutation returns the SourceSampleMutation object of the builder.
@@ -82,6 +99,48 @@ func (ssu *SourceSampleUpdate) ClearSource() *SourceSampleUpdate {
 func (ssu *SourceSampleUpdate) ClearSample() *SourceSampleUpdate {
 	ssu.mutation.ClearSample()
 	return ssu
+}
+
+// ClearCollection clears all "collection" edges to the Collection entity.
+func (ssu *SourceSampleUpdate) ClearCollection() *SourceSampleUpdate {
+	ssu.mutation.ClearCollection()
+	return ssu
+}
+
+// RemoveCollectionIDs removes the "collection" edge to Collection entities by IDs.
+func (ssu *SourceSampleUpdate) RemoveCollectionIDs(ids ...uuid.UUID) *SourceSampleUpdate {
+	ssu.mutation.RemoveCollectionIDs(ids...)
+	return ssu
+}
+
+// RemoveCollection removes "collection" edges to Collection entities.
+func (ssu *SourceSampleUpdate) RemoveCollection(c ...*Collection) *SourceSampleUpdate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssu.RemoveCollectionIDs(ids...)
+}
+
+// ClearCollectionSamples clears all "collection_samples" edges to the CollectionSample entity.
+func (ssu *SourceSampleUpdate) ClearCollectionSamples() *SourceSampleUpdate {
+	ssu.mutation.ClearCollectionSamples()
+	return ssu
+}
+
+// RemoveCollectionSampleIDs removes the "collection_samples" edge to CollectionSample entities by IDs.
+func (ssu *SourceSampleUpdate) RemoveCollectionSampleIDs(ids ...int) *SourceSampleUpdate {
+	ssu.mutation.RemoveCollectionSampleIDs(ids...)
+	return ssu
+}
+
+// RemoveCollectionSamples removes "collection_samples" edges to CollectionSample entities.
+func (ssu *SourceSampleUpdate) RemoveCollectionSamples(c ...*CollectionSample) *SourceSampleUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssu.RemoveCollectionSampleIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -111,7 +170,21 @@ func (ssu *SourceSampleUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ssu *SourceSampleUpdate) check() error {
+	if _, ok := ssu.mutation.SourceID(); ssu.mutation.SourceCleared() && !ok {
+		return errors.New(`sierraent: clearing a required unique edge "SourceSample.source"`)
+	}
+	if _, ok := ssu.mutation.SampleID(); ssu.mutation.SampleCleared() && !ok {
+		return errors.New(`sierraent: clearing a required unique edge "SourceSample.sample"`)
+	}
+	return nil
+}
+
 func (ssu *SourceSampleUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ssu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(sourcesample.Table, sourcesample.Columns, sqlgraph.NewFieldSpec(sourcesample.FieldID, field.TypeString))
 	if ps := ssu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -178,6 +251,108 @@ func (ssu *SourceSampleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ssu.mutation.CollectionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sourcesample.CollectionTable,
+			Columns: sourcesample.CollectionPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collection.FieldID, field.TypeUUID),
+			},
+		}
+		createE := &CollectionSampleCreate{config: ssu.config, mutation: newCollectionSampleMutation(ssu.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssu.mutation.RemovedCollectionIDs(); len(nodes) > 0 && !ssu.mutation.CollectionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sourcesample.CollectionTable,
+			Columns: sourcesample.CollectionPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collection.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &CollectionSampleCreate{config: ssu.config, mutation: newCollectionSampleMutation(ssu.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssu.mutation.CollectionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sourcesample.CollectionTable,
+			Columns: sourcesample.CollectionPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collection.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &CollectionSampleCreate{config: ssu.config, mutation: newCollectionSampleMutation(ssu.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ssu.mutation.CollectionSamplesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sourcesample.CollectionSamplesTable,
+			Columns: []string{sourcesample.CollectionSamplesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collectionsample.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssu.mutation.RemovedCollectionSamplesIDs(); len(nodes) > 0 && !ssu.mutation.CollectionSamplesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sourcesample.CollectionSamplesTable,
+			Columns: []string{sourcesample.CollectionSamplesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collectionsample.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssu.mutation.CollectionSamplesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sourcesample.CollectionSamplesTable,
+			Columns: []string{sourcesample.CollectionSamplesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collectionsample.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ssu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{sourcesample.Label}
@@ -204,14 +379,6 @@ func (ssuo *SourceSampleUpdateOne) SetSourceID(id string) *SourceSampleUpdateOne
 	return ssuo
 }
 
-// SetNillableSourceID sets the "source" edge to the Source entity by ID if the given value is not nil.
-func (ssuo *SourceSampleUpdateOne) SetNillableSourceID(id *string) *SourceSampleUpdateOne {
-	if id != nil {
-		ssuo = ssuo.SetSourceID(*id)
-	}
-	return ssuo
-}
-
 // SetSource sets the "source" edge to the Source entity.
 func (ssuo *SourceSampleUpdateOne) SetSource(s *Source) *SourceSampleUpdateOne {
 	return ssuo.SetSourceID(s.ID)
@@ -223,17 +390,39 @@ func (ssuo *SourceSampleUpdateOne) SetSampleID(id string) *SourceSampleUpdateOne
 	return ssuo
 }
 
-// SetNillableSampleID sets the "sample" edge to the Sample entity by ID if the given value is not nil.
-func (ssuo *SourceSampleUpdateOne) SetNillableSampleID(id *string) *SourceSampleUpdateOne {
-	if id != nil {
-		ssuo = ssuo.SetSampleID(*id)
-	}
-	return ssuo
-}
-
 // SetSample sets the "sample" edge to the Sample entity.
 func (ssuo *SourceSampleUpdateOne) SetSample(s *Sample) *SourceSampleUpdateOne {
 	return ssuo.SetSampleID(s.ID)
+}
+
+// AddCollectionIDs adds the "collection" edge to the Collection entity by IDs.
+func (ssuo *SourceSampleUpdateOne) AddCollectionIDs(ids ...uuid.UUID) *SourceSampleUpdateOne {
+	ssuo.mutation.AddCollectionIDs(ids...)
+	return ssuo
+}
+
+// AddCollection adds the "collection" edges to the Collection entity.
+func (ssuo *SourceSampleUpdateOne) AddCollection(c ...*Collection) *SourceSampleUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssuo.AddCollectionIDs(ids...)
+}
+
+// AddCollectionSampleIDs adds the "collection_samples" edge to the CollectionSample entity by IDs.
+func (ssuo *SourceSampleUpdateOne) AddCollectionSampleIDs(ids ...int) *SourceSampleUpdateOne {
+	ssuo.mutation.AddCollectionSampleIDs(ids...)
+	return ssuo
+}
+
+// AddCollectionSamples adds the "collection_samples" edges to the CollectionSample entity.
+func (ssuo *SourceSampleUpdateOne) AddCollectionSamples(c ...*CollectionSample) *SourceSampleUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssuo.AddCollectionSampleIDs(ids...)
 }
 
 // Mutation returns the SourceSampleMutation object of the builder.
@@ -251,6 +440,48 @@ func (ssuo *SourceSampleUpdateOne) ClearSource() *SourceSampleUpdateOne {
 func (ssuo *SourceSampleUpdateOne) ClearSample() *SourceSampleUpdateOne {
 	ssuo.mutation.ClearSample()
 	return ssuo
+}
+
+// ClearCollection clears all "collection" edges to the Collection entity.
+func (ssuo *SourceSampleUpdateOne) ClearCollection() *SourceSampleUpdateOne {
+	ssuo.mutation.ClearCollection()
+	return ssuo
+}
+
+// RemoveCollectionIDs removes the "collection" edge to Collection entities by IDs.
+func (ssuo *SourceSampleUpdateOne) RemoveCollectionIDs(ids ...uuid.UUID) *SourceSampleUpdateOne {
+	ssuo.mutation.RemoveCollectionIDs(ids...)
+	return ssuo
+}
+
+// RemoveCollection removes "collection" edges to Collection entities.
+func (ssuo *SourceSampleUpdateOne) RemoveCollection(c ...*Collection) *SourceSampleUpdateOne {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssuo.RemoveCollectionIDs(ids...)
+}
+
+// ClearCollectionSamples clears all "collection_samples" edges to the CollectionSample entity.
+func (ssuo *SourceSampleUpdateOne) ClearCollectionSamples() *SourceSampleUpdateOne {
+	ssuo.mutation.ClearCollectionSamples()
+	return ssuo
+}
+
+// RemoveCollectionSampleIDs removes the "collection_samples" edge to CollectionSample entities by IDs.
+func (ssuo *SourceSampleUpdateOne) RemoveCollectionSampleIDs(ids ...int) *SourceSampleUpdateOne {
+	ssuo.mutation.RemoveCollectionSampleIDs(ids...)
+	return ssuo
+}
+
+// RemoveCollectionSamples removes "collection_samples" edges to CollectionSample entities.
+func (ssuo *SourceSampleUpdateOne) RemoveCollectionSamples(c ...*CollectionSample) *SourceSampleUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssuo.RemoveCollectionSampleIDs(ids...)
 }
 
 // Where appends a list predicates to the SourceSampleUpdate builder.
@@ -293,7 +524,21 @@ func (ssuo *SourceSampleUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ssuo *SourceSampleUpdateOne) check() error {
+	if _, ok := ssuo.mutation.SourceID(); ssuo.mutation.SourceCleared() && !ok {
+		return errors.New(`sierraent: clearing a required unique edge "SourceSample.source"`)
+	}
+	if _, ok := ssuo.mutation.SampleID(); ssuo.mutation.SampleCleared() && !ok {
+		return errors.New(`sierraent: clearing a required unique edge "SourceSample.sample"`)
+	}
+	return nil
+}
+
 func (ssuo *SourceSampleUpdateOne) sqlSave(ctx context.Context) (_node *SourceSample, err error) {
+	if err := ssuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(sourcesample.Table, sourcesample.Columns, sqlgraph.NewFieldSpec(sourcesample.FieldID, field.TypeString))
 	id, ok := ssuo.mutation.ID()
 	if !ok {
@@ -370,6 +615,108 @@ func (ssuo *SourceSampleUpdateOne) sqlSave(ctx context.Context) (_node *SourceSa
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(sample.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ssuo.mutation.CollectionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sourcesample.CollectionTable,
+			Columns: sourcesample.CollectionPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collection.FieldID, field.TypeUUID),
+			},
+		}
+		createE := &CollectionSampleCreate{config: ssuo.config, mutation: newCollectionSampleMutation(ssuo.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssuo.mutation.RemovedCollectionIDs(); len(nodes) > 0 && !ssuo.mutation.CollectionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sourcesample.CollectionTable,
+			Columns: sourcesample.CollectionPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collection.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &CollectionSampleCreate{config: ssuo.config, mutation: newCollectionSampleMutation(ssuo.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssuo.mutation.CollectionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sourcesample.CollectionTable,
+			Columns: sourcesample.CollectionPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collection.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &CollectionSampleCreate{config: ssuo.config, mutation: newCollectionSampleMutation(ssuo.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ssuo.mutation.CollectionSamplesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sourcesample.CollectionSamplesTable,
+			Columns: []string{sourcesample.CollectionSamplesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collectionsample.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssuo.mutation.RemovedCollectionSamplesIDs(); len(nodes) > 0 && !ssuo.mutation.CollectionSamplesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sourcesample.CollectionSamplesTable,
+			Columns: []string{sourcesample.CollectionSamplesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collectionsample.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ssuo.mutation.CollectionSamplesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sourcesample.CollectionSamplesTable,
+			Columns: []string{sourcesample.CollectionSamplesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collectionsample.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

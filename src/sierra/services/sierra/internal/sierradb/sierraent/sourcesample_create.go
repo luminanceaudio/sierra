@@ -11,6 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collection"
+	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/collectionsample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sample"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/source"
 	"github.com/luminanceaudio/sierra/src/sierra/services/sierra/internal/sierradb/sierraent/sourcesample"
@@ -48,14 +51,6 @@ func (ssc *SourceSampleCreate) SetSourceID(id string) *SourceSampleCreate {
 	return ssc
 }
 
-// SetNillableSourceID sets the "source" edge to the Source entity by ID if the given value is not nil.
-func (ssc *SourceSampleCreate) SetNillableSourceID(id *string) *SourceSampleCreate {
-	if id != nil {
-		ssc = ssc.SetSourceID(*id)
-	}
-	return ssc
-}
-
 // SetSource sets the "source" edge to the Source entity.
 func (ssc *SourceSampleCreate) SetSource(s *Source) *SourceSampleCreate {
 	return ssc.SetSourceID(s.ID)
@@ -67,17 +62,39 @@ func (ssc *SourceSampleCreate) SetSampleID(id string) *SourceSampleCreate {
 	return ssc
 }
 
-// SetNillableSampleID sets the "sample" edge to the Sample entity by ID if the given value is not nil.
-func (ssc *SourceSampleCreate) SetNillableSampleID(id *string) *SourceSampleCreate {
-	if id != nil {
-		ssc = ssc.SetSampleID(*id)
-	}
-	return ssc
-}
-
 // SetSample sets the "sample" edge to the Sample entity.
 func (ssc *SourceSampleCreate) SetSample(s *Sample) *SourceSampleCreate {
 	return ssc.SetSampleID(s.ID)
+}
+
+// AddCollectionIDs adds the "collection" edge to the Collection entity by IDs.
+func (ssc *SourceSampleCreate) AddCollectionIDs(ids ...uuid.UUID) *SourceSampleCreate {
+	ssc.mutation.AddCollectionIDs(ids...)
+	return ssc
+}
+
+// AddCollection adds the "collection" edges to the Collection entity.
+func (ssc *SourceSampleCreate) AddCollection(c ...*Collection) *SourceSampleCreate {
+	ids := make([]uuid.UUID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssc.AddCollectionIDs(ids...)
+}
+
+// AddCollectionSampleIDs adds the "collection_samples" edge to the CollectionSample entity by IDs.
+func (ssc *SourceSampleCreate) AddCollectionSampleIDs(ids ...int) *SourceSampleCreate {
+	ssc.mutation.AddCollectionSampleIDs(ids...)
+	return ssc
+}
+
+// AddCollectionSamples adds the "collection_samples" edges to the CollectionSample entity.
+func (ssc *SourceSampleCreate) AddCollectionSamples(c ...*CollectionSample) *SourceSampleCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ssc.AddCollectionSampleIDs(ids...)
 }
 
 // Mutation returns the SourceSampleMutation object of the builder.
@@ -119,6 +136,12 @@ func (ssc *SourceSampleCreate) check() error {
 	}
 	if _, ok := ssc.mutation.Filename(); !ok {
 		return &ValidationError{Name: "filename", err: errors.New(`sierraent: missing required field "SourceSample.filename"`)}
+	}
+	if _, ok := ssc.mutation.SourceID(); !ok {
+		return &ValidationError{Name: "source", err: errors.New(`sierraent: missing required edge "SourceSample.source"`)}
+	}
+	if _, ok := ssc.mutation.SampleID(); !ok {
+		return &ValidationError{Name: "sample", err: errors.New(`sierraent: missing required edge "SourceSample.sample"`)}
 	}
 	return nil
 }
@@ -196,6 +219,42 @@ func (ssc *SourceSampleCreate) createSpec() (*SourceSample, *sqlgraph.CreateSpec
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.sample = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ssc.mutation.CollectionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sourcesample.CollectionTable,
+			Columns: sourcesample.CollectionPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collection.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		createE := &CollectionSampleCreate{config: ssc.config, mutation: newCollectionSampleMutation(ssc.config, OpCreate)}
+		createE.defaults()
+		_, specE := createE.createSpec()
+		edge.Target.Fields = specE.Fields
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ssc.mutation.CollectionSamplesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sourcesample.CollectionSamplesTable,
+			Columns: []string{sourcesample.CollectionSamplesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(collectionsample.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

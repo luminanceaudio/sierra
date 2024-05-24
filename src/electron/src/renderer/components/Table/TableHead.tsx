@@ -32,6 +32,7 @@ function TableHead({
   function changeSort() {
     if (column !== sortColumn) {
       setSortColumn(column);
+      setSortDirection(SortDirection_Enum.Asc);
     } else {
       setSortDirection(
         sortDirection === SortDirection_Enum.Asc
@@ -47,9 +48,9 @@ function TableHead({
 
   if (sortColumn === column) {
     if (sortDirection === SortDirection_Enum.Desc) {
-      icon = <ChevronUpIcon width={15} style={{ color: '#787878' }} />;
+      icon = <ChevronDownIcon width={10} style={{ color: '#787878' }} />;
     } else {
-      icon = <ChevronDownIcon width={15} style={{ color: '#787878' }} />;
+      icon = <ChevronUpIcon width={10} style={{ color: '#787878' }} />;
     }
   }
 

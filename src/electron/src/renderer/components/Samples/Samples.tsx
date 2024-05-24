@@ -10,7 +10,7 @@ import {
 } from '../../../proto/app/appbase';
 import TableHead from '../Table/TableHead';
 
-const pageSize = 8;
+const pageSize = 15;
 
 function Samples(): React.ReactElement {
   const [search, setSearch] = React.useState('');
@@ -83,6 +83,7 @@ function Samples(): React.ReactElement {
                   sortDirection={sortDirection}
                   setSortDirection={setSortDirection}
                 />
+                <th />
               </tr>
             </thead>
             <tbody>

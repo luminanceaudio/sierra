@@ -12,6 +12,10 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Collection is the client for interacting with the Collection builders.
+	Collection *CollectionClient
+	// CollectionSample is the client for interacting with the CollectionSample builders.
+	CollectionSample *CollectionSampleClient
 	// Sample is the client for interacting with the Sample builders.
 	Sample *SampleClient
 	// Source is the client for interacting with the Source builders.
@@ -149,6 +153,8 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Collection = NewCollectionClient(tx.config)
+	tx.CollectionSample = NewCollectionSampleClient(tx.config)
 	tx.Sample = NewSampleClient(tx.config)
 	tx.Source = NewSourceClient(tx.config)
 	tx.SourceSample = NewSourceSampleClient(tx.config)
@@ -161,7 +167,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Sample.QueryXXX(), the query will be executed
+// applies a query, for example: Collection.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.
